@@ -2,15 +2,11 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
-//import org.json.simple.JSONArray;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.Iterator;
-import java.util.Map;
 import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.*;
 
@@ -39,6 +35,10 @@ public class JSONFileParser {
       this.jsonFile = fileName;
     }
     this.splitBy = splitBy;
+  }
+
+  public String getFileName() {
+    return this.jsonFile;
   }
 
   public HashMap<String, ArrayList> readFile() throws IOException, ParseException {
@@ -95,6 +95,9 @@ public class JSONFileParser {
     return parsedString;
   }
 
+  //NOTE: The next two files are essentially duplicates
+  //Could make it such that you pass the key (i.e. grammarTitle) and it returns it if it exists?
+
   public String getTitle() throws IOException, ParseException, NoSuchJSONObjectException {
 
     //Setting up the JSON parser
@@ -139,7 +142,6 @@ public class JSONFileParser {
       throw new NoSuchJSONObjectException("This JSON file doesn't have a 'grammarTitle'.");
     }
     return grammarDesc;
-
 
   }
 
