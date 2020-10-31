@@ -7,7 +7,7 @@ public class Grammar {
 
   private String grammarTitle;
   private String grammarDesc;
-  private HashMap<String, ArrayList> info;
+  private HashMap<String, ArrayList<String>> info;
 
   public Grammar(JSONFileParser file) throws IOException, ParseException, NoSuchJSONObjectException {
     this.info = file.readFile();
@@ -23,8 +23,12 @@ public class Grammar {
     return this.grammarDesc;
   }
 
-  public HashMap<String, ArrayList> getInfo() {
+  public HashMap<String, ArrayList<String>> getInfo() {
     return this.info;
+  }
+
+  public ArrayList<String> getInfoValue(String key) {
+    return this.info.get(key);
   }
 
   public static void main(String[] args)
@@ -32,7 +36,7 @@ public class Grammar {
 
     JSONFileParser poemTest = new JSONFileParser("poem_grammar.json");
     Grammar poemGrammar = new Grammar(poemTest);
-    HashMap<String, ArrayList> testMap = poemGrammar.getInfo();
+    HashMap<String, ArrayList<String>> testMap = poemGrammar.getInfo();
     String grammarTitle = poemTest.getTitle();
     String grammarDesc = poemTest.getDesc();
 

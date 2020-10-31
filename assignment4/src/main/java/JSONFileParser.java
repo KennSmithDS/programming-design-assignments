@@ -41,14 +41,14 @@ public class JSONFileParser {
     return this.jsonFile;
   }
 
-  public HashMap<String, ArrayList> readFile() throws IOException, ParseException {
+  public HashMap<String, ArrayList<String>> readFile() throws IOException, ParseException {
 
     //Setting up the JSON parser
     Object obj = new JSONParser().parse(new FileReader(this.jsonFile));
     JSONObject parser = (JSONObject) obj;
 
     //Making the hashmap to store all the parsed JSON file info
-    HashMap<String, ArrayList> info = new HashMap<>();
+    HashMap<String, ArrayList<String>> info = new HashMap<>();
 
     //Get all the keys and removing
     Set keys = parser.keySet();
@@ -147,7 +147,7 @@ public class JSONFileParser {
 
   public static void main(String[] args) throws IOException, ParseException {
     JSONFileParser test = new JSONFileParser("poem_grammar.json");
-    HashMap<String, ArrayList> testMap = test.readFile();
+    HashMap<String, ArrayList<String>> testMap = test.readFile();
 
     for(String key : testMap.keySet()) {
       System.out.println("The key is: " + key);
