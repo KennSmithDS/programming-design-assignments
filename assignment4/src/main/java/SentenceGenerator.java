@@ -1,6 +1,4 @@
-import java.util.LinkedList;
-import java.util.Objects;
-import java.util.Queue;
+import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -27,6 +25,12 @@ public class SentenceGenerator {
         this.grammar = grammar;
     }
 
+    public String getRandomGrammarElement(String key) {
+        ArrayList<String> grammarList = this.grammar.getInfo().get(key);
+        Random rand = new Random();
+        return grammarList.get(rand.nextInt(grammarList.size()));
+    }
+
     public static String findPlaceholder(String input) {
         Pattern pattern = Pattern.compile(PLACEHOLDER_PATTERN);
         Matcher matcher = pattern.matcher(input);
@@ -49,22 +53,40 @@ public class SentenceGenerator {
         return null;
     }
 
-    public void buildSentence() {
-
-    }
-
-    public String recursiveStringReplace(LinkedList<String> grammarQueue) {
-//        String firstToken = grammarQueue.peek();
-        String matchResult = findPlaceholder(grammarQueue.peek());
-        if (matchResult != null) {
-            return "";
-        } else {
-            String firstToken = grammarQueue.remove();
-            return firstToken + recursiveStringReplace(grammarQueue);
+    public static Stack<String> buildGrammarStack(String input) {
+        List<String> stringList = Arrays.asList(input.split(" "));
+        int n = stringList.size();
+        Stack<String> sentenceStack = new Stack<String>();
+        for (int i=n-1; i>=0; i--) {
+            sentenceStack.push(stringList.get(i));
         }
+        return sentenceStack;
     }
 
-    public String getSentence () { return this.sentence; }
+    public String buildSentence() {
+        String sentenceStart = getRandomGrammarElement("start");
+        Stack<String> grammarStack = buildGrammarStack(sentenceStart);
+        this.sentence = recursiveStringReplace(grammarStack);
+        return getFinishedSentence();
+    }
+
+    public String recursiveStringReplace(Stack<String> grammarStack) {
+        if (!grammarStack.empty()) {
+            String topOfStack = grammarStack.pop();
+            String matchResult = findPlaceholder(topOfStack);
+            if (matchResult != null) {
+                String placeholderReturn = getRandomGrammarElement(topOfStack);
+                grammarStack.push(placeholderReturn);
+                return recursiveStringReplace(grammarStack);
+            } else {
+                String firstToken = grammarStack.pop();
+                return firstToken + recursiveStringReplace(grammarStack);
+            }
+        }
+        return null;
+    }
+
+    public String getFinishedSentence () { return this.sentence; }
 
     @Override
     public String toString() {
