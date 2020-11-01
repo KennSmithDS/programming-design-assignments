@@ -81,7 +81,6 @@ public class JSONFileParser {
       //Add the arraylist and corresponding key to the hashmap
       info.put(key, keyValues);
     }
-
     return info;
   }
 
@@ -95,7 +94,7 @@ public class JSONFileParser {
     return parsedString;
   }
 
-  //NOTE: The next two files are essentially duplicates
+  //NOTE: The next two methods are essentially duplicates
   //Could make it such that you pass the key (i.e. grammarTitle) and it returns it if it exists?
 
   public String getTitle() throws IOException, ParseException, NoSuchJSONObjectException {
@@ -135,11 +134,11 @@ public class JSONFileParser {
 
     //if the grammarTitle exists, add it to a list and as a key into hashmap
     //then, remove it from the JSON object
-    if(keys.contains("grammarTitle")) {
-      grammarDesc = (String) parser.get("grammarTitle");
-      keys.remove("grammarTitle");
+    if(keys.contains("grammarDesc")) {
+      grammarDesc = (String) parser.get("grammarDesc");
+      keys.remove("grammarDesc");
     } else {
-      throw new NoSuchJSONObjectException("This JSON file doesn't have a 'grammarTitle'.");
+      throw new NoSuchJSONObjectException("This JSON file doesn't have a 'grammarDesc'.");
     }
     return grammarDesc;
 
