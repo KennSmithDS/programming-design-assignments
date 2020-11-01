@@ -1,3 +1,7 @@
+import org.json.simple.parser.ParseException;
+
+import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -27,6 +31,7 @@ public class SentenceGenerator {
      */
     public SentenceGenerator(Grammar grammar) {
         this.grammar = grammar;
+        this.sentence = "";
     }
 
     /**
@@ -34,7 +39,7 @@ public class SentenceGenerator {
      * @param key String value for HashMap key
      * @return random String element from ArrayList
      */
-    public String getRandomGrammarElement(String key) {
+    private String getRandomGrammarElement(String key) {
         ArrayList<String> grammarList = this.grammar.getInfoValue(key);
         Random rand = new Random();
         return grammarList.get(rand.nextInt(grammarList.size()));
@@ -45,13 +50,13 @@ public class SentenceGenerator {
      * @param input String input token from randomly selected ArrayList element
      * @return String placeholder found or null if no match
      */
-    public static String findPlaceholder(String input) {
+    private static boolean isTokenPlaceholder(String input) {
         Pattern pattern = Pattern.compile(PLACEHOLDER_PATTERN);
         Matcher matcher = pattern.matcher(input);
         if (matcher.find()) {
-            return matcher.group();
+            return true;
         } else {
-            return null;
+            return false;
         }
     }
 
@@ -61,7 +66,7 @@ public class SentenceGenerator {
      * @param input String grammar element randomly chosen
      * @return Stack of strings in reverse order
      */
-    public static Stack<String> buildGrammarStack(String input) {
+    private static Stack<String> buildGrammarStack(String input) {
         List<String> stringList = Arrays.asList(input.split(" "));
         int n = stringList.size();
         Stack<String> sentenceStack = new Stack<String>();
@@ -91,19 +96,24 @@ public class SentenceGenerator {
      * @param grammarStack Stack of Strings in sentence order
      * @return String constructed on recursion stack
      */
-    public String recursiveStringReplace(Stack<String> grammarStack) {
+    private String recursiveStringReplace(Stack<String> grammarStack) {
         if (!grammarStack.empty()) {
             String topOfStack = grammarStack.pop();
-            String matchResult = findPlaceholder(topOfStack);
-            if (matchResult != null) {
-                String placeholderReturn = getRandomGrammarElement(topOfStack);
-                grammarStack.push(placeholderReturn);
+            boolean matchResult = isTokenPlaceholder(topOfStack);
+            if (matchResult) {
+                String hashKey = topOfStack.replace("<", "").replace(">","");
+                String placeholderReplacement = getRandomGrammarElement(hashKey);
+                System.out.println("Replacing " + topOfStack + " by searching for " + hashKey + " with '" + placeholderReplacement + "'");
+                String[] replacementList = placeholderReplacement.split(" ");
+                for (int i=replacementList.length-1; i>=0; i--) {
+                    grammarStack.push(replacementList[i]);
+                }
                 return recursiveStringReplace(grammarStack);
             } else {
-                return topOfStack + recursiveStringReplace(grammarStack);
+                return topOfStack + " " + recursiveStringReplace(grammarStack);
             }
         }
-        return null;
+        return "";
     }
 
     /**
@@ -145,5 +155,15 @@ public class SentenceGenerator {
     @Override
     public int hashCode() {
         return Objects.hash(sentence, grammar);
+    }
+    
+    public static void main(String[] args) throws IOException, ParseException, NoSuchJSONObjectException {
+        JSONFileParser poemTest = new JSONFileParser("poem_grammar.json");
+        Grammar poemGrammar = new Grammar(poemTest);
+//        System.out.println(poemGrammar);
+
+        SentenceGenerator sentenceGen = new SentenceGenerator(poemGrammar);
+        String sentence = sentenceGen.buildSentence();
+        System.out.println(sentence);
     }
 }
