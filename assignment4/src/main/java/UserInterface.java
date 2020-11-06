@@ -44,7 +44,10 @@ public class UserInterface {
     }
     System.out.println();
     System.out.println("Please enter a number corresponding to one of the options above, or 'q' to quit.");
+    return readInput();
+  }
 
+  private String readInput() throws IOException {
     //Get the option selected and make sure it is in the correct format
     BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
     String input = br.readLine();
@@ -57,11 +60,24 @@ public class UserInterface {
     return input;
   }
 
+  public void handleInput(String input) throws IOException {
+    int grammarChoice = 0;
+    while(!input.equals("q")) {
+      grammarChoice = Integer.parseInt(input)-1;
+      SentenceGenerator sentenceGen = new SentenceGenerator(this.grammarList.get(grammarChoice));
+      String sentence = sentenceGen.buildSentence();
+      System.out.println(sentence);
+      System.out.println();
+      System.out.println("Enter a number corresponding to one of the menu options for another grammar, or 'q' to quit.");
+      input = readInput();
+    }
+  }
+
   private boolean checkInput(String input) {
     int choice = 0;
 
     //First, we check if the string is a char = q
-    if(input.charAt(0) == 'q') {
+    if(input.charAt(0) == 'q' && input.length() == 1) {
       return true;
     }
 
@@ -75,7 +91,6 @@ public class UserInterface {
 
     //If it a valid integer, we just check if it is within the range of number of grammars given
     return choice > 0 && choice <= this.grammarList.size();
-
   }
 
   public int lineReader() throws IOException {
@@ -91,7 +106,6 @@ public class UserInterface {
     UserInterface ui = new UserInterface(); //  /Users/isidoraconic/Desktop/json_files/
     try {
       ui.setDirectory(args[0]);
-      System.out.println(ui.getDirectory());
     } catch (ArrayIndexOutOfBoundsException e) {
       System.out.println("You did not provide any directory to start the program." +
           " Please provide a valid/existing directory with .json files.");
@@ -103,13 +117,13 @@ public class UserInterface {
     File folder = new File(ui.getDirectory());
     File[] listOfFiles = folder.listFiles();
     for(int i = 0; i < listOfFiles.length; i++) {
-      System.out.println("File name: " + listOfFiles[i].getName());
       String filePath = ui.getDirectory() + "/" + listOfFiles[i].getName();
       Grammar add = new Grammar(filePath);
       ui.addGrammar(add);
     }
-    ui.menuCommand();
 
+    String input = ui.menuCommand();
+    ui.handleInput(input);
   }
 
 }

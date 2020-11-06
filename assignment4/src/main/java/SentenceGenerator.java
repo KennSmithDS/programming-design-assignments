@@ -103,7 +103,7 @@ public class SentenceGenerator {
             if (matchResult) {
                 String hashKey = topOfStack.replace("<", "").replace(">","");
                 String placeholderReplacement = getRandomGrammarElement(hashKey);
-                System.out.println("Replacing " + topOfStack + " by searching for " + hashKey + " with '" + placeholderReplacement + "'");
+                //System.out.println("Replacing " + topOfStack + " by searching for " + hashKey + " with '" + placeholderReplacement + "'");
                 String[] replacementList = placeholderReplacement.split(" ");
                 for (int i=replacementList.length-1; i>=0; i--) {
                     grammarStack.push(replacementList[i]);
@@ -158,9 +158,9 @@ public class SentenceGenerator {
     }
     
     public static void main(String[] args) throws IOException, ParseException, NoSuchJSONObjectException {
-        JSONFileParser poemTest = new JSONFileParser("poem_grammar.json");
+        JSONFileParser poemTest = new JSONFileParser("term_paper_grammar.json");
         Grammar poemGrammar = new Grammar(poemTest);
-        //System.out.println(poemGrammar);
+        System.out.println(poemGrammar);
 
         SentenceGenerator sentenceGen = new SentenceGenerator(poemGrammar);
         String sentence = sentenceGen.buildSentence();
