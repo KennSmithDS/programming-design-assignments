@@ -22,6 +22,10 @@ public class UserInterface {
     }
   }
 
+  public void addGrammar(Grammar grammar) {
+    this.grammarList.add(grammar);
+  }
+
   public static void main(String[] args) {
 
 
