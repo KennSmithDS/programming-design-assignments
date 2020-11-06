@@ -160,7 +160,7 @@ public class SentenceGenerator {
     public static void main(String[] args) throws IOException, ParseException, NoSuchJSONObjectException {
         JSONFileParser poemTest = new JSONFileParser("poem_grammar.json");
         Grammar poemGrammar = new Grammar(poemTest);
-//        System.out.println(poemGrammar);
+        //System.out.println(poemGrammar);
 
         SentenceGenerator sentenceGen = new SentenceGenerator(poemGrammar);
         String sentence = sentenceGen.buildSentence();
