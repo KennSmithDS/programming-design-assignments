@@ -55,7 +55,7 @@ public class JSONFileParser {
    */
   public JSONFileParser(String fileName, String splitBy) throws FileNotFoundException {
     if (!(new File(fileName).exists())) {
-      throw new FileNotFoundException("The specified template file does not exist. "
+      throw new FileNotFoundException("The specified file does not exist. "
           + "Please enter an existing file.");
     } else {
       this.jsonFile = fileName;
@@ -161,7 +161,7 @@ public class JSONFileParser {
   }
 
   public static void main(String[] args) throws IOException, ParseException {
-    JSONFileParser test = new JSONFileParser("poem_grammar.json");
+    JSONFileParser test = new JSONFileParser("/Users/isidoraconic/Desktop/json_files/poem_grammar_2.json");
     HashMap<String, ArrayList<String>> testMap = test.readFile();
 
     for(String key : testMap.keySet()) {

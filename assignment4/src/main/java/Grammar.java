@@ -26,6 +26,7 @@ public class Grammar {
     this.info = file.readFile();
     this.grammarTitle = file.getTitle();
     this.grammarDesc = file.getDesc();
+    System.out.println("Grammar object with title: " + this.grammarTitle + " made.");
   }
 
   /**
@@ -42,6 +43,7 @@ public class Grammar {
     this.info = file.readFile();
     this.grammarTitle = file.getTitle();
     this.grammarDesc = file.getDesc();
+    System.out.println("Grammar object with title: " + this.grammarTitle + " made.");
   }
 
   /**

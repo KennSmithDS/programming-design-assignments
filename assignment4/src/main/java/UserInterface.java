@@ -1,6 +1,10 @@
+import java.io.BufferedReader;
 import java.io.File;
+import java.io.IOException;
+import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.List;
+import org.json.simple.parser.ParseException;
 
 public class UserInterface {
 
@@ -22,12 +26,89 @@ public class UserInterface {
     }
   }
 
+  public String getDirectory() {
+    return this.directory;
+  }
+
   public void addGrammar(Grammar grammar) {
     this.grammarList.add(grammar);
   }
 
-  public static void main(String[] args) {
+  //Is it poor form to have a method that prints?
+  public String menuCommand() throws IOException {
+    System.out.println("The following grammars are available :");
+    int counter = 1;
+    for(Grammar g : this.grammarList) {
+      System.out.println("[" + counter + "] " + g.getGrammarTitle());
+      counter++;
+    }
+    System.out.println();
+    System.out.println("Please enter a number corresponding to one of the options above, or 'q' to quit.");
 
+    //Get the option selected and make sure it is in the correct format
+    BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+    String input = br.readLine();
+    while(input == null || !checkInput(input)){
+      System.out.println();
+      System.out.println("Please enter a VALID output.");
+      System.out.println("Enter a number corresponding to one of the options above, or 'q' to quit.");
+      input = br.readLine();
+    }
+    return input;
+  }
+
+  private boolean checkInput(String input) {
+    int choice = 0;
+
+    //First, we check if the string is a char = q
+    if(input.charAt(0) == 'q') {
+      return true;
+    }
+
+    //If the input is not q, it should be an int
+    //We try to parse the string to int, if it fails, we know the input is not valid (return false)
+    try {
+      choice = Integer.parseInt(input);
+    } catch (NumberFormatException e) {
+      return false;
+    }
+
+    //If it a valid integer, we just check if it is within the range of number of grammars given
+    return choice > 0 && choice <= this.grammarList.size();
+
+  }
+
+  public int lineReader() throws IOException {
+    BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+    int choice = Integer.parseInt(br.readLine());
+    return choice;
+  }
+
+
+  public static void main(String[] args)
+      throws NoSuchDirectoryException, IOException, ParseException {
+
+    UserInterface ui = new UserInterface(); //  /Users/isidoraconic/Desktop/json_files/
+    try {
+      ui.setDirectory(args[0]);
+      System.out.println(ui.getDirectory());
+    } catch (ArrayIndexOutOfBoundsException e) {
+      System.out.println("You did not provide any directory to start the program." +
+          " Please provide a valid/existing directory with .json files.");
+      System.exit(0);
+    }
+
+    //Getting all files in the specified directory, and making Grammar objects out of them
+    //Inspired by: https://stackoverflow.com/questions/5694385/getting-the-filenames-of-all-files-in-a-folder
+    File folder = new File(ui.getDirectory());
+    File[] listOfFiles = folder.listFiles();
+    for(int i = 0; i < listOfFiles.length; i++) {
+      System.out.println("File name: " + listOfFiles[i].getName());
+      String filePath = ui.getDirectory() + "/" + listOfFiles[i].getName();
+      Grammar add = new Grammar(filePath);
+      ui.addGrammar(add);
+    }
+    ui.menuCommand();
 
   }
 
