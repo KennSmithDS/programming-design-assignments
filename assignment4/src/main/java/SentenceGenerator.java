@@ -39,8 +39,11 @@ public class SentenceGenerator {
      * @param key String value for HashMap key
      * @return random String element from ArrayList
      */
-    private String getRandomGrammarElement(String key) {
+    private String getRandomGrammarElement(String key) throws NoSuchGrammarTypeException{
         ArrayList<String> grammarList = this.grammar.getInfoValue(key);
+        if (grammarList == null) {
+            throw new NoSuchGrammarTypeException("The provided JSON file references a grammar type that is invalid or not defined.");
+        }
         Random rand = new Random();
         return grammarList.get(rand.nextInt(grammarList.size()));
     }
@@ -81,7 +84,7 @@ public class SentenceGenerator {
      * Then building the grammar stack, and passing the Stack into recursion
      * @return String sentence built from recursive Stack string construction
      */
-    public String buildSentence() {
+    public String buildSentence() throws NoSuchGrammarTypeException{
         String sentenceStart = getRandomGrammarElement("start");
         Stack<String> grammarStack = buildGrammarStack(sentenceStart);
         this.sentence = recursiveStringReplace(grammarStack);
@@ -96,12 +99,13 @@ public class SentenceGenerator {
      * @param grammarStack Stack of Strings in sentence order
      * @return String constructed on recursion stack
      */
-    private String recursiveStringReplace(Stack<String> grammarStack) {
+    private String recursiveStringReplace(Stack<String> grammarStack) throws NoSuchGrammarTypeException{
         if (!grammarStack.empty()) {
             String topOfStack = grammarStack.pop();
             boolean matchResult = isTokenPlaceholder(topOfStack);
             if (matchResult) {
                 String hashKey = topOfStack.replace("<", "").replace(">","");
+//                System.out.println("Top of stack: " + hashKey);
                 String placeholderReplacement = getRandomGrammarElement(hashKey);
                 //System.out.println("Replacing " + topOfStack + " by searching for " + hashKey + " with '" + placeholderReplacement + "'");
                 String[] replacementList = placeholderReplacement.split(" ");
@@ -157,7 +161,8 @@ public class SentenceGenerator {
         return Objects.hash(sentence, grammar);
     }
     
-    public static void main(String[] args) throws IOException, ParseException, NoSuchJSONObjectException {
+   
+    public static void main(String[] args) throws IOException, ParseException, NoSuchJSONObjectException, NoSuchGrammarTypeException {
         JSONFileParser poemTest = new JSONFileParser("term_paper_grammar.json");
         Grammar poemGrammar = new Grammar(poemTest);
         System.out.println(poemGrammar);
