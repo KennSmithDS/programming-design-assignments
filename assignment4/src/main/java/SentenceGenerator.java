@@ -161,11 +161,8 @@ public class SentenceGenerator {
         return Objects.hash(sentence, grammar);
     }
     
-<<<<<<< HEAD
-    public static void main(String[] args) throws IOException, ParseException, NoSuchJSONObjectException {
-=======
+   
     public static void main(String[] args) throws IOException, ParseException, NoSuchJSONObjectException, NoSuchGrammarTypeException {
->>>>>>> 037c162ea95968c6f40af462b0add367ed364e68
         JSONFileParser poemTest = new JSONFileParser("term_paper_grammar.json");
         Grammar poemGrammar = new Grammar(poemTest);
         System.out.println(poemGrammar);
