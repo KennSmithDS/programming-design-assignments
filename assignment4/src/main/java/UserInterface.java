@@ -60,14 +60,23 @@ public class UserInterface {
     return input;
   }
 
-  public void handleInput(String input) throws IOException {
+  public void handleInput(String input) throws IOException, NoSuchGrammarTypeException {
     int grammarChoice = 0;
     while(!input.equals("q")) {
       grammarChoice = Integer.parseInt(input)-1;
       SentenceGenerator sentenceGen = new SentenceGenerator(this.grammarList.get(grammarChoice));
-      String sentence = sentenceGen.buildSentence();
-      System.out.println(sentence);
-      System.out.println();
+
+      //Surrounding the buildSentence with a try catch, so that we can catch a
+      //'NoSuchGrammarException' but continue the method if it fails
+      try {
+        String sentence = sentenceGen.buildSentence();
+        System.out.println(sentence);
+        System.out.println();
+      } catch (NoSuchGrammarTypeException e) {
+        //System.out.println("ERROR: ");
+        //System.out.println("The provided JSON file references a grammar type that is invalid or not defined.");
+        System.out.println(e.getMessage());
+      }
       System.out.println("Enter a number corresponding to one of the menu options for another grammar, or 'q' to quit.");
       input = readInput();
     }
@@ -101,7 +110,7 @@ public class UserInterface {
 
 
   public static void main(String[] args)
-      throws NoSuchDirectoryException, IOException, ParseException {
+      throws NoSuchDirectoryException, IOException, ParseException, NoSuchGrammarTypeException {
 
     UserInterface ui = new UserInterface(); //  /Users/isidoraconic/Desktop/json_files/
     try {
