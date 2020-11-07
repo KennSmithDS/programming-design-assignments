@@ -2,6 +2,7 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Objects;
 import org.json.simple.parser.ParseException;
 
 /**
@@ -75,6 +76,48 @@ public class Grammar {
    */
   public ArrayList<String> getInfoValue(String key) {
     return this.info.get(key);
+  }
+
+  /**
+   * Overridden toString method for default toString()
+   * Note that grammarDesc is not used, because in the spec it is not guaranteed that each .json
+   * file will have a description (but it will have a title).
+   * @return String
+   */
+  @Override
+  public String toString() {
+    return "Grammar{" +
+        "grammarTitle='" + grammarTitle + '\'' +
+        ", info=" + info +
+        '}';
+  }
+
+  /**
+   * Overridden equals method for default equals()
+   * @param o Object to compare equality
+   * @return Boolean if the objects are equal (true if yes, false if no)
+   */
+  @Override
+  public boolean equals(Object o) {
+    if (this == o) {
+      return true;
+    }
+    if (!(o instanceof Grammar)) {
+      return false;
+    }
+    Grammar grammar = (Grammar) o;
+    return grammarTitle.equals(grammar.grammarTitle) &&
+        Objects.equals(grammarDesc, grammar.grammarDesc) &&
+        info.equals(grammar.info);
+  }
+
+  /**
+   * Overridden hashCode method for default hashCode()
+   * @return int (the hashcode of the given Grammar object)
+   */
+  @Override
+  public int hashCode() {
+    return Objects.hash(grammarTitle, grammarDesc, info);
   }
 
   public static void main(String[] args)

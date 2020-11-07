@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import org.json.simple.parser.ParseException;
 
 /**
@@ -152,6 +153,44 @@ public class UserInterface {
       System.out.println("Enter a number corresponding to one of the menu options for another grammar, or 'q' to quit.");
       input = readInput();
     }
+  }
+
+  /**
+   * Overridden toString method for default toString()
+   * @return String
+   */
+  @Override
+  public String toString() {
+    return "UserInterface{" +
+        "directory='" + directory + '\'' +
+        '}';
+  }
+
+  /**
+   * Overridden equals method for default equals()
+   * @param o Object to compare equality
+   * @return Boolean if the objects are equal (true if yes, false if no)
+   */
+  @Override
+  public boolean equals(Object o) {
+    if (this == o) {
+      return true;
+    }
+    if (!(o instanceof UserInterface)) {
+      return false;
+    }
+    UserInterface that = (UserInterface) o;
+    return Objects.equals(directory, that.directory) &&
+        Objects.equals(grammarList, that.grammarList);
+  }
+
+  /**
+   * Overridden hashCode method for default hashCode()
+   * @return int (the hashcode of the given UserInterface object)
+   */
+  @Override
+  public int hashCode() {
+    return Objects.hash(directory, grammarList);
   }
 
   /**
