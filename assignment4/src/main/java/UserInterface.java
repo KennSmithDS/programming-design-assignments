@@ -71,12 +71,12 @@ public class UserInterface {
       try {
         String sentence = sentenceGen.buildSentence();
         System.out.println(sentence);
-        System.out.println();
       } catch (NoSuchGrammarTypeException e) {
         //System.out.println("ERROR: ");
         //System.out.println("The provided JSON file references a grammar type that is invalid or not defined.");
         System.out.println(e.getMessage());
       }
+      System.out.println();
       System.out.println("Enter a number corresponding to one of the menu options for another grammar, or 'q' to quit.");
       input = readInput();
     }
