@@ -179,6 +179,8 @@ public class UserInterface {
         System.out.println(sentence);
       } catch (NoSuchGrammarTypeException e) {
         System.out.println(e.getMessage());
+      } catch (StackOverflowError e) {
+        System.out.println("Grammar file structure creates an infinite recursive call on same grammar type. " + e.getMessage());
       }
       System.out.println();
       System.out.println("Enter a number corresponding to one of the menu options for another grammar, or 'q' to quit.");
