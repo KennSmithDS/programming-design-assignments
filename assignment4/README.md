@@ -24,7 +24,7 @@ java -jar RandomSentenceGenApp.jar ./json/
 
 With this command line above, the application will launch and the user will see the following prompt menu:
 
-###**(based on the JSON grammar files in your own folder, the menu option names will be different)**
+## ** based on the JSON grammar files in your own folder, the menu option names will be different **
 
 ```
 The following grammars are available :
