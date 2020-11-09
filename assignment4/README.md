@@ -6,7 +6,6 @@ java -jar message-generator -letter -letter_template letter-template.txt -output
 
 ## Classes
 
-```
-- JSONFileParser.java
-```
+
+- `JSONFileParser.java`
 
