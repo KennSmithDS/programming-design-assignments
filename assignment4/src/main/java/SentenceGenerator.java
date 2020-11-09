@@ -23,28 +23,36 @@ public class SentenceGenerator {
 
     private String sentence;
     private Grammar grammar;
+    private Long randomSeed;
     private static final String PLACEHOLDER_PATTERN = "(?<=\\<)(.*?)(?=\\>)";
 
     /**
      * Default constructor for SentenceGenerator class, requires Grammar object to be passed
      * @param grammar Grammar object created from JSONFileParser
      */
-    public SentenceGenerator(Grammar grammar) {
+    public SentenceGenerator(Grammar grammar, Long randomSeed) {
         this.grammar = grammar;
         this.sentence = "";
+        this.randomSeed = randomSeed;
     }
 
     /**
-     * Method to fetch a random String from Grammar ArrayList based on HashMap key lookup
+     * Overload of method to get random String from Grammar ArraList when a seed is used
      * @param key String value for HashMap key
      * @return random String element from ArrayList
+     * @throws NoSuchGrammarTypeException custom error for when grammar type is not present in grammar file
      */
     private String getRandomGrammarElement(String key) throws NoSuchGrammarTypeException{
         ArrayList<String> grammarList = this.grammar.getInfoValue(key);
         if (grammarList == null) {
             throw new NoSuchGrammarTypeException("The provided JSON file references a grammar type that is invalid or not defined.");
         }
-        Random rand = new Random();
+        Random rand = null;
+        if (this.randomSeed == null) {
+            rand = new Random();
+        } else {
+            rand = new Random(this.randomSeed);
+        }
         return grammarList.get(rand.nextInt(grammarList.size()));
     }
 
@@ -87,8 +95,8 @@ public class SentenceGenerator {
     public String buildSentence() throws NoSuchGrammarTypeException{
         String sentenceStart = getRandomGrammarElement("start");
         Stack<String> grammarStack = buildGrammarStack(sentenceStart);
-        this.sentence = recursiveStringReplace(grammarStack);
-        return getFinishedSentence();
+        this.sentence = recursiveStringReplace(grammarStack).trim();
+        return this.sentence;
     }
 
     /**
@@ -121,12 +129,6 @@ public class SentenceGenerator {
     }
 
     /**
-     * Method to fetch the finished sentence String property
-     * @return String sentence property
-     */
-    public String getFinishedSentence () { return this.sentence; }
-
-    /**
      * Override method for default toString()
      * @return String
      */
@@ -134,7 +136,7 @@ public class SentenceGenerator {
     public String toString() {
         return "SentenceGenerator{" +
                 "sentence='" + sentence + '\'' +
-                ", grammar=" + grammar +
+                ", " + grammar +
                 '}';
     }
 
@@ -160,15 +162,5 @@ public class SentenceGenerator {
     public int hashCode() {
         return Objects.hash(sentence, grammar);
     }
-    
-   
-    public static void main(String[] args) throws IOException, ParseException, NoSuchJSONObjectException, NoSuchGrammarTypeException {
-        JSONFileParser poemTest = new JSONFileParser("term_paper_grammar.json");
-        Grammar poemGrammar = new Grammar(poemTest);
-        System.out.println(poemGrammar);
 
-        SentenceGenerator sentenceGen = new SentenceGenerator(poemGrammar);
-        String sentence = sentenceGen.buildSentence();
-        System.out.println(sentence);
-    }
 }
