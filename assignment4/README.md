@@ -31,7 +31,7 @@ The following grammars are available :
 [1] Insult Generator
 [2] Poem Generator
 [3] A sample grammar
-[5] Term Paper Generator
+[4] Term Paper Generator
 
 Please enter a number corresponding to one of the options above, or 'q' to quit.
 ```
@@ -61,3 +61,8 @@ The big yellow flowers die warily tonight.
 Enter a number corresponding to one of the menu options for another grammar, or 'q' to quit.
 q
 ```
+
+## Classes and Methods
+#### Classes are in order of low-level to high level
+
+- 'SentenceGenerator.java' **class**: Class to represent a sentence generator, like a factory design but not quite. This class takes in a Grammar object (mentioned above), and randomly builds a complete string sentence through recursive string replacement where it finds 
