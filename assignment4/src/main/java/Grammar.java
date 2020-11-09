@@ -86,10 +86,11 @@ public class Grammar {
    */
   @Override
   public String toString() {
-    return "Grammar{" +
+    String string =  "Grammar{" +
         "grammarTitle='" + grammarTitle + '\'' +
         ", info=" + info +
         '}';
+    return string;
   }
 
   /**
