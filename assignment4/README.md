@@ -12,7 +12,7 @@ There is one core dependency for this Java application to work, and that is a li
 
 You will need to make sure that this library is downloaded and available in your global java library for the application to work if running the application within an IDE or CLI.
 
-## ** Make sure you are in assignment 4 folder when running the program in terminal **
+## Make sure you are in assignment 4 folder when running the program in terminal!
 
 ## Usage
 
@@ -24,7 +24,7 @@ java -jar RandomSentenceGenApp.jar ./json/
 
 With this command line above, the application will launch and the user will see the following prompt menu:
 
-## ** based on the JSON grammar files in your own folder, the menu option names will be different **
+## Based on the JSON grammar files in your own folder, the menu option names will be different
 
 ```
 The following grammars are available :
