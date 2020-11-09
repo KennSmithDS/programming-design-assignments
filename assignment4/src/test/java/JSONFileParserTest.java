@@ -87,7 +87,33 @@ public class JSONFileParserTest {
   }
 
   @Test
-  public void
+  public void toStringTest() {
+    String sampleString = "JSONFileParser{jsonFile='sample.json'}";
+    Assert.assertEquals(sampleString, this.sample.toString());
+  }
+
+  @Test
+  public void equalsTest() throws FileNotFoundException {
+    JSONFileParser sampleCopy = new JSONFileParser("sample.json");
+    Assert.assertTrue(sampleCopy.equals(this.sample));
+  }
+
+  @Test
+  public void notEqualsTest() {
+    Assert.assertFalse(this.sample.equals(this.poem));
+  }
+
+  @Test
+  public void notEqualObjectTest() {
+    String test = "hello";
+    Assert.assertFalse(this.poem.equals(test));
+  }
+
+  @Test
+  public void hashcodeTest() throws FileNotFoundException {
+    JSONFileParser sampleCopy = new JSONFileParser("sample.json");
+    Assert.assertEquals(this.sample.hashCode(), sampleCopy.hashCode());
+  }
 
 
 }

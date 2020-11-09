@@ -198,11 +198,5 @@ public class JSONFileParser {
     return Objects.hash(jsonFile);
   }
 
-  public static void main(String[] args) throws IOException, ParseException {
-    JSONFileParser test = new JSONFileParser("sample.json");
-
-  }
-
-
 }
 
