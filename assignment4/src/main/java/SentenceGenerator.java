@@ -29,6 +29,7 @@ public class SentenceGenerator {
     /**
      * Default constructor for SentenceGenerator class, requires Grammar object to be passed
      * @param grammar Grammar object created from JSONFileParser
+     * @param randomSeed random seed value passed from instantiation
      */
     public SentenceGenerator(Grammar grammar, Long randomSeed) {
         this.grammar = grammar;
@@ -91,6 +92,7 @@ public class SentenceGenerator {
      * Helper method to build a sentence by getting random starting place,
      * Then building the grammar stack, and passing the Stack into recursion
      * @return String sentence built from recursive Stack string construction
+     * @throws NoSuchGrammarTypeException custom exception when grammar type not in JSON file
      */
     public String buildSentence() throws NoSuchGrammarTypeException{
         String sentenceStart = getRandomGrammarElement("start");

@@ -1,7 +1,4 @@
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.IOException;
-import java.io.InputStreamReader;
+import java.io.*;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
@@ -16,6 +13,7 @@ import org.json.simple.parser.ParseException;
 public class UserInterface {
 
   private String directory;
+  private String runMode;
   private List<Grammar> grammarList;
 
   /**
@@ -27,6 +25,7 @@ public class UserInterface {
    */
   public UserInterface() {
     this.directory = null;
+    this.runMode = null;
     this.grammarList = new ArrayList<>();
   }
 
@@ -44,6 +43,12 @@ public class UserInterface {
       this.directory = directory;
     }
   }
+
+  /**
+   * Method that sets the UserInterface runtime mode
+   * @param mode String param passed if in test mode, otherwise null
+   */
+  public void setRunMode(String mode) { this.runMode = mode; }
 
   /**
    * Getter method for the directory (String) field
@@ -80,15 +85,25 @@ public class UserInterface {
     return readInput();
   }
 
-//  /**
-//   * Helper method that actually handles the direct user input from input stream reader
-//   * Returns a buffered reader object for the readInput method to read lines
-//   * @return BufferedReader object from user terminal input
-//   */
-//  public BufferedReader getUserInput() {
-//    BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
-//    return br;
-//  }
+  /**
+   * Helper method that handles the direct user input from input stream reader
+   * Returns a buffered reader object for the readInput method to read lines
+   * @return BufferedReader object from user terminal input
+   */
+  public BufferedReader getUserInput() {
+    BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+    return br;
+  }
+
+  /**
+   * Helper method that passes a default argument for test purposes, quits application
+   * Returns a buffered reader object for readINput method to read lines
+   * @return BufferedReader object simulating terminal input
+   */
+  public BufferedReader getTestInput() {
+    BufferedReader br = new BufferedReader(new InputStreamReader(new ByteArrayInputStream(this.runMode.getBytes())));
+    return br;
+  }
 
   /**
    * Helper method that uses a buffered reader and reads the next line
@@ -99,7 +114,13 @@ public class UserInterface {
    */
   private String readInput() throws IOException {
     //Get the option selected and make sure it is in the correct format
-    BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+//    BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+    BufferedReader br = null;
+    if (this.runMode != null) {
+      br = getTestInput();
+    } else {
+      br = getUserInput();
+    }
     String input = br.readLine();
     while(input == null || !checkInput(input)){
       System.out.println();
@@ -224,6 +245,9 @@ public class UserInterface {
     UserInterface ui = new UserInterface(); //  /Users/isidoraconic/Desktop/json_files/
     try {
       ui.setDirectory(args[0]);
+      if (args.length == 2) {
+        ui.setRunMode(args[1]);
+      }
     } catch (ArrayIndexOutOfBoundsException e) {
       System.out.println("You did not provide any directory to start the program." +
           " Please provide a valid/existing directory with .json files.");

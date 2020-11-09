@@ -76,11 +76,11 @@ public class JSONFileParser {
 
   /**
    * Method that reads the specified .json file, and parses it based on the specified regex
-   * @return HashMap<String, ArrayList<String>> info, which contains the file contents
+   * @return HashMap with key String and value ArrayList of String info, which contains the file contents
    * The String key is the key in json file, and then the ArrayList is a list of parsed contents
    * (i.e. the data)
-   * @throws IOException
-   * @throws ParseException
+   * @throws IOException default error
+   * @throws ParseException default error
    */
   public HashMap<String, ArrayList<String>> readFile() throws IOException, ParseException {
 
@@ -130,7 +130,7 @@ public class JSONFileParser {
   /**
    * Helper method for the readFile method
    * @param inputString String that needs to be parsed based on the parseBy field
-   * @return ArrayList<String> containing all the parsed strings
+   * @return ArrayList of String containing all the parsed strings
    */
   private ArrayList<String> patternMatch(String inputString) {
     ArrayList<String> parsedString = new ArrayList<>();
@@ -155,7 +155,7 @@ public class JSONFileParser {
    * Getter method to get the grammarDesc
    * Will return an empty String (i.e. "") if the readFile method hasn't been called yet
    * or if grammarDesc hasn't been given in the .json file
-   * @return
+   * @return String of grammar description
    */
   public String getDesc() {
     return this.grammarDesc;

@@ -61,7 +61,7 @@ public class SentenceGeneratorTest {
 
     @Test
     public void testNullEquals() {
-        Assert.assertNotNull(null, this.testSentence1);
+        Assert.assertNotEquals(null, this.testSentence1);
     }
 
     @Test

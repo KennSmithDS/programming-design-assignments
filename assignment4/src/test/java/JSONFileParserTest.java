@@ -27,18 +27,18 @@ public class JSONFileParserTest {
   @Before
   public void setUp() throws IOException, ParseException {
     String splityBy = "(?<=\")[^,;](.*?)(?=\")";
-    this.sample = new JSONFileParser("sample.json");
-    this.poem = new JSONFileParser("poem_grammar.json", splityBy);
+    this.sample = new JSONFileParser("./json/sample.json");
+    this.poem = new JSONFileParser("./json/poem_grammar.json", splityBy);
   }
 
   @Test(expected = FileNotFoundException.class)
   public void fakeConstructor() throws FileNotFoundException {
-    this.fake = new JSONFileParser("nonexistent_file.json");
+    this.fake = new JSONFileParser("./json/nonexistent_file.json");
   }
 
   @Test
   public void getFileNameTest()  {
-    Assert.assertEquals("sample.json", this.sample.getFileName());
+    Assert.assertEquals("./json/sample.json", this.sample.getFileName());
   }
 
   @Test
@@ -88,13 +88,13 @@ public class JSONFileParserTest {
 
   @Test
   public void toStringTest() {
-    String sampleString = "JSONFileParser{jsonFile='sample.json'}";
+    String sampleString = "JSONFileParser{jsonFile='./json/sample.json'}";
     Assert.assertEquals(sampleString, this.sample.toString());
   }
 
   @Test
   public void equalsTest() throws FileNotFoundException {
-    JSONFileParser sampleCopy = new JSONFileParser("sample.json");
+    JSONFileParser sampleCopy = new JSONFileParser("./json/sample.json");
     Assert.assertTrue(sampleCopy.equals(this.sample));
   }
 
@@ -111,7 +111,7 @@ public class JSONFileParserTest {
 
   @Test
   public void hashcodeTest() throws FileNotFoundException {
-    JSONFileParser sampleCopy = new JSONFileParser("sample.json");
+    JSONFileParser sampleCopy = new JSONFileParser("./json/sample.json");
     Assert.assertEquals(this.sample.hashCode(), sampleCopy.hashCode());
   }
 

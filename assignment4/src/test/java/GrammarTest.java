@@ -24,14 +24,14 @@ public class GrammarTest {
 
   @Before
   public void setUp() throws IOException, ParseException {
-    JSONFileParser sampleParser = new JSONFileParser("sample.json");
+    JSONFileParser sampleParser = new JSONFileParser("./json/sample.json");
     this.sample = new Grammar(sampleParser);
-    this.poem = new Grammar("poem_grammar.json");
+    this.poem = new Grammar("./json/poem_grammar.json");
   }
 
   @Test (expected = FileNotFoundException.class)
   public void failConstructorTest() throws IOException, ParseException {
-    this.fake = new Grammar("nonexistent_file.json");
+    this.fake = new Grammar("./json/nonexistent_file.json");
   }
 
   @Test
@@ -95,7 +95,7 @@ public class GrammarTest {
 
   @Test
   public void equalsTest() throws IOException, ParseException {
-    Grammar sampleCopy = new Grammar("sample.json");
+    Grammar sampleCopy = new Grammar("./json/sample.json");
     Assert.assertTrue(sampleCopy.equals(this.sample));
   }
 
@@ -112,7 +112,7 @@ public class GrammarTest {
 
   @Test
   public void hashcodeTest() throws IOException, ParseException {
-    Grammar sampleCopy = new Grammar("sample.json");
+    Grammar sampleCopy = new Grammar("./json/sample.json");
     int sampleHashcode = this.sample.hashCode();
     int sampleCopyHashcode = sampleCopy.hashCode();
     Assert.assertEquals(sampleHashcode, sampleCopyHashcode);

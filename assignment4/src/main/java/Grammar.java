@@ -20,8 +20,8 @@ public class Grammar {
    * Grammar object constructor 1
    * Reads the JSONFileParser object and then gets the grammarTitle and grammarDesc
    * @param file (JSONFileParser object)
-   * @throws IOException
-   * @throws ParseException
+   * @throws IOException default error
+   * @throws ParseException default error
    */
   public Grammar(JSONFileParser file) throws IOException, ParseException {
     this.info = file.readFile();
@@ -35,8 +35,8 @@ public class Grammar {
    * Then, does the same as Constructor 2: Reads the JSONFileParser object
    * And gets the grammarTitle and grammarDesc
    * @param fileName (String)
-   * @throws IOException
-   * @throws ParseException
+   * @throws IOException default error
+   * @throws ParseException default error
    */
   public Grammar(String fileName) throws IOException, ParseException {
     JSONFileParser file = new JSONFileParser(fileName);
@@ -63,16 +63,16 @@ public class Grammar {
 
   /**
    * Getter method for info
-   * @return HashMap<String, ArrayList<String>> info
+   * @return HashMap with key String and value ArrayList of String info
    */
   public HashMap<String, ArrayList<String>> getInfo() {
     return this.info;
   }
 
   /**
-   * Getter method for a specific ArrayList<String> within the info HashMap
+   * Getter method for a specific ArrayList of String within the info HashMap
    * @param key (String)
-   * @return ArrayList<String> associated with the given key
+   * @return ArrayList of String associated with the given key
    */
   public ArrayList<String> getInfoValue(String key) {
     return this.info.get(key);
