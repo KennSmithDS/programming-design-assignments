@@ -65,8 +65,8 @@ public class UserInterface {
   /**
    * Method that uses the ArrayList of Grammars to create the option menu, with all the
    * Grammars listed in a numbered list
-   * @return
-   * @throws IOException
+   * @return String of user input from the command line, menu option chosen drives program sequence
+   * @throws IOException default IO error
    */
   public String menuCommand() throws IOException {
     System.out.println("The following grammars are available :");
@@ -80,12 +80,22 @@ public class UserInterface {
     return readInput();
   }
 
+//  /**
+//   * Helper method that actually handles the direct user input from input stream reader
+//   * Returns a buffered reader object for the readInput method to read lines
+//   * @return BufferedReader object from user terminal input
+//   */
+//  public BufferedReader getUserInput() {
+//    BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+//    return br;
+//  }
+
   /**
    * Helper method that uses a buffered reader and reads the next line
    * The method will keep reading until it gets a valid input (checked by the checkInput method)
    * It also prompts the user to give a valid input if their input isn't valid (prints to console)
    * @return read String (valid input, since we keep reading until it's valid)
-   * @throws IOException
+   * @throws IOException error
    */
   private String readInput() throws IOException {
     //Get the option selected and make sure it is in the correct format
@@ -132,14 +142,14 @@ public class UserInterface {
    * Once it is done, it prints the sentence to the console,
    * and then prompts the user for a new input, and reads it
    * @param input String (the user's selected menu choice, which has been checked and is valid)
-   * @throws IOException
-   * @throws NoSuchGrammarTypeException
+   * @throws IOException default IO error
+   * @throws NoSuchGrammarTypeException custom error class for no grammar type exists in grammar JSON
    */
   public void handleInput(String input) throws IOException, NoSuchGrammarTypeException {
     int grammarChoice = 0;
     while(!input.equals("q")) {
       grammarChoice = Integer.parseInt(input)-1;
-      SentenceGenerator sentenceGen = new SentenceGenerator(this.grammarList.get(grammarChoice));
+      SentenceGenerator sentenceGen = new SentenceGenerator(this.grammarList.get(grammarChoice), null);
 
       //Surrounding the buildSentence with a try catch, so that we can catch a
       //'NoSuchGrammarException' but continue the method if it fails
@@ -202,10 +212,10 @@ public class UserInterface {
    * Reads all the .json grammar files, creates Grammar objects, and adds them to the Grammars list.
    * Then, prompts the user with menu options and prints appropriate Grammar sentences.
    * @param args String directory where all the grammar .json files are located
-   * @throws NoSuchDirectoryException
-   * @throws IOException
-   * @throws ParseException
-   * @throws NoSuchGrammarTypeException
+   * @throws NoSuchDirectoryException custom error class for when provided directly doesn't exist
+   * @throws IOException default IO error
+   * @throws ParseException default parse error for handling JSON text file
+   * @throws NoSuchGrammarTypeException custom error class for no grammar type exists in grammar JSON
    */
   public static void main(String[] args)
       throws NoSuchDirectoryException, IOException, ParseException, NoSuchGrammarTypeException {

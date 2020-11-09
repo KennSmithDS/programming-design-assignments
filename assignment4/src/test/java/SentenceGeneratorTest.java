@@ -21,7 +21,7 @@ public class SentenceGeneratorTest {
 
     @Before
     public void setUp() throws Exception {
-        this.testParser = new JSONFileParser("sample.json");
+        this.testParser = new JSONFileParser("./json/sample.json");
         this.testGrammar = new Grammar(this.testParser);
         this.testSentence1 = new SentenceGenerator(this.testGrammar, RANDOM_SEED);
         this.testSentence2 = new SentenceGenerator(this.testGrammar, RANDOM_SEED);
@@ -41,7 +41,7 @@ public class SentenceGeneratorTest {
 
     @Test (expected = NoSuchGrammarTypeException.class)
     public void nullGrammarHandle() throws NoSuchGrammarTypeException, IOException, ParseException {
-        JSONFileParser parser = new JSONFileParser("sample_fail.json");
+        JSONFileParser parser = new JSONFileParser("./json/sample_fail.json");
         Grammar grammar = new Grammar(parser);
         SentenceGenerator generator = new SentenceGenerator(grammar, null);
         generator.buildSentence();
