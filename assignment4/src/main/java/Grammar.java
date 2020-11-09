@@ -86,10 +86,11 @@ public class Grammar {
    */
   @Override
   public String toString() {
-    return "Grammar{" +
+    String string =  "Grammar{" +
         "grammarTitle='" + grammarTitle + '\'' +
         ", info=" + info +
         '}';
+    return string;
   }
 
   /**
@@ -120,28 +121,6 @@ public class Grammar {
     return Objects.hash(grammarTitle, grammarDesc, info);
   }
 
-  public static void main(String[] args)
-      throws IOException, ParseException {
-
-    JSONFileParser poemTest = new JSONFileParser("poem_grammar.json");
-    Grammar poemGrammar = new Grammar(poemTest);
-    HashMap<String, ArrayList<String>> testMap = poemGrammar.getInfo();
-    String grammarTitle = poemTest.getTitle();
-    String grammarDesc = poemTest.getDesc();
-
-    System.out.println("The title is: "+grammarTitle);
-    System.out.println("The description is: " +grammarDesc);
-    System.out.println();
-
-    for(String key : testMap.keySet()) {
-      System.out.println("The key is: " + key);
-      ArrayList<String> keyValues = testMap.get(key);
-      for(String value : keyValues) {
-        System.out.println(value);
-      }
-      System.out.println();
-    }
-  }
 
 }
 
