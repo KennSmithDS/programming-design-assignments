@@ -30,24 +30,24 @@ public class GrammarTest {
   }
 
   @Test (expected = FileNotFoundException.class)
-  public void failConstructor() throws IOException, ParseException {
+  public void failConstructorTest() throws IOException, ParseException {
     this.fake = new Grammar("nonexistent_file.json");
   }
 
   @Test
-  public void getTitle() {
+  public void getTitleTest() {
     Assert.assertEquals("A sample grammar", this.sample.getGrammarTitle());
     Assert.assertEquals("Poem Generator", this.poem.getGrammarTitle());
   }
 
   @Test
-  public void getDescription() {
+  public void getDescriptionTest() {
     Assert.assertEquals("A grammar that generates sample grammars.", sample.getGrammarDesc());
     Assert.assertEquals("A grammar that generates poems. ", poem.getGrammarDesc());
   }
 
   @Test
-  public void getInfo() {
+  public void getInfoTest() {
     HashMap<String, ArrayList<String>> sampleInfo = sample.getInfo();
 
     //Make sure the size is 3, and then all 3 keys are contained in the HashMap
@@ -79,10 +79,43 @@ public class GrammarTest {
   }
 
   @Test
-  public void getInfoValue() {
+  public void getInfoValueTest() {
     List<String> name = this.sample.getInfoValue("name");
     Assert.assertEquals(1, name.size());
     Assert.assertEquals("Sally <lastName>", name.get(0));
+  }
+
+  @Test
+  public void toStringTest() {
+    String sampleString = this.sample.toString();
+    Assert.assertEquals("Grammar{grammarTitle='A sample grammar', "
+        + "info={lastName=[Smith, Jones], start=[hi <name>], name=[Sally <lastName>]}}",
+        sampleString);
+  }
+
+  @Test
+  public void equalsTest() throws IOException, ParseException {
+    Grammar sampleCopy = new Grammar("sample.json");
+    Assert.assertTrue(sampleCopy.equals(this.sample));
+  }
+
+  @Test
+  public void notEqualTest() throws IOException, ParseException {
+    Assert.assertFalse(this.poem.equals(this.sample));
+  }
+
+  @Test
+  public void notEqualObjects() {
+    String test = "hello";
+    Assert.assertFalse(this.poem.equals(test));
+  }
+
+  @Test
+  public void hashcodeTest() throws IOException, ParseException {
+    Grammar sampleCopy = new Grammar("sample.json");
+    int sampleHashcode = this.sample.hashCode();
+    int sampleCopyHashcode = sampleCopy.hashCode();
+    Assert.assertEquals(sampleHashcode, sampleCopyHashcode);
   }
 
 
