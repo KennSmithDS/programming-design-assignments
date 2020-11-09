@@ -199,18 +199,8 @@ public class JSONFileParser {
   }
 
   public static void main(String[] args) throws IOException, ParseException {
-    JSONFileParser test = new JSONFileParser("/Users/isidoraconic/Desktop/json_files/poem_grammar_2.json");
-    HashMap<String, ArrayList<String>> testMap = test.readFile();
+    JSONFileParser test = new JSONFileParser("sample.json");
 
-    for(String key : testMap.keySet()) {
-      System.out.println("The key is: " + key);
-      ArrayList<String> keyValues = testMap.get(key);
-      for(String value : keyValues) {
-        System.out.println(value);
-      }
-      System.out.println();
-      System.out.println();
-    }
   }
 
 
