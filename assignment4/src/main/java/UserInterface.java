@@ -203,6 +203,7 @@ public class UserInterface {
     return Objects.hash(directory, grammarList);
   }
 
+
   /**
    * Main method for the user interface program
    * Is called with a command line argument, which is the directory where the grammar .json files
@@ -243,5 +244,6 @@ public class UserInterface {
     String input = ui.menuCommand();
     ui.handleInput(input);
   }
+
 
 }
