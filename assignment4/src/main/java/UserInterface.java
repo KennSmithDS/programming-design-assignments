@@ -139,7 +139,7 @@ public class UserInterface {
     int grammarChoice = 0;
     while(!input.equals("q")) {
       grammarChoice = Integer.parseInt(input)-1;
-      SentenceGenerator sentenceGen = new SentenceGenerator(this.grammarList.get(grammarChoice));
+      SentenceGenerator sentenceGen = new SentenceGenerator(this.grammarList.get(grammarChoice), null);
 
       //Surrounding the buildSentence with a try catch, so that we can catch a
       //'NoSuchGrammarException' but continue the method if it fails
@@ -193,6 +193,7 @@ public class UserInterface {
     return Objects.hash(directory, grammarList);
   }
 
+
   /**
    * Main method for the user interface program
    * Is called with a command line argument, which is the directory where the grammar .json files
@@ -233,5 +234,6 @@ public class UserInterface {
     String input = ui.menuCommand();
     ui.handleInput(input);
   }
+
 
 }
