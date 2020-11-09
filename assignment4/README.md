@@ -8,6 +8,6 @@ java -jar message-generator -letter -letter_template letter-template.txt -output
 
 
 - `JSONFileParser.java` : This class creates an object that takes a .json file (String) as input. 
-  - Method `readFile()` called on the JSONFile Parser object, which subsequently parses out the Grammar .json file (based on the specified regex) into a HashMap         with key String and value ArrayList of String info, which contains the file contents
+  - `readFile()` method: called on the JSONFile Parser object, which subsequently parses out the Grammar .json file (based on the specified regex) into a HashMap       with key String and value ArrayList of String info, which contains the file contents
  
 
