@@ -9,6 +9,9 @@ plugins {
 
     // https://docs.gradle.org/current/userguide/jacoco_plugin.html
     id 'jacoco'
+
+    // https://docs.gradle.org/current/userguide/application_plugin.html
+    id 'application'
 }
 
 group 'PDPCS5010'
@@ -114,5 +117,16 @@ test {
 jacocoTestReport {
     doLast {
         println "file://$buildDir/jacocoHtml/index.html"
+    }
+}
+
+mainClassName = 'UserInterface'
+
+jar {
+    manifest {
+        attributes "Main-Class": "$mainClassName"
+    }
+    from {
+        configurations.compile.collect { it.isDirectory() ? it : zipTree(it)}
     }
 }
