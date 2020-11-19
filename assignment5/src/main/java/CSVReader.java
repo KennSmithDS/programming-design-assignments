@@ -1,12 +1,16 @@
 import java.io.*;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.text.ParseException;
 import java.util.HashMap;
 import org.apache.commons.csv.CSVFormat;
+import org.apache.commons.csv.CSVParser;
 import org.apache.commons.csv.CSVRecord;
 
 public class CSVReader {
 
-    private final String[] STUDENT_HEADERS = {"mode", "presentation", "student", "site", "date", "clicks"};
+    private final String[] STUDENT_HEADERS = {"module", "presentation", "student", "site", "date", "clicks"};
     private String csvFile;
 
     public CSVReader(String csvFile) throws FileNotFoundException {
@@ -23,20 +27,24 @@ public class CSVReader {
      * for clicks aggregated on module, presentation and date
      * @return HashMap with String key and HashMap of value with Integers as key and value for date and sum clicks
      * @throws IOException default IOException error
-     * @throws ParseException default ParseException error
+     * @throws IllegalArgumentException default IllegalArgumentException error
      */
-    public HashMap<String, HashMap<String, Integer>> readCSVFile() throws IOException, ParseException {
-        Reader csvIn = new FileReader(this.csvFile);
-        Iterable<CSVRecord> records = CSVFormat.DEFAULT
+    public HashMap<String, HashMap<String, Integer>> readCSVFile() throws IOException, IllegalArgumentException {
+//        Reader reader = Files.newBufferedReader(Paths.get(SAMPLE_CSV_FILE_PATH));
+//        CSVParser csvParser = new CSVParser(reader, CSVFormat.DEFAULT
+        Reader csvReader = Files.newBufferedReader(Paths.get(csvFile));
+        CSVParser csvParser = new CSVParser(csvReader, CSVFormat.DEFAULT
+                .withFirstRecordAsHeader()
                 .withHeader(STUDENT_HEADERS)
-                .parse(csvIn);
+//                .withIgnoreHeaderCase()
+                );
         HashMap<String, HashMap<String, Integer>> aggStudentData = new HashMap<>();
-        for (CSVRecord record : records) {
+        for (CSVRecord record : csvParser) {
             String module = record.get("module");
             String presentation = record.get("presentation");
             String codeKey = module + "_" + presentation;
             String date = record.get("date");
-            Integer clicks = Integer.parseInt(record.get("clicks"));
+            int clicks = Integer.parseInt(record.get("clicks"));
 
             // module and presentation code exists in HashMap
             if (aggStudentData.containsKey(codeKey)) {
@@ -54,6 +62,17 @@ public class CSVReader {
             }
         }
         return aggStudentData;
+    }
+
+    public static void main(String[] args) throws IOException, IllegalArgumentException {
+        String testFile = "anonymisedData/studentVle_sample.csv";
+        CSVReader csvReader = new CSVReader(testFile);
+        HashMap<String, HashMap<String, Integer>> testData = csvReader.readCSVFile();
+        HashMap<String, Integer> testDataRecord = testData.get("AAA_2013J");
+        System.out.println(testDataRecord.size());
+        for (String key : testDataRecord.keySet()) {
+            System.out.println(key + " " + testDataRecord.get(key));
+        }
     }
 
 }
