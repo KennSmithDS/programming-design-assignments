@@ -1,8 +1,8 @@
+package sequentialSolution;
+
 import java.io.*;
 import java.nio.file.Files;
-import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.text.ParseException;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Objects;
@@ -18,11 +18,15 @@ import org.apache.commons.csv.CSVRecord;
  */
 public class CSVReader {
 
-    private final String[] STUDENT_HEADERS = {"module", "presentation", "student", "site", "date", "clicks"};
+    private static final String[] STUDENT_HEADERS = {"module", "presentation", "student", "site", "date", "clicks"};
+    private static final String MODULE_HEADER = "module";
+    private static final String PRESENTATION_HEADER = "presentation";
+    private static final String DATE_HEADER = "date";
+    private static final String CLICKS_HEADER = "clicks";
     private String csvFile;
 
     /**
-     * Constructor method for CSVReader object
+     * Constructor method for sequentialSolution.CSVReader object
      * @param csvFile String path to CSV file
      * @throws FileNotFoundException default FileNotFoundException error
      */
@@ -50,7 +54,7 @@ public class CSVReader {
     public HashMap<String, HashMap<String, Integer>> readCSVFile() throws IOException, IllegalArgumentException {
 //        Reader reader = Files.newBufferedReader(Paths.get(SAMPLE_CSV_FILE_PATH));
 //        CSVParser csvParser = new CSVParser(reader, CSVFormat.DEFAULT
-        Reader csvReader = Files.newBufferedReader(Paths.get(csvFile));
+        Reader csvReader = Files.newBufferedReader(Paths.get(this.csvFile));
         CSVParser csvParser = new CSVParser(csvReader, CSVFormat.DEFAULT
                 .withFirstRecordAsHeader()
                 .withHeader(STUDENT_HEADERS)
@@ -58,11 +62,11 @@ public class CSVReader {
                 );
         HashMap<String, HashMap<String, Integer>> aggStudentData = new HashMap<>();
         for (CSVRecord record : csvParser) {
-            String module = record.get("module");
-            String presentation = record.get("presentation");
+            String module = record.get(MODULE_HEADER);
+            String presentation = record.get(PRESENTATION_HEADER);
             String codeKey = module + "_" + presentation;
-            String date = record.get("date");
-            int clicks = Integer.parseInt(record.get("clicks"));
+            String date = record.get(DATE_HEADER);
+            int clicks = Integer.parseInt(record.get(CLICKS_HEADER));
 
             // module and presentation code exists in HashMap
             if (aggStudentData.containsKey(codeKey)) {
@@ -83,26 +87,8 @@ public class CSVReader {
     }
 
     /**
-     * Main to test the functionality of the readCSVFile() method of CSVReader class
-     * Validates that the aggregations are occurring properly
-     * @param args String list of arguments
-     * @throws IOException default IOException error
-     * @throws IllegalArgumentException default IllegalArgumentException error
-     */
-    public static void main(String[] args) throws IOException, IllegalArgumentException {
-        String testFile = "anonymisedData/studentVle_sample.csv";
-        CSVReader csvReader = new CSVReader(testFile);
-        HashMap<String, HashMap<String, Integer>> testData = csvReader.readCSVFile();
-        HashMap<String, Integer> testDataRecord = testData.get("AAA_2013J");
-        System.out.println(testDataRecord.size());
-        for (String key : testDataRecord.keySet()) {
-            System.out.println(key + " " + testDataRecord.get(key));
-        }
-    }
-
-    /**
      * Override method for default equals()
-     * @param o class object for CSVReader
+     * @param o class object for sequentialSolution.CSVReader
      * @return boolean
      */
     @Override
@@ -128,7 +114,7 @@ public class CSVReader {
      */
     @Override
     public String toString() {
-        return "CSVReader{" +
+        return "sequentialSolution.CSVReader{" +
                 "STUDENT_HEADERS=" + Arrays.toString(STUDENT_HEADERS) +
                 ", csvFile='" + csvFile + '\'' +
                 '}';
