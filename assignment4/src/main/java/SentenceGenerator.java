@@ -115,9 +115,7 @@ public class SentenceGenerator {
             boolean matchResult = isTokenPlaceholder(topOfStack);
             if (matchResult) {
                 String hashKey = topOfStack.replace("<", "").replace(">","");
-//                System.out.println("Top of stack: " + hashKey);
                 String placeholderReplacement = getRandomGrammarElement(hashKey);
-                //System.out.println("Replacing " + topOfStack + " by searching for " + hashKey + " with '" + placeholderReplacement + "'");
                 String[] replacementList = placeholderReplacement.split(" ");
                 for (int i=replacementList.length-1; i>=0; i--) {
                     grammarStack.push(replacementList[i]);
