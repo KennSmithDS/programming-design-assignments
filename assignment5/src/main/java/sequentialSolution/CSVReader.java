@@ -64,7 +64,7 @@ public class CSVReader {
         for (CSVRecord record : csvParser) {
             String module = record.get(MODULE_HEADER);
             String presentation = record.get(PRESENTATION_HEADER);
-            String codeKey = module + "_" + presentation;
+            String codeKey = presentation + "_" + module;
             String date = record.get(DATE_HEADER);
             int clicks = Integer.parseInt(record.get(CLICKS_HEADER));
 
