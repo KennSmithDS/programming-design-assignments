@@ -18,7 +18,7 @@ import org.apache.commons.csv.CSVRecord;
  */
 public class CSVReader {
 
-    private static final String[] STUDENT_HEADERS = {"module", "presentation", "student", "site", "date", "clicks"};
+    private static final String[] STUDENT_HEADERS = {"index", "module", "presentation", "student", "site", "date", "clicks"};
     private static final String MODULE_HEADER = "module";
     private static final String PRESENTATION_HEADER = "presentation";
     private static final String DATE_HEADER = "date";
@@ -64,7 +64,7 @@ public class CSVReader {
         for (CSVRecord record : csvParser) {
             String module = record.get(MODULE_HEADER);
             String presentation = record.get(PRESENTATION_HEADER);
-            String codeKey = presentation + "_" + module;
+            String codeKey = module + "_" + presentation;
             String date = record.get(DATE_HEADER);
             int clicks = Integer.parseInt(record.get(CLICKS_HEADER));
 
@@ -118,5 +118,11 @@ public class CSVReader {
                 "STUDENT_HEADERS=" + Arrays.toString(STUDENT_HEADERS) +
                 ", csvFile='" + csvFile + '\'' +
                 '}';
+    }
+
+    public static void main(String[] args) throws IOException {
+        CSVReader file = new CSVReader("/Users/isidoraconic/Desktop/anonymisedData/studentVle_sample.csv");
+        HashMap<String, HashMap<String, Integer>> parsedFile = file.readCSVFile();
+
     }
 }

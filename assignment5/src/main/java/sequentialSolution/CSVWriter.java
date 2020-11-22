@@ -13,9 +13,7 @@ import java.util.List;
 
 import java.util.Map;
 import org.apache.commons.csv.CSVFormat;
-import org.apache.commons.csv.CSVParser;
 import org.apache.commons.csv.CSVPrinter;
-import org.apache.commons.csv.CSVRecord;
 
 public class CSVWriter {
 
@@ -36,17 +34,18 @@ public class CSVWriter {
 
   public void writeFiles(CSVReader inputFile) throws IOException {
     HashMap<String, HashMap<String, Integer>> info = inputFile.readCSVFile();
+    System.out.println();
     FileWriter fileWriter = null;
     BufferedWriter bufferedWriter = null;
     CSVPrinter csvPrinter = null;
 
-    for (Map.Entry fileName : info.entrySet()) {
+    for (String fileName : info.keySet()) {
       try {
         fileWriter = new FileWriter(this.outputDir + fileName + ".csv");
         bufferedWriter = new BufferedWriter(fileWriter);
         csvPrinter = new CSVPrinter(bufferedWriter, CSVFormat.DEFAULT.withHeader(OUTPUT_HEADER));
 
-        for (Map.Entry date : info.get(fileName).entrySet()) {
+        for (String date : info.get(fileName).keySet()) {
           csvPrinter.printRecord(date, info.get(fileName).get(date));
         }
 
@@ -63,6 +62,7 @@ public class CSVWriter {
       }
     }
   }
+
 
 
 }
