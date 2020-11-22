@@ -11,16 +11,26 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
-import java.util.Map;
+import java.util.Objects;
 import org.apache.commons.csv.CSVFormat;
 import org.apache.commons.csv.CSVPrinter;
 
+/**
+ * Class to represent a CSV writer object encapsulating the commons-csv library
+ * Inputs a string path to the an output directory for the summary files
+ * Uses the HashMap created by the readFile method in CSVReader to create summary files.
+ */
 public class CSVWriter {
 
   private String outputDir;
-  private List<String> files;
   private static final String[] OUTPUT_HEADER = {"date", "total_clicks"};
 
+  /**
+   * Constructor for CSVWriter
+   * Checks if the output directory exists, and assigns it to the outputDir field if it does
+   * @param outputDir
+   * @throws NoSuchDirectoryException if the passed directory does not exist
+   */
   public CSVWriter(String outputDir) throws NoSuchDirectoryException {
     //Check if the output directory exists, if not, throw NoSuchDirectoryException
     if (!(new File(outputDir).exists())) {
@@ -29,9 +39,15 @@ public class CSVWriter {
     } else {
       this.outputDir = outputDir;
     }
-    this.files = new ArrayList<>();
   }
 
+  /**
+   * Method that writes a CSV output file for each nested HashMap produced by the readFile method
+   * in the CSVReader class, which contains all the (summed) clicks on a certain date.
+   * The name of the file is in the format of "module_presentation.csv"
+   * @param inputFile CSVReader object
+   * @throws IOException
+   */
   public void writeFiles(CSVReader inputFile) throws IOException {
     HashMap<String, HashMap<String, Integer>> info = inputFile.readCSVFile();
     System.out.println();
@@ -63,6 +79,40 @@ public class CSVWriter {
     }
   }
 
+  /**
+   * Override method for default equals()
+   * @param o class object for sequentialSolution.CSVWriter
+   * @return boolean
+   */
+  @Override
+  public boolean equals(Object o) {
+    if (this == o) {
+      return true;
+    }
+    if (!(o instanceof CSVWriter)) {
+      return false;
+    }
+    CSVWriter csvWriter = (CSVWriter) o;
+    return outputDir.equals(csvWriter.outputDir);
+  }
 
+  /**
+   * Override method for default hashCode()
+   * @return int
+   */
+  @Override
+  public int hashCode() {
+    return Objects.hash(outputDir);
+  }
 
+  /**
+   * Override method for default toString()
+   * @return String
+   */
+  @Override
+  public String toString() {
+    return "CSVWriter{" +
+        "outputDir='" + outputDir + '\'' +
+        '}';
+  }
 }
