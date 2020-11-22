@@ -32,11 +32,13 @@ public class CSVReader {
      */
     public CSVReader(String csvFile) throws FileNotFoundException {
         if (!(new File(csvFile).exists())) {
-            throw new FileNotFoundException("The specified CSV file does not exist in provided directory."
+            throw new FileNotFoundException("The specified CSV file does not exist in provided directory. "
             + "Please enter a valid file path.");
         } else {
             this.csvFile = csvFile;
         }
+
+        System.out.println("The csv file is: " + csvFile);
     }
 
     /**

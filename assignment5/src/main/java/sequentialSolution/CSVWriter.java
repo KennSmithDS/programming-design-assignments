@@ -1,16 +1,11 @@
 package sequentialSolution;
 
-import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileNotFoundException;
-import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
-
 import java.util.Objects;
 import org.apache.commons.csv.CSVFormat;
 import org.apache.commons.csv.CSVPrinter;
@@ -60,7 +55,6 @@ public class CSVWriter {
         fileWriter = new FileWriter(this.outputDir + fileName + ".csv");
         bufferedWriter = new BufferedWriter(fileWriter);
         csvPrinter = new CSVPrinter(bufferedWriter, CSVFormat.DEFAULT.withHeader(OUTPUT_HEADER));
-
         for (String date : info.get(fileName).keySet()) {
           csvPrinter.printRecord(date, info.get(fileName).get(date));
         }
