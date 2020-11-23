@@ -3,22 +3,14 @@ package sequentialSolution;
 import static org.junit.Assert.*;
 
 import java.io.BufferedReader;
-import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileReader;
-import java.io.FileWriter;
 import java.io.IOException;
 import java.io.PrintWriter;
-import java.io.Reader;
-import java.nio.file.Files;
-import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
-import org.apache.commons.csv.CSVFormat;
-import org.apache.commons.csv.CSVParser;
-import org.apache.commons.csv.CSVPrinter;
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
@@ -30,6 +22,7 @@ public class CSVWriterTest {
 
   private CSVWriter writer1;
   private CSVWriter writer2;
+  private CSVWriter writer3;
   private CSVReader reader;
   private File sampleFile;
   private static final String[] HEADER = {"date", "total_clicks"};
@@ -82,6 +75,8 @@ public class CSVWriterTest {
     csvWriter.close();
 
     writer1 = new CSVWriter(outputDirectory.getRoot().getAbsolutePath()+"/");
+    writer2 = new CSVWriter(outputDirectory.getRoot().getAbsolutePath()+"/");
+    writer3 = new CSVWriter(sampleFileFolder.getRoot().getAbsolutePath()+"/");
     reader = new CSVReader(this.sampleFile.toString());
   }
 
@@ -98,52 +93,77 @@ public class CSVWriterTest {
     List<File> outputFileList = Arrays.asList(outputFiles);
 
     //Making a nested HashMap of the expected results
-    HashMap<String, HashMap<String, Integer>> expected = new HashMap<>();
-    HashMap<String, Integer> AAA_2014J = new HashMap<>();
-    HashMap<String, Integer> CCC_2014J_entry1 = new HashMap<>();
-    HashMap<String, Integer> CCC_2014J_entry2 = new HashMap<>();
-    HashMap<String, Integer> FFF_2014J_entry1 = new HashMap<>();
-    HashMap<String, Integer> FFF_2014J_entry2 = new HashMap<>();
-    AAA_2014J.put("95", 2);
-    CCC_2014J_entry1.put("239", 5);
-    CCC_2014J_entry2.put("240", 1);
-    FFF_2014J_entry1.put("227", 11);
-    FFF_2014J_entry2.put("90", 19);
-    expected.put("AAA_2014J.csv", AAA_2014J);
-    expected.put("CCC_2014J.csv", CCC_2014J_entry1);
-    expected.put("CCC_2014J.csv", CCC_2014J_entry2);
-    expected.put("FFF_2014J.csv",FFF_2014J_entry1);
-    expected.put("FFF_2014J.csv",FFF_2014J_entry2);
+    HashMap<String, ArrayList<String>> expected = new HashMap<>();
+    ArrayList<String> a = new ArrayList<>();
+    ArrayList<String> c = new ArrayList<>();
+    ArrayList<String> f = new ArrayList<>();
+    expected.put("AAA_2014J.csv", a);
+    expected.put("CCC_2014J.csv", c);
+    expected.put("FFF_2014J.csv", f);
+    a.add("date,total_clicks");
+    a.add("95,2");
+    c.add("date,total_clicks");
+    c.add("239,5");
+    c.add("240,1");
+    f.add("date,total_clicks");
+    f.add("227,11");
+    f.add("90,19");
 
+    Assert.assertEquals(3, outputFileList.size());
 
+    FileReader fr = null;
+    BufferedReader br = null;
+    int counter = 0;
+    int size = 0;
     for(File file : outputFileList) {
       Assert.assertTrue(expected.containsKey(file.getName()));
-      Reader csvReader = Files.newBufferedReader(file.toPath());
-      CSVParser csvParser = new CSVParser(csvReader, CSVFormat.DEFAULT.withFirstRecordAsHeader()
-          .withHeader(HEADER));
+      fr = new FileReader(file.getAbsolutePath());
+      br = new BufferedReader(fr);
+      size = expected.get(file.getName()).size();
 
-      //for(HashMap<String, Integer> data : expected.get(file.getName()))
-
+      String buffer;
+      String text = "";
+      while ((buffer = br.readLine()) != null && counter < size) {
+        Assert.assertEquals(expected.get(file.getName()).get(counter), buffer);
+        text += buffer;
+        counter++;
+      }
+      counter = 0;
     }
 
-
+    br.close();
+    fr.close();
 
   }
 
-  /*
   @Test
-  public void testEquals() {
+  public void testEqualsTrue() {
+    Assert.assertEquals(writer1, writer2);
   }
 
   @Test
-  public void testHashCode() {
+  public void testEqualsFalse() {
+    Assert.assertNotEquals(writer1, writer3);
+  }
+
+  @Test
+  public void testEqualsDifferentObject() {
+    String s = "hello";
+    Assert.assertNotEquals(writer1, s);
+  }
+
+  @Test
+  public void testHashCodeSame() {
+    Assert.assertEquals(writer1.hashCode(), writer2.hashCode());
   }
 
   @Test
   public void testToString() {
+    String expected = "CSVWriter{" +
+        "outputDir='" + outputDirectory.getRoot().getAbsolutePath() + "/" + '\'' +
+        '}';
+    Assert.assertEquals(expected, writer1.toString());
   }
-
-   */
 
   @After
   public void tearDown() {
