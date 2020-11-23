@@ -18,7 +18,7 @@ import org.apache.commons.csv.CSVRecord;
  */
 public class CSVReader {
 
-    private static final String[] STUDENT_HEADERS = {"module", "presentation", "student", "site", "date", "clicks"};
+    private static final String[] STUDENT_HEADERS = {"index", "module", "presentation", "student", "site", "date", "clicks"};
     private static final String MODULE_HEADER = "module";
     private static final String PRESENTATION_HEADER = "presentation";
     private static final String DATE_HEADER = "date";
@@ -32,11 +32,13 @@ public class CSVReader {
      */
     public CSVReader(String csvFile) throws FileNotFoundException {
         if (!(new File(csvFile).exists())) {
-            throw new FileNotFoundException("The specified CSV file does not exist in provided directory."
+            throw new FileNotFoundException("The specified CSV file does not exist in provided directory. "
             + "Please enter a valid file path.");
         } else {
             this.csvFile = csvFile;
         }
+
+        System.out.println("The csv file is: " + csvFile);
     }
 
     /**
@@ -119,4 +121,5 @@ public class CSVReader {
                 ", csvFile='" + csvFile + '\'' +
                 '}';
     }
+
 }
