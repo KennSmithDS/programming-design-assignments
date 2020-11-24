@@ -16,20 +16,21 @@ public class CSVReaderTest {
 
     private CSVReader testReader1;
     private CSVReader testReader2;
-    private String testFile;
-    private static final int TEST_CLICKS = 3;
+    private String testFolder;
+    private static final int TEST_CLICKS = 38091;
     private static final String[] STUDENT_HEADERS = {"module", "presentation", "student", "site", "date", "clicks"};
+    private static final String STUDENT_CLICKS_TEST = "studentVle_sample.csv";
 
     @Before
     public void setUp() throws Exception {
-        this.testFile = "anonymisedData/test.csv";
-        this.testReader1 = new CSVReader(this.testFile);
-        this.testReader2 = new CSVReader(this.testFile);
+        this.testFolder = "anonymisedData";
+        this.testReader1 = new CSVReader(this.testFolder, "test");
+        this.testReader2 = new CSVReader(this.testFolder, "test");
     }
 
-    @Test (expected = FileNotFoundException.class)
-    public void setupNoValidFile() throws FileNotFoundException {
-        CSVReader failTest = new CSVReader("notavalid/path.csv");
+    @Test (expected = NoSuchDirectoryException.class)
+    public void setupNoValidFile() throws NoSuchDirectoryException {
+        CSVReader failTest = new CSVReader("notavalid", "test");
     }
 
     @Test
@@ -56,7 +57,7 @@ public class CSVReaderTest {
     @Test
     public void testToString() {
         String testString = "sequentialSolution.CSVReader{STUDENT_HEADERS=" + Arrays.toString(STUDENT_HEADERS) +
-                ", csvFile='" + this.testFile + '\'' + '}';
+                ", csvFile='" + this.testFolder + "/" + STUDENT_CLICKS_TEST + '\'' + '}';
         Assert.assertEquals(testString, this.testReader1.toString());
     }
 }

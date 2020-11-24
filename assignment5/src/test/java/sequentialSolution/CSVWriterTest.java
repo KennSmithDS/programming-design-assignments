@@ -77,7 +77,7 @@ public class CSVWriterTest {
     writer1 = new CSVWriter(outputDirectory.getRoot().getAbsolutePath()+"/");
     writer2 = new CSVWriter(outputDirectory.getRoot().getAbsolutePath()+"/");
     writer3 = new CSVWriter(sampleFileFolder.getRoot().getAbsolutePath()+"/");
-    reader = new CSVReader(this.sampleFile.toString());
+    reader = new CSVReader(this.sampleFile.toString(), "test");
   }
 
   @Test (expected = NoSuchDirectoryException.class)

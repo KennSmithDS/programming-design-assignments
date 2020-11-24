@@ -23,23 +23,41 @@ public class CSVReader {
     private static final String PRESENTATION_HEADER = "presentation";
     private static final String DATE_HEADER = "date";
     private static final String CLICKS_HEADER = "clicks";
+    private static final String STUDENT_CLICKS = "studentVle.csv";
+    private static final String STUDENT_CLICKS_TEST = "studentVle_sample.csv";
     private String csvFile;
+    private String folderPath;
 
     /**
      * Constructor method for sequentialSolution.CSVReader object
-     * @param csvFile String path to CSV file
-     * @throws FileNotFoundException default FileNotFoundException error
+     * @param csvFolder String path to folder containing CSV files
+     * @throws NoSuchDirectoryException custom NoSuchDirectoryException error
      */
-    public CSVReader(String csvFile) throws FileNotFoundException {
-        if (!(new File(csvFile).exists())) {
-            throw new FileNotFoundException("The specified CSV file does not exist in provided directory. "
-            + "Please enter a valid file path.");
+    public CSVReader(String csvFolder, String mode) throws NoSuchDirectoryException {
+        if (!(new File(csvFolder).exists())) {
+            throw new NoSuchDirectoryException("The specified folder path does not exist. "
+                    + "Please enter a valid folder path.");
         } else {
-            this.csvFile = csvFile;
+            this.folderPath = csvFolder;
+            if (mode.equals("test")) {
+                this.csvFile = csvFolder + "/" + STUDENT_CLICKS_TEST;
+            } else if (mode.equals("prod")) {
+                this.csvFile = csvFolder + "/" + STUDENT_CLICKS;
+            }
         }
-
-        System.out.println("The csv file is: " + csvFile);
     }
+
+    /**
+     * Method to get the folder path passed as command line argument
+     * @return String folder path where CSV files are located
+     */
+    public String getFolderPath() { return this.folderPath; }
+
+    /**
+     * Method to get the full concatenated string file path
+     * @return String full path to CSV file for reading
+     */
+    public String getFilePath() { return this.csvFile; }
 
     /**
      * Method that reads the CSV file and returns a data object containing the key lookup for clicks aggregated on module, presentation and date
