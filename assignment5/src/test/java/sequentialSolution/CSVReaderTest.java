@@ -18,7 +18,7 @@ public class CSVReaderTest {
     private CSVReader testReader2;
     private String testFile;
     private static final int TEST_CLICKS = 3;
-    private static final String[] STUDENT_HEADERS = {"index", "module", "presentation", "student", "site", "date", "clicks"};
+    private static final String[] STUDENT_HEADERS = {"module", "presentation", "student", "site", "date", "clicks"};
 
     @Before
     public void setUp() throws Exception {

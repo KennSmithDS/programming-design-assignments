@@ -24,14 +24,16 @@ public class Controller {
      * @param argPath String path from CLI argument
      * @throws FileNotFoundException default FileNotFoundException error
      */
-    public Controller(String argPath) throws FileNotFoundException {
+    public Controller(String argPath) throws NoSuchDirectoryException {
         if (!(new File(argPath).exists())) {
-            throw new FileNotFoundException("The specified folder path does not exist."
+            throw new NoSuchDirectoryException("The specified folder path does not exist."
                     + "Please enter a valid folder path.");
         } else {
             this.folderPath = argPath;
         }
     }
+
+    public String getFolderPath() { return this.folderPath; }
 
     /**
      * Method to set the full file path concatenating CLI argument to the hard coded CSV file name
@@ -45,15 +47,6 @@ public class Controller {
     public String getFilePath() { return this.fullFilePath; }
 
     /**
-     * Method to set store the HashMap click data object from CSVReader
-     * @throws IOException default IOException error
-     */
-    public void setClickData() throws IOException {
-        CSVReader reader = new CSVReader(getFilePath());
-        this.clickData = reader.readCSVFile();
-    }
-
-    /**
      * Method to get the HashMap click data property
      * @return Hashmap object of student click data
      */
@@ -65,11 +58,11 @@ public class Controller {
      * @throws IOException default IOException error
      * @throws FileNotFoundException default FileNotFoundException error
      */
-    public static void main(String[] args) throws IOException, FileNotFoundException {
+    public static void main(String[] args) throws IOException, NoSuchDirectoryException {
         Controller cliControl = new Controller(args[0]);
         cliControl.setFilePath();
-        cliControl.setClickData();
-
-        // instantiate CSVWriter here by passing the getClickData() method into constructor
+        CSVReader reader = new CSVReader(cliControl.getFilePath());
+        CSVWriter writer = new CSVWriter(cliControl.getFolderPath());
+        writer.writeFiles(reader);
     }
 }

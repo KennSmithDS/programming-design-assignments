@@ -18,7 +18,7 @@ import org.apache.commons.csv.CSVRecord;
  */
 public class CSVReader {
 
-    private static final String[] STUDENT_HEADERS = {"index", "module", "presentation", "student", "site", "date", "clicks"};
+    private static final String[] STUDENT_HEADERS = {"module", "presentation", "student", "site", "date", "clicks"};
     private static final String MODULE_HEADER = "module";
     private static final String PRESENTATION_HEADER = "presentation";
     private static final String DATE_HEADER = "date";
