@@ -8,7 +8,7 @@ import java.util.HashMap;
 /**
  * Class to represent the main file controller that will drive the CSV reading and writing processes
  */
-public class Controller {
+public class SequentialDriver {
 
     /**
      * Main method to drive the program, controls both the CSVReader and CSVWriter classes
