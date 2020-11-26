@@ -18,7 +18,7 @@ import org.apache.commons.csv.CSVRecord;
  */
 public class CSVReader {
 
-    private static final String[] STUDENT_HEADERS = {"module", "presentation", "student", "site", "date", "clicks"};
+    private static final String[] STUDENT_HEADERS = {"index", "module", "presentation", "student", "site", "date", "clicks"};
     private static final String MODULE_HEADER = "module";
     private static final String PRESENTATION_HEADER = "presentation";
     private static final String DATE_HEADER = "date";
@@ -83,6 +83,7 @@ public class CSVReader {
         HashMap<String, HashMap<String, Integer>> aggStudentData = new HashMap<>();
         for (CSVRecord record : csvParser) {
             String module = record.get(MODULE_HEADER);
+            System.out.println("module = "+module);
             String presentation = record.get(PRESENTATION_HEADER);
             String codeKey = module + "_" + presentation;
             String date = record.get(DATE_HEADER);
