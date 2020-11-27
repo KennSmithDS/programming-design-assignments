@@ -2,8 +2,11 @@ package concurrentSolution;
 
 import sequentialSolution.NoSuchDirectoryException;
 
-import java.io.File;
+import java.io.*;
+import java.util.ArrayList;
 import java.util.concurrent.BlockingQueue;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 public class CSVReaderProducer implements Runnable {
 
@@ -14,6 +17,7 @@ public class CSVReaderProducer implements Runnable {
     private static final String CLICKS_HEADER = "clicks";
     private static final String STUDENT_CLICKS = "studentVle.csv";
     private static final String STUDENT_CLICKS_TEST = "studentVle_sample.csv";
+    private static final String SPLIT_BY = "(?<=\")[^,;](.*?)(?=\")";
     private String csvFile;
     private String folderPath;
     private BlockingQueue<InboundCSVRow> queue;
@@ -44,9 +48,38 @@ public class CSVReaderProducer implements Runnable {
      */
     public String getFilePath() { return this.csvFile; }
 
+    private ArrayList<String> patternMatch(String inputString) {
+        ArrayList<String> parsedString = new ArrayList<>();
+        Pattern pattern = Pattern.compile(SPLIT_BY);
+        Matcher matcher = pattern.matcher(inputString);
+        while (matcher.find()) {
+            parsedString.add(matcher.group());
+        }
+        return parsedString;
+    }
+
+    public InboundCSVRow parseCSVRow(String line) {
+        ArrayList<String> parsedRow = patternMatch(line);
+        String module = parsedRow.get(0);
+        String presentation = parsedRow.get(1);
+        Integer student = Integer.parseInt(parsedRow.get(2));
+        Integer site = Integer.parseInt(parsedRow.get(3));
+        Integer date = Integer.parseInt(parsedRow.get(4));
+        Integer clicks = Integer.parseInt(parsedRow.get(5));
+        return new InboundCSVRow(module, presentation, student, site, date, clicks);
+    }
+
     @Override
     public void run() {
-
+        try (BufferedReader reader = new BufferedReader(new FileReader(this.csvFile))) {
+            String headers = reader.readLine();
+            String newLine;
+            while ((newLine = reader.readLine()) != null) {
+                queue.put(parseCSVRow(newLine));
+            }
+        } catch (IOException | InterruptedException e) {
+            e.printStackTrace();
+        }
     }
 
 }
