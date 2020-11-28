@@ -37,7 +37,7 @@ public class CSVWriterTest {
 
   @Before
   public void setUp() throws Exception {
-    this.sampleFile = sampleFileFolder.newFile("studentVle_test.csv");
+    this.sampleFile = sampleFileFolder.newFile("studentVle_sample.csv");
 
     //Writing a CSV file in Java adapted from the following link:
     //https://stackabuse.com/reading-and-writing-csvs-in-java/
@@ -77,7 +77,8 @@ public class CSVWriterTest {
     writer1 = new CSVWriter(outputDirectory.getRoot().getAbsolutePath()+"/");
     writer2 = new CSVWriter(outputDirectory.getRoot().getAbsolutePath()+"/");
     writer3 = new CSVWriter(sampleFileFolder.getRoot().getAbsolutePath()+"/");
-    reader = new CSVReader(this.sampleFile.toString(), "test");
+    reader = new CSVReader(sampleFileFolder.getRoot().toString(), "test");
+    System.out.println("The sample file absolute path is: "+sampleFile.getAbsolutePath());
   }
 
   @Test (expected = NoSuchDirectoryException.class)
@@ -108,6 +109,7 @@ public class CSVWriterTest {
     f.add("date,total_clicks");
     f.add("227,11");
     f.add("90,19");
+
 
     Assert.assertEquals(3, outputFileList.size());
 

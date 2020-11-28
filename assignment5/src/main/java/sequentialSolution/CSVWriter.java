@@ -109,4 +109,12 @@ public class CSVWriter {
         "outputDir='" + outputDir + '\'' +
         '}';
   }
+
+  /*
+  public static void main(String[] args) throws NoSuchDirectoryException, IOException {
+    CSVReader reader = new CSVReader("/Users/isidoraconic/Desktop/a5_test", "test");
+    CSVWriter writer = new CSVWriter("/Users/isidoraconic/Desktop/a5_output_files/");
+    writer.writeFiles(reader);
+  }
+   */
 }
