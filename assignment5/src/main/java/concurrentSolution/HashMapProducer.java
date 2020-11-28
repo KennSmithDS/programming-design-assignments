@@ -9,12 +9,12 @@ import sun.jvm.hotspot.opto.Block;
 
 public class HashMapProducer implements Runnable {
 
-  private BlockingQueue<ConcurrentHashMap<String, Integer>> queue; //= new LinkedBlockingQueue<>();
+  private BlockingQueue<InboundCSVRow> queue; //= new LinkedBlockingQueue<>();
   private ConcurrentHashMap<String, ConcurrentHashMap<String, Integer>> map;
-  private final ConcurrentHashMap<String, Integer> POISON;
+  private final InboundCSVRow POISON;
 
-  public HashMapProducer(BlockingQueue<ConcurrentHashMap<String, Integer>> queue,
-      ConcurrentHashMap<String, Integer> poisonPill, ConcurrentHashMap<String, ConcurrentHashMap<String, Integer>> map) {
+  public HashMapProducer(BlockingQueue<InboundCSVRow> queue,
+      InboundCSVRow poisonPill, ConcurrentHashMap<String, ConcurrentHashMap<String, Integer>> map) {
     this.queue = queue;
     this.POISON = poisonPill;
     this.map = map;
@@ -23,9 +23,28 @@ public class HashMapProducer implements Runnable {
   public void getMapElement() throws InterruptedException {
     for(Map.Entry outerKey : this.map.entrySet()) {
 
-      //Should this be map.get?
       ConcurrentHashMap<String, Integer> innerMap = this.map.remove(outerKey);
-      this.queue.add(innerMap);
+
+      StringBuilder sb1 = new StringBuilder();
+      sb1.append(outerKey);
+      String codeKey = sb1.toString();
+
+      for(Map.Entry innerKey : this.map.get(outerKey).entrySet()) {
+
+        StringBuilder sb2 = new StringBuilder();
+        sb2.append(innerKey);
+        String date = sb2.toString();
+        sb2 = new StringBuilder();
+        sb2.append(this.map.get(outerKey).get(innerKey));
+        Integer clicks = Integer.valueOf(sb2.toString());
+
+        //InboundCSVRow(String module, String presentation, Integer student, Integer site, String date, Integer clicks)
+        InboundCSVRow row = new InboundCSVRow("module", "presentation",
+            Integer.MIN_VALUE, Integer.MIN_VALUE, date, clicks);
+        row.setCodeKey(codeKey);
+        this.queue.add(row);
+      }
+
       //break;
       //Should I break here? I.e. only does one element at a time?
       //Will this essentially block every single thread other than one from doing this bc it is
