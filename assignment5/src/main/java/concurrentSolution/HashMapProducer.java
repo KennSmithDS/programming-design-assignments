@@ -1,4 +1,4 @@
-package isi_concurrent_testing;
+package concurrentSolution;
 
 import java.util.Map;
 import java.util.concurrent.BlockingQueue;
