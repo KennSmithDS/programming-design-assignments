@@ -2,16 +2,28 @@ package concurrentSolution;
 
 import java.util.HashMap;
 import java.util.Objects;
-import java.util.concurrent.BlockingDeque;
+import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.ConcurrentHashMap;
 
+/**
+ * Class to represent a Consumer that takes student click data CSV rows from BlockingQueue
+ * Since it is designed to work in a Thread, it needs to implement Runnable and override run()
+ * The class just takes parsed rows of a CSV file placed into a Blocking Queue
+ * Then the consumer aggregates the clicks for each unique module and presentation and date
+ */
 public class ClickAggregatorConsumer implements Runnable {
 
-    private BlockingDeque<InboundCSVRow> queue;
-    private ConcurrentHashMap<String, ConcurrentHashMap<String, Integer>> aggStudentData;
-    private InboundCSVRow poison;
+    private final BlockingQueue<InboundCSVRow> queue;
+    private final ConcurrentHashMap<String, ConcurrentHashMap<String, Integer>> aggStudentData;
+    private final InboundCSVRow poison;
 
-    ClickAggregatorConsumer(BlockingDeque<InboundCSVRow> queue,
+    /**
+     * Constructor method for ClickAggregatorConsumer class
+     * @param queue BlockingQueue from Driver that the CSV rows will be stored in
+     * @param aggStudentData ConcurrentHashMap object to aggregate the student clicks
+     * @param poison CSV row poison pill that will kill each consumer thread
+     */
+    ClickAggregatorConsumer(BlockingQueue<InboundCSVRow> queue,
                             ConcurrentHashMap<String, ConcurrentHashMap<String, Integer>> aggStudentData,
                             InboundCSVRow poison) {
         this.queue = queue;
@@ -19,6 +31,14 @@ public class ClickAggregatorConsumer implements Runnable {
         this.poison = poison;
     }
 
+    /**
+     * Method to write student clicks into the ConcurrentHashMap
+     * Checks if codeKey (module + presentation) is present and date
+     * Then puts new value or updates value of existing value
+     * @param codeKey concatenated String of module and presentation codes
+     * @param date String of the date since days of the assessment
+     * @param clicks Integer clicks by the student
+     */
     public void writeToHash(String codeKey, String date, Integer clicks) {
         // module and presentation code exists in HashMap
         if (aggStudentData.containsKey(codeKey)) {
@@ -35,12 +55,17 @@ public class ClickAggregatorConsumer implements Runnable {
             aggStudentData.get(codeKey).put(date, clicks);
         }
     }
-    
+
+    /**
+     * Override of Runnable.run() method to take each parsed row from the BlockingQueue
+     * The student click data is aggregated with the writeToHash method
+     * When the Thread finds a poison pill, it will terminate
+     */
     @Override
     public void run() {
         try {
             InboundCSVRow csvRow;
-            while ((csvRow = queue.take()) != poison) {
+            while (!(csvRow = queue.take()).getCodeKey().equals(poison.getCodeKey())) {
                 writeToHash(csvRow.getCodeKey(), csvRow.getDate(), csvRow.getClicks());
             }
         } catch (InterruptedException interruptedException) {
@@ -48,6 +73,11 @@ public class ClickAggregatorConsumer implements Runnable {
         }
     }
 
+    /**
+     * Override of default equals() method
+     * @param o object
+     * @return boolean
+     */
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
@@ -58,11 +88,19 @@ public class ClickAggregatorConsumer implements Runnable {
                 Objects.equals(poison, that.poison);
     }
 
+    /**
+     * Override of default hashCode() method
+     * @return int
+     */
     @Override
     public int hashCode() {
         return Objects.hash(queue, aggStudentData, poison);
     }
 
+    /**
+     * Override of default toString() method
+     * @return String
+     */
     @Override
     public String toString() {
         return "ClickAggregatorConsumer{" +
