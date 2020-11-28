@@ -1,20 +1,25 @@
 package concurrentSolution;
 
 import java.util.HashMap;
+import java.util.Objects;
 import java.util.concurrent.BlockingDeque;
 import java.util.concurrent.ConcurrentHashMap;
 
 public class ClickAggregatorConsumer implements Runnable {
 
     private BlockingDeque<InboundCSVRow> queue;
-    private ConcurrentHashMap<String, ConcurrentHashMap<Integer, Integer>> aggStudentData;
+    private ConcurrentHashMap<String, ConcurrentHashMap<String, Integer>> aggStudentData;
+    private InboundCSVRow poison;
 
-    ClickAggregatorConsumer(BlockingDeque<InboundCSVRow> queue, ConcurrentHashMap<String, ConcurrentHashMap<Integer, Integer>> aggStudentData) {
+    ClickAggregatorConsumer(BlockingDeque<InboundCSVRow> queue,
+                            ConcurrentHashMap<String, ConcurrentHashMap<String, Integer>> aggStudentData,
+                            InboundCSVRow poison) {
         this.queue = queue;
         this.aggStudentData = aggStudentData;
+        this.poison = poison;
     }
 
-    public void writeToHash(String codeKey, Integer date, Integer clicks) {
+    public void writeToHash(String codeKey, String date, Integer clicks) {
         // module and presentation code exists in HashMap
         if (aggStudentData.containsKey(codeKey)) {
             // date exists in HashMap
@@ -35,11 +40,35 @@ public class ClickAggregatorConsumer implements Runnable {
     public void run() {
         try {
             InboundCSVRow csvRow;
-            while ((csvRow = queue.take()) != null) {
-                writeToHash(csvRow.getCodeKey(), csvRow.getDate(), csvRow.getDate());
+            while ((csvRow = queue.take()) != poison) {
+                writeToHash(csvRow.getCodeKey(), csvRow.getDate(), csvRow.getClicks());
             }
         } catch (InterruptedException interruptedException) {
-            interruptedException.printStackTrace();
+            Thread.currentThread().interrupt();
         }
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        ClickAggregatorConsumer that = (ClickAggregatorConsumer) o;
+        return Objects.equals(queue, that.queue) &&
+                Objects.equals(aggStudentData, that.aggStudentData) &&
+                Objects.equals(poison, that.poison);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(queue, aggStudentData, poison);
+    }
+
+    @Override
+    public String toString() {
+        return "ClickAggregatorConsumer{" +
+                "queue=" + queue +
+                ", aggStudentData=" + aggStudentData +
+                ", poison=" + poison +
+                '}';
     }
 }

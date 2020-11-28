@@ -12,7 +12,7 @@ public class InboundCSVRow {
     private String presentation;
     private Integer student;
     private Integer site;
-    private Integer date;
+    private String date;
     private Integer clicks;
     private String codeKey;
 
@@ -25,7 +25,7 @@ public class InboundCSVRow {
      * @param date the date of student’s interaction with the material measured as the number of days since the start of the module-presentation
      * @param clicks the number of times a student interacts with the material in that day
      */
-    InboundCSVRow(String module, String presentation, Integer student, Integer site, Integer date, Integer clicks) {
+    InboundCSVRow(String module, String presentation, Integer student, Integer site, String date, Integer clicks) {
         this.module = module;
         this.presentation = presentation;
         this.student = student;
@@ -47,7 +47,7 @@ public class InboundCSVRow {
      * Method to get the date integer when building the ConcurrentHasMap
      * @return Integer of the date
      */
-    public Integer getDate() {
+    public String getDate() {
         return date;
     }
 

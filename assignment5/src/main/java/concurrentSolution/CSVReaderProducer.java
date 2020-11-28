@@ -22,8 +22,9 @@ public class CSVReaderProducer implements Runnable {
     private String csvFile;
     private String folderPath;
     private BlockingQueue<InboundCSVRow> queue;
+    private final InboundCSVRow poison;
 
-    CSVReaderProducer(String csvFolder, String mode) throws NoSuchDirectoryException {
+    CSVReaderProducer(String csvFolder, String mode, BlockingQueue<InboundCSVRow> queue, InboundCSVRow poison) throws NoSuchDirectoryException {
         if (!(new File(csvFolder).exists())) {
             throw new NoSuchDirectoryException("The specified folder path does not exist. "
                     + "Please enter a valid folder path.");
@@ -34,6 +35,8 @@ public class CSVReaderProducer implements Runnable {
             } else if (mode.equals("prod")) {
                 this.csvFile = csvFolder + "/" + STUDENT_CLICKS;
             }
+            this.queue = queue;
+            this.poison = poison;
         }
     }
 
@@ -65,7 +68,7 @@ public class CSVReaderProducer implements Runnable {
         String presentation = parsedRow.get(1);
         Integer student = Integer.parseInt(parsedRow.get(2));
         Integer site = Integer.parseInt(parsedRow.get(3));
-        Integer date = Integer.parseInt(parsedRow.get(4));
+        String date = parsedRow.get(4);
         Integer clicks = Integer.parseInt(parsedRow.get(5));
         return new InboundCSVRow(module, presentation, student, site, date, clicks);
     }
@@ -80,6 +83,14 @@ public class CSVReaderProducer implements Runnable {
             }
         } catch (IOException | InterruptedException e) {
             e.printStackTrace();
+        } finally {
+            while (true) {
+                try {
+                    queue.put(this.poison);
+                } catch (InterruptedException e) {
+                    Thread.currentThread().interrupt();
+                }
+            }
         }
     }
 
