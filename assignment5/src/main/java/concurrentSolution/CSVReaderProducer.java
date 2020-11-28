@@ -4,6 +4,7 @@ import sequentialSolution.NoSuchDirectoryException;
 
 import java.io.*;
 import java.util.ArrayList;
+import java.util.Objects;
 import java.util.concurrent.BlockingQueue;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -82,4 +83,27 @@ public class CSVReaderProducer implements Runnable {
         }
     }
 
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        CSVReaderProducer that = (CSVReaderProducer) o;
+        return Objects.equals(csvFile, that.csvFile) &&
+                Objects.equals(folderPath, that.folderPath) &&
+                Objects.equals(queue, that.queue);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(csvFile, folderPath, queue);
+    }
+
+    @Override
+    public String toString() {
+        return "CSVReaderProducer{" +
+                "csvFile='" + csvFile + '\'' +
+                ", folderPath='" + folderPath + '\'' +
+                ", queue=" + queue +
+                '}';
+    }
 }
