@@ -45,7 +45,6 @@ public class CSVWriter {
    */
   public void writeFiles(CSVReader inputFile) throws IOException {
     HashMap<String, HashMap<String, Integer>> info = inputFile.readCSVFile();
-    System.out.println();
     FileWriter fileWriter = null;
     BufferedWriter bufferedWriter = null;
     CSVPrinter csvPrinter = null;

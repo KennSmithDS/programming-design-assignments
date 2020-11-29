@@ -3,23 +3,25 @@ package concurrentSolution;
 import java.util.Map;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.LinkedBlockingDeque;
 import java.util.concurrent.LinkedBlockingQueue;
 import sun.jvm.hotspot.opto.Block;
 
 public class HashMapProducer implements Runnable {
 
-  private BlockingQueue<InboundCSVRow> queue; //= new LinkedBlockingQueue<>();
+  private BlockingQueue<CSVFile> queue; //= new LinkedBlockingQueue<>();
   private ConcurrentHashMap<String, ConcurrentHashMap<String, Integer>> map;
-  private final InboundCSVRow POISON;
+  private final CSVFile POISON;
 
-  public HashMapProducer(BlockingQueue<InboundCSVRow> queue,
-      InboundCSVRow poisonPill, ConcurrentHashMap<String, ConcurrentHashMap<String, Integer>> map) {
+  public HashMapProducer(BlockingQueue<CSVFile> queue,
+      CSVFile poisonPill, ConcurrentHashMap<String, ConcurrentHashMap<String, Integer>> map) {
     this.queue = queue;
     this.POISON = poisonPill;
     this.map = map;
   }
 
+  /*
   public void getMapElement() throws InterruptedException {
     for(Map.Entry outerKey : this.map.entrySet()) {
 
@@ -44,6 +46,38 @@ public class HashMapProducer implements Runnable {
         row.setCodeKey(codeKey);
         this.queue.add(row);
       }
+
+      //break;
+      //Should I break here? I.e. only does one element at a time?
+      //Will this essentially block every single thread other than one from doing this bc it is
+      //a concurrent hashmap?
+    }
+  }
+   */
+
+  public void getMapElement() throws InterruptedException {
+    for(Map.Entry outerKey : this.map.entrySet()) {
+
+      ConcurrentHashMap<String, Integer> innerMap = this.map.remove(outerKey);
+
+      StringBuilder sb1 = new StringBuilder();
+      sb1.append(outerKey);
+      String codeKey = sb1.toString();
+      CSVFile outputFile = new CSVFile(codeKey);
+
+      for(Map.Entry innerKey : this.map.get(outerKey).entrySet()) {
+        CopyOnWriteArrayList<String> row = new CopyOnWriteArrayList<>();
+        StringBuilder sb2 = new StringBuilder();
+        sb2.append(innerKey);
+        String date = sb2.toString();
+        sb2 = new StringBuilder();
+        sb2.append(this.map.get(outerKey).get(innerKey));
+        String clicks = sb2.toString();
+        row.add(date);
+        row.add(clicks);
+        outputFile.addRow(row);
+      }
+      this.queue.add(outputFile);
 
       //break;
       //Should I break here? I.e. only does one element at a time?
