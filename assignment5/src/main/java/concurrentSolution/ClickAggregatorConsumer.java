@@ -1,6 +1,5 @@
 package concurrentSolution;
 
-import java.util.HashMap;
 import java.util.Objects;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.ConcurrentHashMap;
@@ -13,9 +12,9 @@ import java.util.concurrent.ConcurrentHashMap;
  */
 public class ClickAggregatorConsumer implements Runnable {
 
-    private final BlockingQueue<InboundCSVRow> queue;
+    private final BlockingQueue<CSVRow> queue;
     private final ConcurrentHashMap<String, ConcurrentHashMap<String, Integer>> aggStudentData;
-    private final InboundCSVRow poison;
+    private final CSVRow poison;
 
     /**
      * Constructor method for ClickAggregatorConsumer class
@@ -23,9 +22,9 @@ public class ClickAggregatorConsumer implements Runnable {
      * @param aggStudentData ConcurrentHashMap object to aggregate the student clicks
      * @param poison CSV row poison pill that will kill each consumer thread
      */
-    ClickAggregatorConsumer(BlockingQueue<InboundCSVRow> queue,
+    ClickAggregatorConsumer(BlockingQueue<CSVRow> queue,
                             ConcurrentHashMap<String, ConcurrentHashMap<String, Integer>> aggStudentData,
-                            InboundCSVRow poison) {
+                            CSVRow poison) {
         this.queue = queue;
         this.aggStudentData = aggStudentData;
         this.poison = poison;
@@ -64,7 +63,7 @@ public class ClickAggregatorConsumer implements Runnable {
     @Override
     public void run() {
         try {
-            InboundCSVRow csvRow;
+            CSVRow csvRow;
             while (!(csvRow = queue.take()).getCodeKey().equals(poison.getCodeKey())) {
                 writeToHash(csvRow.getCodeKey(), csvRow.getDate(), csvRow.getClicks());
                 System.out.println(Thread.currentThread().getName() + " just wrote row: " + csvRow.toString() + " to the hashmap!");

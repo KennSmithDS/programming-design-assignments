@@ -7,8 +7,6 @@ import java.util.ArrayList;
 import java.util.Objects;
 import java.util.StringTokenizer;
 import java.util.concurrent.BlockingQueue;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 /**
  * Class to represent a Producer that reads a CSV file of student click data
@@ -22,8 +20,8 @@ public class CSVReaderProducer implements Runnable {
     private static final String STUDENT_CLICKS_TEST = "studentVle_sample.csv";
     private String csvFile;
     private final String folderPath;
-    private final BlockingQueue<InboundCSVRow> queue;
-    private final InboundCSVRow poison;
+    private final BlockingQueue<CSVRow> queue;
+    private final CSVRow poison;
     private final int N_POISON_PER_PRODUCER;
 
     /**
@@ -35,7 +33,7 @@ public class CSVReaderProducer implements Runnable {
      * @param N_POISON_PER_PRODUCER
      * @throws NoSuchDirectoryException
      */
-    CSVReaderProducer(String csvFolder, String mode, BlockingQueue<InboundCSVRow> queue, InboundCSVRow poison, int N_POISON_PER_PRODUCER) throws NoSuchDirectoryException {
+    CSVReaderProducer(String csvFolder, String mode, BlockingQueue<CSVRow> queue, CSVRow poison, int N_POISON_PER_PRODUCER) throws NoSuchDirectoryException {
         if (!(new File(csvFolder).exists())) {
             throw new NoSuchDirectoryException("The specified folder path does not exist. "
                     + "Please enter a valid folder path.");
@@ -83,7 +81,7 @@ public class CSVReaderProducer implements Runnable {
      * @param line String line from the BufferedReader
      * @return InbouncCSVRow custom class to store in BlockingQueue
      */
-    public InboundCSVRow parseCSVRow(String line) {
+    public CSVRow parseCSVRow(String line) {
         ArrayList<String> parsedRow = patternMatch(line);
 //        System.out.println(parsedRow);
         String module = parsedRow.get(0);
@@ -93,7 +91,7 @@ public class CSVReaderProducer implements Runnable {
         String date = parsedRow.get(4);
         Integer clicks = Integer.parseInt(parsedRow.get(5));
 //        System.out.println(module + " " + presentation + " " + student + " " + site + " " + date + " " + clicks);
-        return new InboundCSVRow(module, presentation, student, site, date, clicks);
+        return new CSVRow(module, presentation, student, site, date, clicks);
     }
 
     /**

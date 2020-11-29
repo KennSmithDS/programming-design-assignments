@@ -6,7 +6,7 @@ import java.util.Objects;
  * Simple class to represent the row of a CSV file with student click data
  * Only has a constructor and getter methods for primary properties
  */
-public class InboundCSVRow {
+public class CSVRow {
 
     private String module;
     private String presentation;
@@ -17,7 +17,7 @@ public class InboundCSVRow {
     private String codeKey;
 
     /**
-     * Constructor method for InboundCSVRow class expects all row variables to be passed
+     * Constructor method for CSVRow class expects all row variables to be passed
      * @param module String identification code for a module
      * @param presentation the identification code of the module presentation
      * @param student a unique identification number for the student
@@ -25,7 +25,7 @@ public class InboundCSVRow {
      * @param date the date of student’s interaction with the material measured as the number of days since the start of the module-presentation
      * @param clicks the number of times a student interacts with the material in that day
      */
-    InboundCSVRow(String module, String presentation, Integer student, Integer site, String date, Integer clicks) {
+    CSVRow(String module, String presentation, Integer student, Integer site, String date, Integer clicks) {
         this.module = module;
         this.presentation = presentation;
         this.student = student;
@@ -72,7 +72,7 @@ public class InboundCSVRow {
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
-        InboundCSVRow that = (InboundCSVRow) o;
+        CSVRow that = (CSVRow) o;
         return Objects.equals(module, that.module) &&
                 Objects.equals(presentation, that.presentation) &&
                 Objects.equals(student, that.student) &&
@@ -97,7 +97,7 @@ public class InboundCSVRow {
      */
     @Override
     public String toString() {
-        return "InboundCSVRow{" +
+        return "CSVRow{" +
                 "module='" + module + '\'' +
                 ", presentation='" + presentation + '\'' +
                 ", student=" + student +

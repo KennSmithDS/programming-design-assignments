@@ -1,4 +1,4 @@
-package sequentialSolution;
+package concurrentSolution;
 
 public class InvalidThresholdValue extends Exception {
 

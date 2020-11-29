@@ -13,10 +13,10 @@ import sequentialSolution.NoSuchDirectoryException;
 
 /**\
  * Class to represent the consumers that will write the output files
- * The consumer takes a CSVFile object from the queue that was enqueued by the HashMapProducer class
+ * The consumer takes a CSVFile object from the queue that was enqueued by the CSVFileProducer class
  * instances (producers), and writes that .csv file to the specified output directory
  */
-public class WriterConsumer implements Runnable {
+public class CSVFileWriterConsumer implements Runnable {
 
   private BlockingQueue<CSVFile> queue;
   private String outputDir;
@@ -24,14 +24,14 @@ public class WriterConsumer implements Runnable {
   private final CSVFile POISON;
 
   /**
-   * Constructor for the WriterConsumer class
+   * Constructor for the CSVFileWriterConsumer class
    * @param outputDir output directory to store all the .csv files in
    * @param queue BlockingQueue from Driver that the CSVFile objects are stored in
    * @param poison CSVFile poison pill that will kill each consumer thread
    * @throws NoSuchDirectoryException
    */
-  public WriterConsumer(String outputDir, BlockingQueue<CSVFile> queue,
-                        CSVFile poison) throws NoSuchDirectoryException {
+  public CSVFileWriterConsumer(String outputDir, BlockingQueue<CSVFile> queue,
+                               CSVFile poison) throws NoSuchDirectoryException {
     //Check if the output directory exists, if not, throw NoSuchDirectoryException
     if (!(new File(outputDir).exists())) {
       throw new NoSuchDirectoryException("The specified directory does not exist. "
@@ -103,10 +103,10 @@ public class WriterConsumer implements Runnable {
     if (this == o) {
       return true;
     }
-    if (!(o instanceof WriterConsumer)) {
+    if (!(o instanceof CSVFileWriterConsumer)) {
       return false;
     }
-    WriterConsumer that = (WriterConsumer) o;
+    CSVFileWriterConsumer that = (CSVFileWriterConsumer) o;
     return queue.equals(that.queue) &&
         outputDir.equals(that.outputDir) &&
         POISON.equals(that.POISON);
@@ -127,7 +127,7 @@ public class WriterConsumer implements Runnable {
    */
   @Override
   public String toString() {
-    return "WriterConsumer{" +
+    return "CSVFileWriterConsumer{" +
         "queue=" + queue +
         ", outputDir='" + outputDir + '\'' +
         ", POISON=" + POISON +

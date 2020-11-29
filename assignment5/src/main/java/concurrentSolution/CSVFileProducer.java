@@ -6,12 +6,12 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CopyOnWriteArrayList;
 
 /**
- * Class to represent the HashMapProducer
+ * Class to represent the CSVFileProducer
  * This producer (thread) will read from the HashMap of information (information parsed from the
  * studentVle.csv file) and create a CSVFile object for each one of the outer HashMap entries
  * These CSVFile objects will be passed to the consumers which will write the .csv files
  */
-public class HashMapProducer implements Runnable {
+public class CSVFileProducer implements Runnable {
 
   private BlockingQueue<CSVFile> queue;
   private ConcurrentHashMap<String, ConcurrentHashMap<String, Integer>> map;
@@ -20,7 +20,7 @@ public class HashMapProducer implements Runnable {
   private final int N_POISON_PER_PRODUCER;
 
   /**
-   * Constructor for the HashMapProducer
+   * Constructor for the CSVFileProducer
    * Note that the key list is a thread safe ArrayList of all the keys in the HashMap
    * @param queue BlockingQueue from Driver that the CSVFile objects will be stored in
    * @param poison CSVFile poison pill that will kill each consumer thread
@@ -28,9 +28,9 @@ public class HashMapProducer implements Runnable {
    * @param N_POISON_PER_PRODUCER number of poison pills per producer
    * @param keyList list of keys from the map (HashMap of studentVle.csv info)
    */
-  public HashMapProducer(BlockingQueue<CSVFile> queue,
-      CSVFile poison, ConcurrentHashMap<String, ConcurrentHashMap<String, Integer>> map,
-      int N_POISON_PER_PRODUCER, CopyOnWriteArrayList<String> keyList) {
+  public CSVFileProducer(BlockingQueue<CSVFile> queue,
+                         CSVFile poison, ConcurrentHashMap<String, ConcurrentHashMap<String, Integer>> map,
+                         int N_POISON_PER_PRODUCER, CopyOnWriteArrayList<String> keyList) {
     this.queue = queue;
     this.POISON = poison;
     this.map = map;
@@ -40,7 +40,7 @@ public class HashMapProducer implements Runnable {
 
   /**
    * Method that takes the top element in the list of keys, and then extracts those nested
-   * HashMaps from the HashMap containg the parsed studentVle.csv info
+   * HashMaps from the HashMap containing the parsed studentVle.csv info
    * @return CSVFile object with all the information from those nested HashMaps
    * @throws InterruptedException
    */
@@ -103,10 +103,10 @@ public class HashMapProducer implements Runnable {
     if (this == o) {
       return true;
     }
-    if (!(o instanceof HashMapProducer)) {
+    if (!(o instanceof CSVFileProducer)) {
       return false;
     }
-    HashMapProducer that = (HashMapProducer) o;
+    CSVFileProducer that = (CSVFileProducer) o;
     return N_POISON_PER_PRODUCER == that.N_POISON_PER_PRODUCER &&
         queue.equals(that.queue) &&
         map.equals(that.map) &&
@@ -129,7 +129,7 @@ public class HashMapProducer implements Runnable {
    */
   @Override
   public String toString() {
-    return "HashMapProducer{" +
+    return "CSVFileProducer{" +
         "queue=" + queue +
         ", map=" + map +
         ", keyList=" + keyList +
