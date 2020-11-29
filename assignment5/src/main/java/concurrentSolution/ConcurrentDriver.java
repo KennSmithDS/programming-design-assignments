@@ -39,7 +39,7 @@ public class ConcurrentDriver {
             new Thread(new ClickAggregatorConsumer(readerQueue, aggStudentData, readerPoison)).start();
         }
 
-//        System.out.println(aggStudentData.get("AAA_2013J"));
+        System.out.println(aggStudentData.get("AAA_2013J"));
         Thread.sleep(10000);
 
         // writer threads go here
