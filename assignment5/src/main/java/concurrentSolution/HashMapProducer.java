@@ -13,12 +13,14 @@ public class HashMapProducer implements Runnable {
   private BlockingQueue<CSVFile> queue; //= new LinkedBlockingQueue<>();
   private ConcurrentHashMap<String, ConcurrentHashMap<String, Integer>> map;
   private final CSVFile POISON;
+  private final int N_POISON_PER_PRODUCER;
 
   public HashMapProducer(BlockingQueue<CSVFile> queue,
-      CSVFile poisonPill, ConcurrentHashMap<String, ConcurrentHashMap<String, Integer>> map) {
+      CSVFile poisonPill, ConcurrentHashMap<String, ConcurrentHashMap<String, Integer>> map, int N_POISON_PER_PRODUCER) {
     this.queue = queue;
     this.POISON = poisonPill;
     this.map = map;
+    this.N_POISON_PER_PRODUCER = N_POISON_PER_PRODUCER;
   }
 
   /*
@@ -55,15 +57,17 @@ public class HashMapProducer implements Runnable {
   }
    */
 
-  public void getMapElement() throws InterruptedException {
+  public CSVFile getMapElement() throws InterruptedException {
+    CSVFile outputFile = null;
     for(Map.Entry outerKey : this.map.entrySet()) {
 
       ConcurrentHashMap<String, Integer> innerMap = this.map.remove(outerKey);
+      //ConcurrentHashMap<String, Integer> innerMap = this.map.get(outerKey);
 
       StringBuilder sb1 = new StringBuilder();
       sb1.append(outerKey);
       String codeKey = sb1.toString();
-      CSVFile outputFile = new CSVFile(codeKey);
+      outputFile = new CSVFile(codeKey);
 
       for(Map.Entry innerKey : this.map.get(outerKey).entrySet()) {
         CopyOnWriteArrayList<String> row = new CopyOnWriteArrayList<>();
@@ -77,26 +81,33 @@ public class HashMapProducer implements Runnable {
         row.add(clicks);
         outputFile.addRow(row);
       }
-      this.queue.add(outputFile);
+      return outputFile;
 
-      //break;
       //Should I break here? I.e. only does one element at a time?
       //Will this essentially block every single thread other than one from doing this bc it is
       //a concurrent hashmap?
     }
+    return outputFile;
   }
 
   @Override
   public void run() {
-
     try {
-      getMapElement();
+      CSVFile fileInfo;
+      while(!map.isEmpty()) {
+        fileInfo = getMapElement();
+        queue.add(fileInfo);
+        System.out.println("Just added CSVFile = " + fileInfo.getName() + " to the BlockingQueue.");
+      }
     } catch (InterruptedException e) {
       Thread.currentThread().interrupt();
     } finally {
       while(true) {
         try {
-          this.queue.put(this.POISON);
+          for (int i=0; i < this.N_POISON_PER_PRODUCER; i++) {
+            System.out.println("Adding poison pill to queue in WriterProducer!");
+            queue.put(this.POISON);
+          }
           break;
         } catch (InterruptedException e) {
           e.printStackTrace();

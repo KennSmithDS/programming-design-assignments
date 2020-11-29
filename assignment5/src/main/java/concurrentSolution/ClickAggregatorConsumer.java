@@ -67,6 +67,7 @@ public class ClickAggregatorConsumer implements Runnable {
             InboundCSVRow csvRow;
             while (!(csvRow = queue.take()).getCodeKey().equals(poison.getCodeKey())) {
                 writeToHash(csvRow.getCodeKey(), csvRow.getDate(), csvRow.getClicks());
+                System.out.println("Just wrote row: " + csvRow.toString() + " to the hashmap!");
             }
         } catch (InterruptedException interruptedException) {
             Thread.currentThread().interrupt();

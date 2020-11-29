@@ -13,7 +13,7 @@ import java.util.concurrent.LinkedBlockingQueue;
 public class ConcurrentDriver {
 
     private static final InboundCSVRow readerPoison = new InboundCSVRow("thread", "killer", 0, 0, "", 0);
-    private static final CSVFile writerPoison = null;
+    private static final CSVFile writerPoison = new CSVFile("poison");
     private static final int QUEUE_BOUND = 10;
     private static final int N_PRODUCERS = 2;
     private static final int N_CONSUMERS = 2; //Runtime.getRuntime().availableProcessors();
@@ -27,7 +27,7 @@ public class ConcurrentDriver {
      * @throws InterruptedException default InterruptedException error for Threads
      */
     public static void main(String[] args) throws NoSuchDirectoryException, InterruptedException {
-        String cliPath = "/Users/isidoraconic/Desktop/kendall_sample_files/studentVle_sample.csv"; //= args[0];
+        String cliPath = "/Users/isidoraconic/Desktop/kendall_sample_files"; //= args[0];
         String outputDir = "/Users/isidoraconic/Desktop/a5_output_files/";
 
         BlockingQueue<InboundCSVRow> readerQueue = new LinkedBlockingQueue<InboundCSVRow>(QUEUE_BOUND);
@@ -40,16 +40,19 @@ public class ConcurrentDriver {
             new Thread(new ClickAggregatorConsumer(readerQueue, aggStudentData, readerPoison)).start();
         }
 
-        System.out.println(aggStudentData.get("AAA_2013J"));
+
         Thread.sleep(10000);
+        System.out.println();
+        System.out.println("The size of the hashmap is: " + aggStudentData.size());
+        System.out.println();
 
         // writer threads go here
-        for(int i = 0; i < N_PRODUCERS; i++) {
-            new Thread(new HashMapProducer(writerQueue, writerPoison, aggStudentData));
+        for(int i = 0; i < 1; i++) {
+            new Thread(new HashMapProducer(writerQueue, writerPoison, aggStudentData, N_CONSUMERS)).start();
         }
 
         for(int j = 0; j < N_CONSUMERS; j++) {
-            new Thread(new WriterConsumer(outputDir, writerQueue, writerPoison));
+            new Thread(new WriterConsumer(outputDir, writerQueue, writerPoison)).start();
         }
     }
 }
