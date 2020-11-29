@@ -1,5 +1,7 @@
 package concurrentSolution;
 
+import java.util.Map;
+import java.util.concurrent.CopyOnWriteArrayList;
 import sequentialSolution.NoSuchDirectoryException;
 
 import java.util.concurrent.BlockingQueue;
@@ -47,12 +49,43 @@ public class ConcurrentDriver {
         System.out.println();
 
         // writer threads go here
-        for(int i = 0; i < 1; i++) {
+        for(int i = 0; i < N_PRODUCERS; i++) {
             new Thread(new HashMapProducer(writerQueue, writerPoison, aggStudentData, N_CONSUMERS)).start();
         }
 
         for(int j = 0; j < N_CONSUMERS; j++) {
             new Thread(new WriterConsumer(outputDir, writerQueue, writerPoison)).start();
         }
+
+
+        /*
+
+        for(Map.Entry outerKey : aggStudentData.entrySet()) {
+
+            StringBuilder sb1 = new StringBuilder();
+            sb1.append(outerKey);
+            String codeKey = sb1.toString();
+            outputFile = new CSVFile(codeKey);
+
+            for(Map.Entry innerKey : this.map.get(outerKey).entrySet()) {
+                CopyOnWriteArrayList<String> row = new CopyOnWriteArrayList<>();
+                StringBuilder sb2 = new StringBuilder();
+                sb2.append(innerKey);
+                String date = sb2.toString();
+                sb2 = new StringBuilder();
+                sb2.append(this.map.get(outerKey).get(innerKey));
+                String clicks = sb2.toString();
+                row.add(date);
+                row.add(clicks);
+                outputFile.addRow(row);
+            }
+            return outputFile;
+
+            //Should I break here? I.e. only does one element at a time?
+            //Will this essentially block every single thread other than one from doing this bc it is
+            //a concurrent hashmap?
+        }
+
+         */
     }
 }

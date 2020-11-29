@@ -59,7 +59,10 @@ public class HashMapProducer implements Runnable {
 
   public CSVFile getMapElement() throws InterruptedException {
     CSVFile outputFile = null;
-    for(Map.Entry outerKey : this.map.entrySet()) {
+
+    System.out.println("The size of the map is now: " + map.size());
+
+    for(String outerKey : this.map.keySet()) {
 
       ConcurrentHashMap<String, Integer> innerMap = this.map.remove(outerKey);
       //ConcurrentHashMap<String, Integer> innerMap = this.map.get(outerKey);
@@ -69,13 +72,13 @@ public class HashMapProducer implements Runnable {
       String codeKey = sb1.toString();
       outputFile = new CSVFile(codeKey);
 
-      for(Map.Entry innerKey : this.map.get(outerKey).entrySet()) {
+      for(String innerKey : innerMap.keySet()) {
         CopyOnWriteArrayList<String> row = new CopyOnWriteArrayList<>();
         StringBuilder sb2 = new StringBuilder();
         sb2.append(innerKey);
         String date = sb2.toString();
         sb2 = new StringBuilder();
-        sb2.append(this.map.get(outerKey).get(innerKey));
+        sb2.append(innerMap.get(innerKey));
         String clicks = sb2.toString();
         row.add(date);
         row.add(clicks);
