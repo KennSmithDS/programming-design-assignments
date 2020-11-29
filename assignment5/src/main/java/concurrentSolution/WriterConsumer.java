@@ -18,10 +18,10 @@ public class WriterConsumer implements Runnable {
   private BlockingQueue<CSVFile> queue;
   private String outputDir;
   private static final String[] OUTPUT_HEADER = {"date", "total_clicks"};
-  private final ConcurrentHashMap<String, Integer> POISON;
+  private final CSVFile POISON;
 
   public WriterConsumer(String outputDir, BlockingQueue<CSVFile> queue,
-      ConcurrentHashMap<String, Integer> poison) throws NoSuchDirectoryException {
+      CSVFile poison) throws NoSuchDirectoryException {
     //Check if the output directory exists, if not, throw NoSuchDirectoryException
     if (!(new File(outputDir).exists())) {
       throw new NoSuchDirectoryException("The specified directory does not exist. "
@@ -64,6 +64,20 @@ public class WriterConsumer implements Runnable {
 
   @Override
   public void run() {
+
+    CSVFile outputFile = null;
+    try {
+      outputFile = queue.take();
+    } catch (InterruptedException e) {
+      e.printStackTrace();
+    }
+    while (outputFile != this.POISON) {
+      try {
+        writeFile(outputFile);
+      } catch (IOException e) {
+        e.printStackTrace();
+      }
+    }
 
   }
 }
