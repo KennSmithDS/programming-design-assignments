@@ -16,12 +16,13 @@ public class SequentialDriver {
      * @throws IOException default IOException error
      * @throws NoSuchDirectoryException custom NoSuchDirectoryException error
      */
-    public static void main(String[] args) throws IOException, NoSuchDirectoryException {
-        //String inputFilePath = "/Users/isidoraconic/Desktop/kendall_sample_files"; //= args[0];
-        //String outputDir = "/Users/isidoraconic/Desktop/a5_output_files/";
+    public static void main(String[] args) throws IOException, NoSuchDirectoryException, NullCommandLineArgument {
+        if (args.length < 1) {
+            throw new NullCommandLineArgument("The command line argument was null/empty. Please provide a valid folder path to CSV data.");
+        }
         String inputFilePath = args[0];
         String outputDir = args[0];
-        CSVReader reader = new CSVReader(inputFilePath, "test");
+        CSVReader reader = new CSVReader(inputFilePath, "test"); // need to set to "prod" before submission!!!
         CSVWriter writer = new CSVWriter(outputDir);
         writer.writeFiles(reader);
     }

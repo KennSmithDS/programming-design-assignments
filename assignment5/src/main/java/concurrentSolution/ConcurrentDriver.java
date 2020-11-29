@@ -1,8 +1,8 @@
 package concurrentSolution;
 
-import java.util.Map;
 import java.util.concurrent.CopyOnWriteArrayList;
 import sequentialSolution.NoSuchDirectoryException;
+import sequentialSolution.NullCommandLineArgument;
 
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.ConcurrentHashMap;
@@ -28,37 +28,56 @@ public class ConcurrentDriver {
      * @throws NoSuchDirectoryException custom exception error when no directory found
      * @throws InterruptedException default InterruptedException error for Threads
      */
-    public static void main(String[] args) throws NoSuchDirectoryException, InterruptedException {
-        String cliPath = args[0];
-        //String outputDir = "/Users/isidoraconic/Desktop/a5_output_files/";
-        //String cliPath = "/Users/isidoraconic/Desktop/kendall_sample_files"; //= args[0];
-        //String outputDir = "/Users/isidoraconic/Desktop/a5_output_files/";
+    public static void main(String[] args) throws NoSuchDirectoryException, InterruptedException, NullCommandLineArgument {
+        if (args.length < 1) {
+            throw new NullCommandLineArgument("The command line argument was null/empty. Please provide a valid folder path to CSV data.");
+        } else if (args.length == 1) {
+            String cliPath = args[0];
+            ConcurrentHashMap<String, ConcurrentHashMap<String, Integer>> aggStudentData = readStudentData(cliPath);
+            writeMultipleFiles(cliPath, aggStudentData);
+        } else {
+            String cliPath = args[0];
+            Integer threshold = Integer.parseInt(args[1]); // need to check data type or throw error
+            ConcurrentHashMap<String, ConcurrentHashMap<String, Integer>> aggStudentData = readStudentData(cliPath);
+            writeSingleThresholdFile(cliPath, threshold, aggStudentData);
+        }
+    }
 
+    public static ConcurrentHashMap<String, ConcurrentHashMap<String, Integer>> readStudentData(String path) throws NoSuchDirectoryException, InterruptedException {
         BlockingQueue<InboundCSVRow> readerQueue = new LinkedBlockingQueue<InboundCSVRow>(QUEUE_BOUND);
-        BlockingQueue<CSVFile> writerQueue = new LinkedBlockingQueue<CSVFile>(QUEUE_BOUND);
         ConcurrentHashMap<String, ConcurrentHashMap<String, Integer>> aggStudentData = new ConcurrentHashMap<String, ConcurrentHashMap<String, Integer>>();
 
         // reader threads go here
-        new Thread(new CSVReaderProducer(cliPath, "test", readerQueue, readerPoison, N_CONSUMERS)).start();
+        new Thread(new CSVReaderProducer(path, "test", readerQueue, readerPoison, N_CONSUMERS)).start();
         for (int i = 0; i < N_CONSUMERS; i++) {
             new Thread(new ClickAggregatorConsumer(readerQueue, aggStudentData, readerPoison)).start();
         }
 
-        Thread.sleep(10000);
+        // sleep between CSV reader and writer Thread workflows
+        Thread.sleep(1000);
+        return aggStudentData;
+    }
+
+    public static void writeMultipleFiles(String path, ConcurrentHashMap<String, ConcurrentHashMap<String, Integer>> studentData) throws NoSuchDirectoryException {
+        BlockingQueue<CSVFile> writerQueue = new LinkedBlockingQueue<CSVFile>(QUEUE_BOUND);
 
         //List of keys for the writer producer and consumer to use
-        CopyOnWriteArrayList<String> keyList = new CopyOnWriteArrayList<>();
-        for(String key : aggStudentData.keySet()) {
-            keyList.add(key);
-        }
+        CopyOnWriteArrayList<String> keyList = new CopyOnWriteArrayList<>(studentData.keySet());
+//        for(String key : studentData.keySet()) {
+//            keyList.add(key);
+//        }
 
         //Writer threads go here
         for(int i = 0; i < N_PRODUCERS; i++) {
-            new Thread(new HashMapProducer(writerQueue, writerPoison, aggStudentData, N_CONSUMERS, keyList)).start();
+            new Thread(new HashMapProducer(writerQueue, writerPoison, studentData, N_CONSUMERS, keyList)).start();
         }
 
         for(int j = 0; j < N_CONSUMERS; j++) {
-            new Thread(new WriterConsumer(cliPath, writerQueue, writerPoison)).start();
+            new Thread(new WriterConsumer(path, writerQueue, writerPoison)).start();
         }
+    }
+
+    public static void writeSingleThresholdFile(String path, Integer threshold, ConcurrentHashMap<String, ConcurrentHashMap<String, Integer>> studentData) {
+
     }
 }

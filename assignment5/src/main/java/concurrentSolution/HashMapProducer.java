@@ -77,7 +77,7 @@ public class HashMapProducer implements Runnable {
         System.out.println(Thread.currentThread().getName() + " just added CSVFile = " + fileInfo.getName() + " to the BlockingQueue.");
       }
     } catch (InterruptedException e) {
-      Thread.currentThread().interrupt();
+        Thread.currentThread().interrupt();
     } finally {
       while(true) {
         try {

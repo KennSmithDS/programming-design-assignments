@@ -89,7 +89,7 @@ public class WriterConsumer implements Runnable {
         writeFile(outputFile);
       }
     } catch (InterruptedException | IOException interruptedException) {
-      Thread.currentThread().interrupt();
+        Thread.currentThread().interrupt();
     }
   }
 
