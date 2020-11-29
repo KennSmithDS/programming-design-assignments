@@ -51,7 +51,8 @@ public class CSVWriter {
 
     for (String fileName : info.keySet()) {
       try {
-        fileWriter = new FileWriter(this.outputDir + fileName + ".csv");
+//        fileWriter = new FileWriter(this.outputDir + fileName + ".csv");
+        fileWriter = new FileWriter(this.outputDir + "/" + fileName + ".csv");
         bufferedWriter = new BufferedWriter(fileWriter);
         csvPrinter = new CSVPrinter(bufferedWriter, CSVFormat.DEFAULT.withHeader(OUTPUT_HEADER));
         for (String date : info.get(fileName).keySet()) {

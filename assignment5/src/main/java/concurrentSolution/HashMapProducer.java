@@ -99,8 +99,8 @@ public class HashMapProducer implements Runnable {
       CSVFile fileInfo;
       while(!map.isEmpty()) {
         fileInfo = getMapElement();
-        queue.add(fileInfo);
-        System.out.println("Just added CSVFile = " + fileInfo.getName() + " to the BlockingQueue.");
+        queue.put(fileInfo);
+        System.out.println(Thread.currentThread().getName() + " just added CSVFile = " + fileInfo.getName() + " to the BlockingQueue.");
       }
     } catch (InterruptedException e) {
       Thread.currentThread().interrupt();
@@ -108,7 +108,7 @@ public class HashMapProducer implements Runnable {
       while(true) {
         try {
           for (int i=0; i < this.N_POISON_PER_PRODUCER; i++) {
-            System.out.println("Adding poison pill to queue in WriterProducer!");
+            System.out.println(Thread.currentThread().getName() + " adding poison pill to queue in WriterProducer!");
             queue.put(this.POISON);
           }
           break;

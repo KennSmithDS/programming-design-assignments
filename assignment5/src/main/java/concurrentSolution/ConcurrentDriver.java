@@ -29,33 +29,54 @@ public class ConcurrentDriver {
      * @throws InterruptedException default InterruptedException error for Threads
      */
     public static void main(String[] args) throws NoSuchDirectoryException, InterruptedException {
-        String cliPath = "/Users/isidoraconic/Desktop/kendall_sample_files"; //= args[0];
-        String outputDir = "/Users/isidoraconic/Desktop/a5_output_files/";
+//        String cliPath = "/Users/isidoraconic/Desktop/kendall_sample_files"; //= args[0];
+//        String outputDir = "/Users/isidoraconic/Desktop/a5_output_files/";
+        String cliPath = args[0];
+        String outputDir = cliPath + "/";
 
         BlockingQueue<InboundCSVRow> readerQueue = new LinkedBlockingQueue<InboundCSVRow>(QUEUE_BOUND);
-        BlockingQueue<CSVFile> writerQueue = new LinkedBlockingQueue<CSVFile>(QUEUE_BOUND);
+        BlockingQueue<CSVFile> writerQueue = new LinkedBlockingQueue<CSVFile>();
         ConcurrentHashMap<String, ConcurrentHashMap<String, Integer>> aggStudentData = new ConcurrentHashMap<String, ConcurrentHashMap<String, Integer>>();
 
         // reader threads go here
         new Thread(new CSVReaderProducer(cliPath, "test", readerQueue, readerPoison, N_CONSUMERS)).start();
-        for (int i = 0; i < N_CONSUMERS; i++) {
-            new Thread(new ClickAggregatorConsumer(readerQueue, aggStudentData, readerPoison)).start();
-        }
+//        for (int i = 0; i < N_CONSUMERS; i++) {
+//            new Thread(new ClickAggregatorConsumer(readerQueue, aggStudentData, readerPoison)).start();
+//        }
+        Thread readConsumer1 = new Thread(new ClickAggregatorConsumer(readerQueue, aggStudentData, readerPoison));
+        readConsumer1.start();
+        Thread readConsumer2 =new Thread(new ClickAggregatorConsumer(readerQueue, aggStudentData, readerPoison));
+        readConsumer2.start();
 
-
-        Thread.sleep(10000);
+//        Thread.sleep(10000);
         System.out.println();
         System.out.println("The size of the hashmap is: " + aggStudentData.size());
         System.out.println();
 
-        // writer threads go here
-        for(int i = 0; i < N_PRODUCERS; i++) {
-            new Thread(new HashMapProducer(writerQueue, writerPoison, aggStudentData, N_CONSUMERS)).start();
-        }
+        readConsumer1.join();
+        readConsumer2.join();
 
-        for(int j = 0; j < N_CONSUMERS; j++) {
-            new Thread(new WriterConsumer(outputDir, writerQueue, writerPoison)).start();
-        }
+        // writer threads go here
+        Thread writeProducer1 = new Thread(new HashMapProducer(writerQueue, writerPoison, aggStudentData, N_POISON_PER_PRODUCER));
+        writeProducer1.start();
+        Thread writeProducer2 = new Thread(new HashMapProducer(writerQueue, writerPoison, aggStudentData, N_POISON_PER_PRODUCER));
+        writeProducer2.start();
+
+        writeProducer1.join();
+        writeProducer2.join();
+
+        Thread writeConsumer1 = new Thread(new WriterConsumer(outputDir, writerQueue, writerPoison));
+        writeConsumer1.start();
+        Thread writeConsumer2 = new Thread(new WriterConsumer(outputDir, writerQueue, writerPoison));
+        writeConsumer2.start();
+
+//        for(int i = 0; i < N_PRODUCERS; i++) {
+//            new Thread(new HashMapProducer(writerQueue, writerPoison, aggStudentData, N_POISON_PER_PRODUCER)).start();
+//        }
+//
+//        for(int j = 0; j < N_CONSUMERS; j++) {
+//            new Thread(new WriterConsumer(outputDir, writerQueue, writerPoison)).start();
+//        }
 
 
         /*
