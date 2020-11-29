@@ -2,17 +2,20 @@ package concurrentSolution;
 
 import java.io.BufferedWriter;
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.FileWriter;
 import java.io.IOException;
-import java.util.concurrent.BlockingDeque;
+import java.util.Objects;
 import java.util.concurrent.BlockingQueue;
-import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CopyOnWriteArrayList;
 import org.apache.commons.csv.CSVFormat;
 import org.apache.commons.csv.CSVPrinter;
 import sequentialSolution.NoSuchDirectoryException;
 
+/**\
+ * Class to represent the consumers that will write the output files
+ * The consumer takes a CSVFile object from the queue that was enqueued by the HashMapProducer class
+ * instances (producers), and writes that .csv file to the specified output directory
+ */
 public class WriterConsumer implements Runnable {
 
   private BlockingQueue<CSVFile> queue;
@@ -20,6 +23,13 @@ public class WriterConsumer implements Runnable {
   private static final String[] OUTPUT_HEADER = {"date", "total_clicks"};
   private final CSVFile POISON;
 
+  /**
+   * Constructor for the WriterConsumer class
+   * @param outputDir output directory to store all the .csv files in
+   * @param queue BlockingQueue from Driver that the CSVFile objects are stored in
+   * @param poison CSVFile poison pill that will kill each consumer thread
+   * @throws NoSuchDirectoryException
+   */
   public WriterConsumer(String outputDir, BlockingQueue<CSVFile> queue,
                         CSVFile poison) throws NoSuchDirectoryException {
     //Check if the output directory exists, if not, throw NoSuchDirectoryException
@@ -33,6 +43,11 @@ public class WriterConsumer implements Runnable {
     this.POISON = poison;
   }
 
+  /**
+   * Method that takes in a CSVFile object and writes a csv. file using the information stored in it
+   * @param fileContent CSVFile object to write to a csv. file
+   * @throws IOException
+   */
   public void writeFile(CSVFile fileContent) throws IOException {
 
     FileWriter fileWriter;
@@ -60,7 +75,11 @@ public class WriterConsumer implements Runnable {
     }
   }
 
-
+  /**
+   * Override of Runnable.run() method to take each CSVFile object from the BlockingQueue
+   * We call the writeFile method here as long as the queue has (valid) CSVFile objects
+   * When the Thread finds a poison pill, it will terminate
+   */
   @Override
   public void run() {
     try {
@@ -72,5 +91,46 @@ public class WriterConsumer implements Runnable {
     } catch (InterruptedException | IOException interruptedException) {
       Thread.currentThread().interrupt();
     }
+  }
+
+  /**
+   * Override of default equals() method
+   * @param o object
+   * @return boolean
+   */
+  @Override
+  public boolean equals(Object o) {
+    if (this == o) {
+      return true;
+    }
+    if (!(o instanceof WriterConsumer)) {
+      return false;
+    }
+    WriterConsumer that = (WriterConsumer) o;
+    return queue.equals(that.queue) &&
+        outputDir.equals(that.outputDir) &&
+        POISON.equals(that.POISON);
+  }
+
+  /**
+   * Override of default hashCode() method
+   * @return int
+   */
+  @Override
+  public int hashCode() {
+    return Objects.hash(queue, outputDir, POISON);
+  }
+
+  /**
+   * Override of default toString() method
+   * @return String
+   */
+  @Override
+  public String toString() {
+    return "WriterConsumer{" +
+        "queue=" + queue +
+        ", outputDir='" + outputDir + '\'' +
+        ", POISON=" + POISON +
+        '}';
   }
 }
