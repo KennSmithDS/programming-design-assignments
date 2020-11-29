@@ -1,28 +1,49 @@
 package concurrentSolution;
 
+import java.util.Objects;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CopyOnWriteArrayList;
 
+/**
+ * Class to represent the HashMapProducer
+ * This producer (thread) will read from the HashMap of information (information parsed from the
+ * studentVle.csv file) and create a CSVFile object for each one of the outer HashMap entries
+ * These CSVFile objects will be passed to the consumers which will write the .csv files
+ */
 public class HashMapProducer implements Runnable {
 
-  private BlockingQueue<CSVFile> queue; //= new LinkedBlockingQueue<>();
+  private BlockingQueue<CSVFile> queue;
   private ConcurrentHashMap<String, ConcurrentHashMap<String, Integer>> map;
   private CopyOnWriteArrayList<String> keyList;
   private final CSVFile POISON;
   private final int N_POISON_PER_PRODUCER;
 
+  /**
+   * Constructor for the HashMapProducer
+   * Note that the key list is a thread safe ArrayList of all the keys in the HashMap
+   * @param queue BlockingQueue from Driver that the CSVFile objects will be stored in
+   * @param poison CSVFile poison pill that will kill each consumer thread
+   * @param map thread safe HashMap containing all the parsed info from studentVle.csv
+   * @param N_POISON_PER_PRODUCER number of poison pills per producer
+   * @param keyList list of keys from the map (HashMap of studentVle.csv info)
+   */
   public HashMapProducer(BlockingQueue<CSVFile> queue,
-      CSVFile poisonPill, ConcurrentHashMap<String, ConcurrentHashMap<String, Integer>> map,
+      CSVFile poison, ConcurrentHashMap<String, ConcurrentHashMap<String, Integer>> map,
       int N_POISON_PER_PRODUCER, CopyOnWriteArrayList<String> keyList) {
     this.queue = queue;
-    this.POISON = poisonPill;
+    this.POISON = poison;
     this.map = map;
     this.N_POISON_PER_PRODUCER = N_POISON_PER_PRODUCER;
     this.keyList = keyList;
   }
 
-
+  /**
+   * Method that takes the top element in the list of keys, and then extracts those nested
+   * HashMaps from the HashMap containg the parsed studentVle.csv info
+   * @return CSVFile object with all the information from those nested HashMaps
+   * @throws InterruptedException
+   */
   public synchronized CSVFile getMapElement() throws InterruptedException {
     String key = keyList.remove(0);
     ConcurrentHashMap<String, Integer> innerMap = this.map.remove(key);
@@ -41,6 +62,11 @@ public class HashMapProducer implements Runnable {
 
   }
 
+  /**
+   * Override of Runnable.run() method to take each key and alll nested HashMaps, creates the CSVFile
+   * objects for each one, and puts them into the blocking queue for the consumers
+   * At the end when there is nothing else to read, it stashes a poison pill for each consumer
+   */
   @Override
   public void run() {
     try {
@@ -63,25 +89,53 @@ public class HashMapProducer implements Runnable {
         } catch (InterruptedException e) {
           e.printStackTrace();
         }
-        //break;
       }
     }
   }
 
-  public static void main(String[] args) {
-    ConcurrentHashMap<String, ConcurrentHashMap<String, Integer>> map = new ConcurrentHashMap<>();
-    ConcurrentHashMap<String, Integer> a = new ConcurrentHashMap<>();
-    ConcurrentHashMap<String, Integer> c = new ConcurrentHashMap<>();
-    ConcurrentHashMap<String, Integer> f = new ConcurrentHashMap<>();
-    map.put("AAA_2014J.csv", a);
-    map.put("CCC_2014J.csv", c);
-    map.put("FFF_2014J.csv", f);
-    a.put("95", 2);
-    c.put("239", 5);
-    c.put("240", 1);
-    f.put("227", 11);
-    f.put("90", 19);
+  /**
+   * Override of default equals() method
+   * @param o object
+   * @return boolean
+   */
+  @Override
+  public boolean equals(Object o) {
+    if (this == o) {
+      return true;
+    }
+    if (!(o instanceof HashMapProducer)) {
+      return false;
+    }
+    HashMapProducer that = (HashMapProducer) o;
+    return N_POISON_PER_PRODUCER == that.N_POISON_PER_PRODUCER &&
+        queue.equals(that.queue) &&
+        map.equals(that.map) &&
+        keyList.equals(that.keyList) &&
+        POISON.equals(that.POISON);
   }
 
+  /**
+   * Override of default hashCode() method
+   * @return int
+   */
+  @Override
+  public int hashCode() {
+    return Objects.hash(queue, map, keyList, POISON, N_POISON_PER_PRODUCER);
+  }
+
+  /**
+   * Override of default toString() method
+   * @return String
+   */
+  @Override
+  public String toString() {
+    return "HashMapProducer{" +
+        "queue=" + queue +
+        ", map=" + map +
+        ", keyList=" + keyList +
+        ", POISON=" + POISON +
+        ", N_POISON_PER_PRODUCER=" + N_POISON_PER_PRODUCER +
+        '}';
+  }
 
 }
