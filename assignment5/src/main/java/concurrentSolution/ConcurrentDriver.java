@@ -30,7 +30,7 @@ public class ConcurrentDriver {
         String cliPath = args[0];
 
         BlockingQueue<InboundCSVRow> readerQueue = new LinkedBlockingQueue<InboundCSVRow>(QUEUE_BOUND);
-        BlockingQueue<ConcurrentHashMap<String, Integer>> writerQueue = new LinkedBlockingQueue<ConcurrentHashMap<String, Integer>>(QUEUE_BOUND);
+        BlockingQueue<CSVFile> writerQueue = new LinkedBlockingQueue<CSVFile>(QUEUE_BOUND);
         ConcurrentHashMap<String, ConcurrentHashMap<String, Integer>> aggStudentData = new ConcurrentHashMap<String, ConcurrentHashMap<String, Integer>>();
 
         // reader threads go here
