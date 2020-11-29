@@ -17,9 +17,10 @@ public class SequentialDriver {
      * @throws NoSuchDirectoryException custom NoSuchDirectoryException error
      */
     public static void main(String[] args) throws IOException, NoSuchDirectoryException {
-        String folderPath = args[0];
-        CSVReader reader = new CSVReader(folderPath, "prod");
-        CSVWriter writer = new CSVWriter(folderPath);
+        String inputFilePath = "/Users/isidoraconic/Desktop/kendall_sample_files"; //= args[0];
+        String outputDir = "/Users/isidoraconic/Desktop/a5_output_files/";
+        CSVReader reader = new CSVReader(inputFilePath, "test");
+        CSVWriter writer = new CSVWriter(outputDir);
         writer.writeFiles(reader);
     }
 }
