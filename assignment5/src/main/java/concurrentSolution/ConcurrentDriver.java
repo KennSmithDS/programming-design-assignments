@@ -30,7 +30,7 @@ public class ConcurrentDriver {
      */
     public static void main(String[] args) throws NoSuchDirectoryException, InterruptedException {
         String cliPath = args[0];
-        String outputDir = "/Users/isidoraconic/Desktop/a5_output_files/";
+        //String outputDir = "/Users/isidoraconic/Desktop/a5_output_files/";
         //String cliPath = "/Users/isidoraconic/Desktop/kendall_sample_files"; //= args[0];
         //String outputDir = "/Users/isidoraconic/Desktop/a5_output_files/";
 
@@ -58,7 +58,7 @@ public class ConcurrentDriver {
         }
 
         for(int j = 0; j < N_CONSUMERS; j++) {
-            new Thread(new WriterConsumer(outputDir, writerQueue, writerPoison)).start();
+            new Thread(new WriterConsumer(cliPath, writerQueue, writerPoison)).start();
         }
     }
 }
