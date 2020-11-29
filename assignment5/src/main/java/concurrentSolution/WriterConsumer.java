@@ -21,11 +21,11 @@ public class WriterConsumer implements Runnable {
   private final CSVFile POISON;
 
   public WriterConsumer(String outputDir, BlockingQueue<CSVFile> queue,
-      CSVFile poison) throws NoSuchDirectoryException {
+                        CSVFile poison) throws NoSuchDirectoryException {
     //Check if the output directory exists, if not, throw NoSuchDirectoryException
     if (!(new File(outputDir).exists())) {
       throw new NoSuchDirectoryException("The specified directory does not exist. "
-          + "Please enter an existing directory.");
+              + "Please enter an existing directory.");
     } else {
       this.outputDir = outputDir;
     }
@@ -40,7 +40,7 @@ public class WriterConsumer implements Runnable {
     CSVPrinter csvPrinter;
 
     try {
-      fileWriter = new FileWriter(this.outputDir + fileContent.getName());
+      fileWriter = new FileWriter(this.outputDir + "/" + fileContent.getName());
       bufferedWriter = new BufferedWriter(fileWriter);
       csvPrinter = new CSVPrinter(bufferedWriter, CSVFormat.DEFAULT.withHeader(OUTPUT_HEADER));
 
@@ -48,12 +48,11 @@ public class WriterConsumer implements Runnable {
         csvPrinter.printRecord(row.get(0), row.get(1));
       }
 
-    } catch (FileNotFoundException e) {
-      e.printStackTrace();
     } catch (IOException e) {
       e.printStackTrace();
     } finally {
       try {
+        assert bufferedWriter != null;
         bufferedWriter.close();
       } catch (IOException e) {
         e.printStackTrace();
@@ -64,20 +63,14 @@ public class WriterConsumer implements Runnable {
 
   @Override
   public void run() {
-
-    CSVFile outputFile = null;
     try {
-      outputFile = queue.take();
-    } catch (InterruptedException e) {
-      e.printStackTrace();
-    }
-    while (outputFile != this.POISON) {
-      try {
+      CSVFile outputFile;
+      while (!(outputFile = queue.take()).equals(POISON)) {
+        System.out.println(Thread.currentThread().getName() + " taking " + outputFile.getName() + " from BlockingQueue");
         writeFile(outputFile);
-      } catch (IOException e) {
-        e.printStackTrace();
       }
+    } catch (InterruptedException | IOException interruptedException) {
+      Thread.currentThread().interrupt();
     }
-
   }
 }

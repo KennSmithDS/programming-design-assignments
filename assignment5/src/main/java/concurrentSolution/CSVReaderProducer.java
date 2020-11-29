@@ -115,7 +115,7 @@ public class CSVReaderProducer implements Runnable {
             while (true) {
                 try {
                     for (int i=0; i < this.N_POISON_PER_PRODUCER; i++) {
-                        System.out.println("Adding poison pill to queue");
+                        System.out.println(Thread.currentThread().getName() + " adding poison pill to BlockingQueue");
                         queue.put(this.poison);
                     }
                     break;
