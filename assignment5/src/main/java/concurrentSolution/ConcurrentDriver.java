@@ -29,84 +29,36 @@ public class ConcurrentDriver {
      * @throws InterruptedException default InterruptedException error for Threads
      */
     public static void main(String[] args) throws NoSuchDirectoryException, InterruptedException {
-//        String cliPath = "/Users/isidoraconic/Desktop/kendall_sample_files"; //= args[0];
-//        String outputDir = "/Users/isidoraconic/Desktop/a5_output_files/";
         String cliPath = args[0];
-        String outputDir = cliPath + "/";
+        String outputDir = "/Users/isidoraconic/Desktop/a5_output_files/";
+        //String cliPath = "/Users/isidoraconic/Desktop/kendall_sample_files"; //= args[0];
+        //String outputDir = "/Users/isidoraconic/Desktop/a5_output_files/";
 
         BlockingQueue<InboundCSVRow> readerQueue = new LinkedBlockingQueue<InboundCSVRow>(QUEUE_BOUND);
-        BlockingQueue<CSVFile> writerQueue = new LinkedBlockingQueue<CSVFile>();
+        BlockingQueue<CSVFile> writerQueue = new LinkedBlockingQueue<CSVFile>(QUEUE_BOUND);
         ConcurrentHashMap<String, ConcurrentHashMap<String, Integer>> aggStudentData = new ConcurrentHashMap<String, ConcurrentHashMap<String, Integer>>();
 
         // reader threads go here
         new Thread(new CSVReaderProducer(cliPath, "test", readerQueue, readerPoison, N_CONSUMERS)).start();
-//        for (int i = 0; i < N_CONSUMERS; i++) {
-//            new Thread(new ClickAggregatorConsumer(readerQueue, aggStudentData, readerPoison)).start();
-//        }
-        Thread readConsumer1 = new Thread(new ClickAggregatorConsumer(readerQueue, aggStudentData, readerPoison));
-        readConsumer1.start();
-        Thread readConsumer2 =new Thread(new ClickAggregatorConsumer(readerQueue, aggStudentData, readerPoison));
-        readConsumer2.start();
-
-//        Thread.sleep(10000);
-        System.out.println();
-        System.out.println("The size of the hashmap is: " + aggStudentData.size());
-        System.out.println();
-
-        readConsumer1.join();
-        readConsumer2.join();
-
-        // writer threads go here
-        Thread writeProducer1 = new Thread(new HashMapProducer(writerQueue, writerPoison, aggStudentData, N_POISON_PER_PRODUCER));
-        writeProducer1.start();
-        Thread writeProducer2 = new Thread(new HashMapProducer(writerQueue, writerPoison, aggStudentData, N_POISON_PER_PRODUCER));
-        writeProducer2.start();
-
-        writeProducer1.join();
-        writeProducer2.join();
-
-        Thread writeConsumer1 = new Thread(new WriterConsumer(outputDir, writerQueue, writerPoison));
-        writeConsumer1.start();
-        Thread writeConsumer2 = new Thread(new WriterConsumer(outputDir, writerQueue, writerPoison));
-        writeConsumer2.start();
-
-//        for(int i = 0; i < N_PRODUCERS; i++) {
-//            new Thread(new HashMapProducer(writerQueue, writerPoison, aggStudentData, N_POISON_PER_PRODUCER)).start();
-//        }
-//
-//        for(int j = 0; j < N_CONSUMERS; j++) {
-//            new Thread(new WriterConsumer(outputDir, writerQueue, writerPoison)).start();
-//        }
-
-
-        /*
-
-        for(Map.Entry outerKey : aggStudentData.entrySet()) {
-
-            StringBuilder sb1 = new StringBuilder();
-            sb1.append(outerKey);
-            String codeKey = sb1.toString();
-            outputFile = new CSVFile(codeKey);
-
-            for(Map.Entry innerKey : this.map.get(outerKey).entrySet()) {
-                CopyOnWriteArrayList<String> row = new CopyOnWriteArrayList<>();
-                StringBuilder sb2 = new StringBuilder();
-                sb2.append(innerKey);
-                String date = sb2.toString();
-                sb2 = new StringBuilder();
-                sb2.append(this.map.get(outerKey).get(innerKey));
-                String clicks = sb2.toString();
-                row.add(date);
-                row.add(clicks);
-                outputFile.addRow(row);
-            }
-            return outputFile;
-
-            //Should I break here? I.e. only does one element at a time?
-            //Will this essentially block every single thread other than one from doing this bc it is
-            //a concurrent hashmap?
+        for (int i = 0; i < N_CONSUMERS; i++) {
+            new Thread(new ClickAggregatorConsumer(readerQueue, aggStudentData, readerPoison)).start();
         }
 
-         */
+        Thread.sleep(10000);
+
+        //List of keys for the writer producer and consumer to use
+        CopyOnWriteArrayList<String> keyList = new CopyOnWriteArrayList<>();
+        for(String key : aggStudentData.keySet()) {
+            keyList.add(key);
+        }
+
+        // writer threads go here
+        for(int i = 0; i < N_PRODUCERS; i++) {
+            new Thread(new HashMapProducer(writerQueue, writerPoison, aggStudentData, N_CONSUMERS, keyList)).start();
+        }
+
+        for(int j = 0; j < N_CONSUMERS; j++) {
+            new Thread(new WriterConsumer(outputDir, writerQueue, writerPoison)).start();
+        }
     }
 }
