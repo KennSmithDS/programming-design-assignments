@@ -59,6 +59,10 @@ public class InboundCSVRow {
         return clicks;
     }
 
+    public void setCodeKey(String newCodeKey) {
+        this.codeKey = newCodeKey;
+    }
+
     /**
      * Method to override the default equals()
      * @param o object
