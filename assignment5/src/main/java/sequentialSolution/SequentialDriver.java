@@ -15,6 +15,7 @@ public class SequentialDriver {
      * @param args CLI arguments passed when program runs
      * @throws IOException default IOException error
      * @throws NoSuchDirectoryException custom NoSuchDirectoryException error
+     * @throws NullCommandLineArgument custom exception error when command line args is null
      */
     public static void main(String[] args) throws IOException, NoSuchDirectoryException, NullCommandLineArgument {
         if (args.length < 1) {

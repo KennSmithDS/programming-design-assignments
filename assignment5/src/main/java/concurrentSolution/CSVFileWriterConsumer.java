@@ -28,7 +28,7 @@ public class CSVFileWriterConsumer implements Runnable {
    * @param outputDir output directory to store all the .csv files in
    * @param queue BlockingQueue from Driver that the CSVFile objects are stored in
    * @param poison CSVFile poison pill that will kill each consumer thread
-   * @throws NoSuchDirectoryException
+   * @throws NoSuchDirectoryException custom exception when directory does not exist
    */
   public CSVFileWriterConsumer(String outputDir, BlockingQueue<CSVFile> queue,
                                CSVFile poison) throws NoSuchDirectoryException {
@@ -46,7 +46,7 @@ public class CSVFileWriterConsumer implements Runnable {
   /**
    * Method that takes in a CSVFile object and writes a csv. file using the information stored in it
    * @param fileContent CSVFile object to write to a csv. file
-   * @throws IOException
+   * @throws IOException default IOException error
    */
   public void writeFile(CSVFile fileContent) throws IOException {
 
