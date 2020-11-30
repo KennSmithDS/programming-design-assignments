@@ -35,6 +35,16 @@ public class CSVRow {
         this.codeKey = this.module + "_" + this.presentation;
     }
 
+    CSVRow(String codeKey, String date, Integer clicks) {
+        this.module = "";
+        this.presentation = "";
+        this.student = Integer.MIN_VALUE;
+        this.site = Integer.MIN_VALUE;
+        this.date = date;
+        this.clicks = clicks;
+        this.codeKey = codeKey;
+    }
+
     /**
      * Method to get the code key when building the ConcurrentHashMap
      * @return String concatenation of module and presentation codes
