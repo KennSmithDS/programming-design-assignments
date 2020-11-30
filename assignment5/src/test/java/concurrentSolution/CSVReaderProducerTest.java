@@ -1,5 +1,6 @@
 package concurrentSolution;
 
+import org.apache.commons.lang3.ThreadUtils;
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
@@ -53,6 +54,21 @@ public class CSVReaderProducerTest {
         int queueSize = this.testQueue.size();
         int testFileSize = this.testProducer1.getFileSize();
         Assert.assertEquals(testFileSize, queueSize);
+    }
+
+    @Test //(expected = InterruptedException.class)
+    public void runInterrupt() throws InterruptedException {
+        final Thread testThread = new Thread(this.testProducer1, "test-1");
+        testThread.start();
+        assertEquals(1, ThreadUtils.findThreadsByName("test-1").size());
+        testThread.interrupt();
+//        try {
+//            testThread.start();
+//            assertEquals(1, ThreadUtils.findThreadsByName("test-1").size());
+//        } finally {
+//            testThread.interrupt();
+//            testThread.join();
+//        }
     }
 
     @Test

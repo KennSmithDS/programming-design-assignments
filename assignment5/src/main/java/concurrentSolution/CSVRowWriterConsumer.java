@@ -37,8 +37,8 @@ public class CSVRowWriterConsumer implements Runnable {
 
   /**
    * Method that takes a CSVPrinter object from its field, and prints the passed CSVRow object to the file
-   * @param row
-   * @throws IOException
+   * @param row CSVRow object to write to file
+   * @throws IOException default IOException error
    */
   public void writeFile(CSVRow row) throws IOException {
     try {

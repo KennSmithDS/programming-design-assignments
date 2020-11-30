@@ -123,7 +123,11 @@ public class CSVReaderProducer implements Runnable {
                     }
                     break;
                 } catch (InterruptedException e) {
-                    e.printStackTrace();
+                    try {
+                        throw new InterruptedException(Thread.currentThread().getName() + " has been interrupted.");
+                    } catch (InterruptedException interruptedException) {
+                        interruptedException.printStackTrace();
+                    }
                 }
             }
         }

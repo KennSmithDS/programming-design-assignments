@@ -45,7 +45,7 @@ public class CSVRowProducerTest {
         this.testKeyList = new CopyOnWriteArrayList<>(testHashMap.keySet());
         this.testRowProducer1 = new CSVRowProducer(this.testQueue, this.POISON, this.testHashMap, N_POISON_PER_PRODUCER, testKeyList, TEST_THRESH);
         this.testRowProducer2 = new CSVRowProducer(this.testQueue, this.POISON, this.testHashMap, N_POISON_PER_PRODUCER, testKeyList, TEST_THRESH);
-        this.testRowProducer2 = new CSVRowProducer(this.testQueue, this.POISON, this.testHashMap, N_POISON_PER_PRODUCER, testKeyList, 0);
+        this.testRowProducer3 = new CSVRowProducer(this.testQueue, this.POISON, this.testHashMap, N_POISON_PER_PRODUCER, testKeyList, 0);
     }
 
     @Test
@@ -88,13 +88,10 @@ public class CSVRowProducerTest {
 
     @Test
     public void testToString() {
-//        String testToString = "CSVRowProducer{" +
-//                "queue=" + queue +
-//                ", map=" + map +
-//                ", keyList=" + keyList +
-//                ", threshold=" + threshold +
-//                ", POISON=" + POISON +
-//                ", N_POISON_PER_PRODUCER=" + N_POISON_PER_PRODUCER +
-//                '}';
+        System.out.println(this.testRowProducer1.toString());
+        String testToString = "CSVRowProducer{queue=[], map={BBB_2020={1=1}, AAA_2020={1=3}, DDD_2020={1=1}, EEE_2020={1=1}, CCC_2020={1=1}}, " +
+                "keyList=[BBB_2020, AAA_2020, DDD_2020, EEE_2020, CCC_2020], " + "" +
+                "threshold=3, POISON=CSVRow{module='', presentation='', student=-2147483648, site=-2147483648, date=, clicks=0, codeKey='poison'}, N_POISON_PER_PRODUCER=1}";
+        Assert.assertEquals(testToString, this.testRowProducer1.toString());
     }
 }

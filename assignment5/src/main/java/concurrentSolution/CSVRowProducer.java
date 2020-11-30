@@ -45,7 +45,7 @@ public class CSVRowProducer implements Runnable {
   /**
    * Method that takes one of the keys to access the nested HashMaps from map, and creates CSVRow
    * objects from the nested HashMaps, and then pushes them to the queue
-   * @throws InterruptedException
+   * @throws InterruptedException default InterruptedException for Thread interruption
    */
   public synchronized void getMapElement() throws InterruptedException {
     String key = keyList.remove(0);
