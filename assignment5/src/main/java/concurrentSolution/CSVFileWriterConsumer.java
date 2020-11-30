@@ -55,7 +55,7 @@ public class CSVFileWriterConsumer implements Runnable {
     CSVPrinter csvPrinter;
 
     try {
-      fileWriter = new FileWriter(this.outputDir + "/" + fileContent.getName());
+      fileWriter = new FileWriter(this.outputDir + "/" + fileContent.getName() + ".csv");
       bufferedWriter = new BufferedWriter(fileWriter);
       csvPrinter = new CSVPrinter(bufferedWriter, CSVFormat.DEFAULT.withHeader(OUTPUT_HEADER));
 
