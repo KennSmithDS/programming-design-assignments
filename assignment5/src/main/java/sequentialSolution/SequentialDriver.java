@@ -23,7 +23,7 @@ public class SequentialDriver {
         }
         String inputFilePath = args[0];
         String outputDir = args[0];
-        CSVReader reader = new CSVReader(inputFilePath, "test"); // need to set to "prod" before submission!!!
+        CSVReader reader = new CSVReader(inputFilePath, "prod"); // need to set to "prod" before submission!!!
         CSVWriter writer = new CSVWriter(outputDir);
         writer.writeFiles(reader);
     }

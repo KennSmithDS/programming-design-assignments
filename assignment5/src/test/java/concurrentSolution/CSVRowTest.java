@@ -1,5 +1,6 @@
 package concurrentSolution;
 
+import com.sun.tools.jdeprscan.CSV;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -11,12 +12,14 @@ public class CSVRowTest {
     private CSVRow testRow1;
     private CSVRow testRow2;
     private CSVRow testRow3;
+    private CSVRow outputRow;
 
     @Before
     public void setUp() throws Exception {
         this.testRow1 = new CSVRow("AAA", "1111", 1, 1, "1", 0);
         this.testRow2 = new CSVRow("AAA", "1111", 1, 1, "1", 0);
         this.testRow3 = new CSVRow("BBB", "1111", 1, 1, "1", 0);
+        this.outputRow = new CSVRow("AAA_1111", "1", 0);
     }
 
     @Test

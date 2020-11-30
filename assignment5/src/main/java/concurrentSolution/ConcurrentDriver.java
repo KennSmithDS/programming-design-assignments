@@ -66,7 +66,7 @@ public class ConcurrentDriver {
         ConcurrentHashMap<String, ConcurrentHashMap<String, Integer>> aggStudentData = new ConcurrentHashMap<String, ConcurrentHashMap<String, Integer>>();
 
         // reader threads go here
-        new Thread(new CSVReaderProducer(path, "test", readerQueue, readerPoison, N_CONSUMERS)).start();
+        new Thread(new CSVReaderProducer(path, "prod", readerQueue, readerPoison, N_CONSUMERS)).start();
         for (int i = 0; i < N_CONSUMERS; i++) {
             new Thread(new ClickAggregatorConsumer(readerQueue, aggStudentData, readerPoison)).start();
         }
