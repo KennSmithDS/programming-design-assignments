@@ -31,6 +31,7 @@ public class CSVReader {
     /**
      * Constructor method for sequentialSolution.CSVReader object
      * @param csvFolder String path to folder containing CSV files
+     * @param mode String mode switch for test or production of code
      * @throws NoSuchDirectoryException custom NoSuchDirectoryException error
      */
     public CSVReader(String csvFolder, String mode) throws NoSuchDirectoryException {

@@ -23,7 +23,7 @@ public class CSVWriter {
   /**
    * Constructor for CSVWriter
    * Checks if the output directory exists, and assigns it to the outputDir field if it does
-   * @param outputDir
+   * @param outputDir String output directory to write new CSV files to
    * @throws NoSuchDirectoryException if the passed directory does not exist
    */
   public CSVWriter(String outputDir) throws NoSuchDirectoryException {
@@ -41,7 +41,7 @@ public class CSVWriter {
    * in the CSVReader class, which contains all the (summed) clicks on a certain date.
    * The name of the file is in the format of "module_presentation.csv"
    * @param inputFile CSVReader object
-   * @throws IOException
+   * @throws IOException default IOException error
    */
   public void writeFiles(CSVReader inputFile) throws IOException {
     HashMap<String, HashMap<String, Integer>> info = inputFile.readCSVFile();

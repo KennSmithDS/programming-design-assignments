@@ -7,6 +7,7 @@ import java.util.ArrayList;
 import java.util.Objects;
 import java.util.StringTokenizer;
 import java.util.concurrent.BlockingQueue;
+import java.util.concurrent.atomic.AtomicInteger;
 
 /**
  * Class to represent a Producer that reads a CSV file of student click data
@@ -23,6 +24,7 @@ public class CSVReaderProducer implements Runnable {
     private final BlockingQueue<CSVRow> queue;
     private final CSVRow poison;
     private final int N_POISON_PER_PRODUCER;
+    private AtomicInteger fileSize;
 
     /**
      * Constructor method for the CSVReaderProducer class
@@ -47,20 +49,9 @@ public class CSVReaderProducer implements Runnable {
             this.queue = queue;
             this.poison = poison;
             this.N_POISON_PER_PRODUCER = N_POISON_PER_PRODUCER;
+            this.fileSize = new AtomicInteger(0);
         }
     }
-
-    /**
-     * Method to get the folder path passed as command line argument
-     * @return String folder path where CSV files are located
-     */
-    public String getFolderPath() { return this.folderPath; }
-
-    /**
-     * Method to get the full concatenated string file path
-     * @return String full path to CSV file for reading
-     */
-    public String getFilePath() { return this.csvFile; }
 
     /**
      * Parses the input line from BufferedReader into a StringTokenizer which is stored in an ArrayList
@@ -95,6 +86,18 @@ public class CSVReaderProducer implements Runnable {
     }
 
     /**
+     * Method to get the size of the CSV file in row count
+     * @return int of the file size
+     */
+    public int getFileSize() { return this.fileSize.get(); }
+
+    /**
+     * Method to get the full string file path of the CSV
+     * @return String of the file path in folder
+     */
+    public String getCsvFile() { return this.csvFile; }
+
+    /**
      * Override of Runnable.run() method to take each line from CSV file and pass to BlockingQueue
      * At the end when there is nothing else to read, it stashes a poison pill for each consumer
      */
@@ -106,6 +109,7 @@ public class CSVReaderProducer implements Runnable {
             while ((newLine = reader.readLine()) != null) {
                 System.out.println("Parsing row: " + newLine);
                 queue.put(parseCSVRow(newLine));
+                this.fileSize.getAndIncrement();
             }
         } catch (IOException | InterruptedException e) {
             Thread.currentThread().interrupt();
@@ -115,6 +119,7 @@ public class CSVReaderProducer implements Runnable {
                     for (int i=0; i < this.N_POISON_PER_PRODUCER; i++) {
                         System.out.println(Thread.currentThread().getName() + " adding poison pill to BlockingQueue");
                         queue.put(this.poison);
+                        this.fileSize.getAndIncrement();
                     }
                     break;
                 } catch (InterruptedException e) {

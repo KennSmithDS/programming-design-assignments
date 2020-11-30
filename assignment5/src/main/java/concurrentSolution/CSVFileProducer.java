@@ -42,7 +42,7 @@ public class CSVFileProducer implements Runnable {
    * Method that takes the top element in the list of keys, and then extracts those nested
    * HashMaps from the HashMap containing the parsed studentVle.csv info
    * @return CSVFile object with all the information from those nested HashMaps
-   * @throws InterruptedException
+   * @throws InterruptedException default InterruptedException error for Thread interruption
    */
   public synchronized CSVFile getMapElement() throws InterruptedException {
     String key = keyList.remove(0);

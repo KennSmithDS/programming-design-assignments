@@ -36,6 +36,8 @@ public class ConcurrentDriver {
      * @param args String array of arguments passed in command line
      * @throws NoSuchDirectoryException custom exception error when no directory found
      * @throws InterruptedException default InterruptedException error for Threads
+     * @throws NullCommandLineArgument custom exception error when the command line args are null
+     * @throws InvalidThresholdValue custom exception error when the threshold value is not numeric
      */
     public static void main(String[] args)
         throws NoSuchDirectoryException, InterruptedException, NullCommandLineArgument, InvalidThresholdValue, IOException {
