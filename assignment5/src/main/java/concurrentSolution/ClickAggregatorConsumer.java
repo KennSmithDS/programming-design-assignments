@@ -56,6 +56,25 @@ public class ClickAggregatorConsumer implements Runnable {
     }
 
     /**
+     * Method to get the click amount based on codekey and nested date keys
+     * @param codeKey String key for parent concurrenthashmap
+     * @param date String key for nested hashmap
+     * @return int value of clicks
+     */
+    public int getClicksAmount(String codeKey, String date) {
+        if (!this.aggStudentData.containsKey(codeKey)) {
+            System.out.println("Queried codeKey does not exist in the hashmap");
+        } else {
+            if (!this.aggStudentData.get(codeKey).containsKey(date)) {
+                System.out.println("Queried date does not exist in the hashmap");
+            } else {
+                return this.aggStudentData.get(codeKey).get(date);
+            }
+        }
+        return -1;
+    }
+
+    /**
      * Override of Runnable.run() method to take each parsed row from the BlockingQueue
      * The student click data is aggregated with the writeToHash method
      * When the Thread finds a poison pill, it will terminate
