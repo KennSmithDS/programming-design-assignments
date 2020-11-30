@@ -5,6 +5,7 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.util.concurrent.CopyOnWriteArrayList;
 
+import java.util.concurrent.CountDownLatch;
 import org.apache.commons.csv.CSVFormat;
 import org.apache.commons.csv.CSVPrinter;
 import sequentialSolution.NoSuchDirectoryException;
@@ -39,7 +40,6 @@ public class ConcurrentDriver {
     public static void main(String[] args)
         throws NoSuchDirectoryException, InterruptedException, NullCommandLineArgument, InvalidThresholdValue, IOException {
 
-        /*
         if (args.length < 1) {
             throw new NullCommandLineArgument("The command line argument was null/empty. Please provide a valid folder path to CSV data.");
         } else if (args.length == 1) {
@@ -55,14 +55,8 @@ public class ConcurrentDriver {
             } catch (NumberFormatException | IOException e) {
                 throw new InvalidThresholdValue("Threshold value provided was not a valid integer. Please rerun program with integer value for the threshold paramter.");
             }
-
         }
 
-         */
-
-        String path = "/Users/isidoraconic/Desktop/kendall_sample_files/";
-        ConcurrentHashMap<String, ConcurrentHashMap<String, Integer>> map = readStudentData(path);
-        writeSingleThresholdFile(path, 25, map);
     }
 
     public static ConcurrentHashMap<String, ConcurrentHashMap<String, Integer>> readStudentData(String path) throws NoSuchDirectoryException, InterruptedException {
@@ -126,14 +120,13 @@ public class ConcurrentDriver {
         //the file once it has been opened and written to
         csvPrinter = new CSVPrinter(bufferedWriter, CSVFormat.DEFAULT.withSkipHeaderRecord());
         System.out.println("Made the writer");
-        Thread writer = new Thread(new CSVRowWriterConsumer(writerQueue, writerRowPoison,threshold, csvPrinter));
+        Thread writer = new Thread(new CSVRowWriterConsumer(writerQueue, writerRowPoison, csvPrinter, 2));
         writer.start();
         System.out.println("Started the writer!");
 
         //At the end, once the thread is done (i.e. not alive), we close the file
         while(writer.isAlive()) {
             //While the thread is alive, we wait, and then once it ends, we move to the next block
-
         }
 
         //We now close the file (buffered writer) because we know the thread has finished
