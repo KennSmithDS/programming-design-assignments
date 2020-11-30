@@ -89,9 +89,14 @@ public class CSVRowProducerTest {
     @Test
     public void testToString() {
         System.out.println(this.testRowProducer1.toString());
-        String testToString = "CSVRowProducer{queue=[], map={BBB_2020={1=1}, AAA_2020={1=3}, DDD_2020={1=1}, EEE_2020={1=1}, CCC_2020={1=1}}, " +
-                "keyList=[BBB_2020, AAA_2020, DDD_2020, EEE_2020, CCC_2020], " + "" +
-                "threshold=3, POISON=CSVRow{module='', presentation='', student=-2147483648, site=-2147483648, date=, clicks=0, codeKey='poison'}, N_POISON_PER_PRODUCER=1}";
+        String testToString = "CSVRowProducer{" +
+                "queue=" + this.testQueue +
+                ", map=" + this.testHashMap +
+                ", keyList=" + this.testKeyList +
+                ", threshold=" + TEST_THRESH +
+                ", POISON=" + this.POISON +
+                ", N_POISON_PER_PRODUCER=" + this.N_POISON_PER_PRODUCER +
+                '}';
         Assert.assertEquals(testToString, this.testRowProducer1.toString());
     }
 }

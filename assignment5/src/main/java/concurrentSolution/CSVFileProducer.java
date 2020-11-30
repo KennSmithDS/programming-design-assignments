@@ -74,7 +74,7 @@ public class CSVFileProducer implements Runnable {
       while(!map.isEmpty() && !keyList.isEmpty()) {
         fileInfo = getMapElement();
         queue.put(fileInfo);
-        System.out.println(Thread.currentThread().getName() + " just added CSVFile = " + fileInfo.getName() + " to the BlockingQueue.");
+//        System.out.println(Thread.currentThread().getName() + " just added CSVFile = " + fileInfo.getName() + " to the BlockingQueue.");
       }
     } catch (InterruptedException e) {
         Thread.currentThread().interrupt();
@@ -82,7 +82,7 @@ public class CSVFileProducer implements Runnable {
       while(true) {
         try {
           for (int i=0; i < this.N_POISON_PER_PRODUCER; i++) {
-            System.out.println(Thread.currentThread().getName() + " adding poison pill to queue in WriterProducer!");
+//            System.out.println(Thread.currentThread().getName() + " adding poison pill to queue in WriterProducer!");
             queue.put(this.POISON);
           }
           break;

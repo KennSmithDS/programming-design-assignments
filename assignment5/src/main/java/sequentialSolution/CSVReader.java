@@ -85,10 +85,10 @@ public class CSVReader {
         HashMap<String, HashMap<String, Integer>> aggStudentData = new HashMap<>();
         for (CSVRecord record : csvParser) {
             String module = record.get(MODULE_HEADER);
-            System.out.println("module = "+module);
+//            System.out.println("module = "+module);
             String presentation = record.get(PRESENTATION_HEADER);
             String codeKey = module + "_" + presentation;
-            System.out.println("The codekey is: " + codeKey);
+//            System.out.println("The codekey is: " + codeKey);
             String date = record.get(DATE_HEADER);
             int clicks = Integer.parseInt(record.get(CLICKS_HEADER));
 

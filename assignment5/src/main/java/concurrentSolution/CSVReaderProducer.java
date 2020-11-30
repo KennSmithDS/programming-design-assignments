@@ -8,6 +8,8 @@ import java.util.Objects;
 import java.util.StringTokenizer;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 /**
  * Class to represent a Producer that reads a CSV file of student click data
@@ -19,8 +21,10 @@ public class CSVReaderProducer implements Runnable {
 
     private static final String STUDENT_CLICKS = "studentVle.csv";
     private static final String STUDENT_CLICKS_TEST = "studentVle_sample.csv";
+    private static final String SPLIT_BY = "(?<=\\\")[^,;](.*?)(?=\\\")";
     private String csvFile;
     private final String folderPath;
+    private final String mode;
     private final BlockingQueue<CSVRow> queue;
     private final CSVRow poison;
     private final int N_POISON_PER_PRODUCER;
@@ -40,6 +44,7 @@ public class CSVReaderProducer implements Runnable {
             throw new NoSuchDirectoryException("The specified folder path does not exist. "
                     + "Please enter a valid folder path.");
         } else {
+            this.mode = mode;
             this.folderPath = csvFolder;
             if (mode.equals("test")) {
                 this.csvFile = csvFolder + "/" + STUDENT_CLICKS_TEST;
@@ -60,9 +65,17 @@ public class CSVReaderProducer implements Runnable {
      */
     private ArrayList<String> patternMatch(String inputString) {
         ArrayList<String> parsedString = new ArrayList<>();
-        StringTokenizer tokenizer = new StringTokenizer(inputString, ",");
-        while (tokenizer.hasMoreTokens()) {
-            parsedString.add(tokenizer.nextToken());
+        if (mode.equals("test")) {
+            StringTokenizer tokenizer = new StringTokenizer(inputString, ",");
+            while (tokenizer.hasMoreTokens()) {
+                parsedString.add(tokenizer.nextToken());
+            }
+        } else {
+            Pattern pattern = Pattern.compile(SPLIT_BY);
+            Matcher matcher = pattern.matcher(inputString);
+            while (matcher.find()) {
+                parsedString.add(matcher.group());
+            }
         }
         return parsedString;
     }
@@ -107,7 +120,7 @@ public class CSVReaderProducer implements Runnable {
             String headers = reader.readLine();
             String newLine;
             while ((newLine = reader.readLine()) != null) {
-                System.out.println("Parsing row: " + newLine);
+//                System.out.println("Parsing row: " + newLine);
                 queue.put(parseCSVRow(newLine));
                 this.fileSize.getAndIncrement();
             }
@@ -117,7 +130,7 @@ public class CSVReaderProducer implements Runnable {
             while (true) {
                 try {
                     for (int i=0; i < this.N_POISON_PER_PRODUCER; i++) {
-                        System.out.println(Thread.currentThread().getName() + " adding poison pill to BlockingQueue");
+//                        System.out.println(Thread.currentThread().getName() + " adding poison pill to BlockingQueue");
                         queue.put(this.poison);
                         this.fileSize.getAndIncrement();
                     }

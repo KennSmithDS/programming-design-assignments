@@ -49,7 +49,7 @@ public class CSVRowProducer implements Runnable {
    */
   public synchronized void getMapElement() throws InterruptedException {
     String key = keyList.remove(0);
-    System.out.println("Removing nested hashmap for key: " + key);
+//    System.out.println("Removing nested hashmap for key: " + key);
     ConcurrentHashMap<String, Integer> innerMap = this.map.remove(key);
 
     for(String innerKey : innerMap.keySet()) {
@@ -82,7 +82,7 @@ public class CSVRowProducer implements Runnable {
       while (true) {
         try {
           for (int i=0; i < this.N_POISON_PER_PRODUCER; i++) {
-            System.out.println(Thread.currentThread().getName() + " adding poison pill to queue in WriterProducer!");
+//            System.out.println(Thread.currentThread().getName() + " adding poison pill to queue in WriterProducer!");
             queue.put(this.POISON);
           }
           break;

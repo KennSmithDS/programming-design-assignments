@@ -113,13 +113,10 @@ public class ClickAggregatorConsumerTest {
 
     @Test
     public void testToString() {
-        String testToString = "ClickAggregatorConsumer{queue=[" +
-                "CSVRow{module='AAA', presentation='2020', student=1, site=1, date=1, clicks=1, codeKey='AAA_2020'}, " +
-                "CSVRow{module='AAA', presentation='2020', student=2, site=1, date=1, clicks=1, codeKey='AAA_2020'}, " +
-                "CSVRow{module='BBB', presentation='2020', student=1, site=1, date=2, clicks=1, codeKey='BBB_2020'}, " +
-                "CSVRow{module='thread', presentation='killer', student=0, site=0, date=, clicks=0, codeKey='thread_killer'}], " +
-                "aggStudentData={AAA_2019={0=1}}, " +
-                "poison=CSVRow{module='thread', presentation='killer', student=0, site=0, date=, clicks=0, codeKey='thread_killer'}}";
+        String testToString = "ClickAggregatorConsumer{queue=" + this.testQueue + ", " +
+                "aggStudentData=" + this.testHashMap + ", " +
+                "poison=" + this.poison +
+                "}";
         Assert.assertEquals(testToString, this.testConsumer1.toString());
     }
 }

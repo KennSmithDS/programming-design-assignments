@@ -85,7 +85,7 @@ public class CSVFileWriterConsumer implements Runnable {
     try {
       CSVFile outputFile;
       while (!(outputFile = queue.take()).equals(POISON)) {
-        System.out.println(Thread.currentThread().getName() + " taking " + outputFile.getName() + " from BlockingQueue");
+//        System.out.println(Thread.currentThread().getName() + " taking " + outputFile.getName() + " from BlockingQueue");
         writeFile(outputFile);
       }
     } catch (InterruptedException | IOException interruptedException) {
