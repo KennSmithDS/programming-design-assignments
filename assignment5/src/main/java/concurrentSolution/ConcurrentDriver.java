@@ -27,7 +27,7 @@ public class ConcurrentDriver {
     private static final String[] THRESHOLD_OUTPUT_HEADER = {"module_presentation", "date", "total_clicks"};
     private static final int QUEUE_BOUND = 10;
     private static final int N_PRODUCERS = 2;
-    private static final int N_CONSUMERS = 2; //Runtime.getRuntime().availableProcessors();
+    private static final int N_CONSUMERS = 3; //Runtime.getRuntime().availableProcessors();
     private static final int N_POISON_PER_PRODUCER = N_CONSUMERS / N_PRODUCERS;
     private static final int N_POISON_PILL_REMAIN = N_CONSUMERS % N_PRODUCERS;
 
@@ -56,7 +56,7 @@ public class ConcurrentDriver {
                 ConcurrentHashMap<String, ConcurrentHashMap<String, Integer>> aggStudentData = readStudentData(cliPath);
                 writeSingleThresholdFile(cliPath, threshold, aggStudentData);
             } catch (NumberFormatException | IOException e) {
-                throw new InvalidThresholdValue("Threshold value provided was not a valid integer. Please rerun program with integer value for the threshold paramter.");
+                throw new InvalidThresholdValue("Threshold value provided was not a valid integer. Please rerun program with integer value for the threshold parameter.");
             }
         }
 
@@ -67,13 +67,17 @@ public class ConcurrentDriver {
         ConcurrentHashMap<String, ConcurrentHashMap<String, Integer>> aggStudentData = new ConcurrentHashMap<String, ConcurrentHashMap<String, Integer>>();
 
         // reader threads go here
-        new Thread(new CSVReaderProducer(path, "prod", readerQueue, readerPoison, N_CONSUMERS)).start();
+        Thread producer = new Thread(new CSVReaderProducer(path, "prod", readerQueue, readerPoison, N_CONSUMERS));
+        producer.start();
         for (int i = 0; i < N_CONSUMERS; i++) {
             new Thread(new ClickAggregatorConsumer(readerQueue, aggStudentData, readerPoison)).start();
         }
 
         // sleep between CSV reader and writer Thread workflows
-        Thread.sleep(1000);
+        producer.join();
+
+//        System.out.println("Student data has " + aggStudentData.size() + " keys");
+
         return aggStudentData;
     }
 
@@ -94,13 +98,14 @@ public class ConcurrentDriver {
     }
 
     public static void writeSingleThresholdFile(String path, Integer threshold, ConcurrentHashMap<String, ConcurrentHashMap<String, Integer>> studentData)
-        throws IOException {
+            throws IOException, InterruptedException {
         BlockingQueue<CSVRow> writerQueue = new LinkedBlockingQueue<CSVRow>(QUEUE_BOUND);
 
         //List of keys for the writer producer and consumer to use
         CopyOnWriteArrayList<String> keyList = new CopyOnWriteArrayList<>(studentData.keySet());
 
         //Multiple producers
+//        System.out.println("Student data has " + studentData.size() + " keys");
         for(int i = 0; i < N_PRODUCERS; i++) {
             new Thread(new CSVRowProducer(writerQueue, writerRowPoison, studentData, 1, keyList, threshold)).start();
         }
