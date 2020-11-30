@@ -205,6 +205,21 @@ public class CSVFileWriterConsumerTest {
     Assert.assertEquals(3, outputDirectory.getRoot().listFiles().length);
   }
 
+  /*
+  @Test //(expected = InterruptedException.class)
+  public void runInterrupt() throws InterruptedException {
+    //Assert.assertEquals(4, this.queue.size());
+    //Assert.assertEquals(0, outputDirectory.getRoot().listFiles().length);
+    Thread testThread = new Thread(this.consumer1);
+    testThread.interrupt();
+    testThread.start();
+
+    //Assert.assertEquals(0, this.queue.size());
+    //Assert.assertEquals(3, outputDirectory.getRoot().listFiles().length);
+  }
+
+   */
+
   @Test
   public void testEqualsTrue() {
     Assert.assertTrue(this.consumer1.equals(this.consumer2));
