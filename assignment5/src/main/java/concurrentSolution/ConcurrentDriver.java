@@ -127,11 +127,8 @@ public class ConcurrentDriver {
         //Pass the csvPrinter object to the thread so that we dont need to keep opening and closing
         //the file once it has been opened and written to
         csvPrinter = new CSVPrinter(bufferedWriter, CSVFormat.DEFAULT.withSkipHeaderRecord());
-        System.out.println("Made the writer");
         Thread writer = new Thread(new CSVRowWriterConsumer(writerQueue, writerRowPoison, csvPrinter, 2));
         writer.start();
-
-        System.out.println("Started the writer!");
 
         //At the end, once the thread is done (i.e. not alive), we close the file
         while(writer.isAlive()) {

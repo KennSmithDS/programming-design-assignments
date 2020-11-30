@@ -66,7 +66,6 @@ public class CSVRowWriterConsumer implements Runnable {
           poisonCount--;
         } else {
           writeFile(row);
-//          System.out.println(Thread.currentThread().getName() + " taking row from BlockingQueue, codekey =  " + row.getCodeKey() + " and clicks = " + row.getClicks());
         }
       }
     } catch (InterruptedException | IOException interruptedException) {
