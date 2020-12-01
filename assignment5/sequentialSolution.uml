@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Diagram>
+  <ID>JAVA</ID>
+  <OriginalElement>sequentialSolution</OriginalElement>
+  <nodes>
+    <node x="13.943750000000023" y="0.0">sequentialSolution.NoSuchDirectoryException</node>
+    <node x="211.14375" y="735.0">sequentialSolution.SequentialDriver</node>
+    <node x="62.5" y="104.0">sequentialSolution.CSVReader</node>
+    <node x="302.6625" y="564.0">sequentialSolution.NullCommandLineArgument</node>
+    <node x="0.0" y="497.0">sequentialSolution.CSVWriter</node>
+  </nodes>
+  <notes />
+  <edges>
+    <edge source="sequentialSolution.CSVWriter" target="sequentialSolution.CSVReader">
+      <point x="52.0" y="-94.0" />
+      <point x="156.0" y="472.0" />
+      <point x="129.0" y="472.0" />
+      <point x="-133.0" y="171.5" />
+    </edge>
+    <edge source="sequentialSolution.CSVWriter" target="sequentialSolution.NoSuchDirectoryException">
+      <point x="-52.0" y="-94.0" />
+      <point x="52.0" y="79.0" />
+      <point x="77.19375000000002" y="79.0" />
+      <point x="-63.25" y="27.0" />
+    </edge>
+    <edge source="sequentialSolution.SequentialDriver" target="sequentialSolution.CSVWriter">
+      <point x="-69.19999999999999" y="-27.0" />
+      <point x="228.44375000000002" y="715.0" />
+      <point x="52.0" y="715.0" />
+      <point x="-52.0" y="94.0" />
+    </edge>
+    <edge source="sequentialSolution.CSVReader" target="sequentialSolution.NoSuchDirectoryException">
+      <point x="0.0" y="-171.5" />
+      <point x="262.0" y="79.0" />
+      <point x="203.69375000000002" y="79.0" />
+      <point x="63.25" y="27.0" />
+    </edge>
+    <edge source="sequentialSolution.SequentialDriver" target="sequentialSolution.CSVReader">
+      <point x="34.60000000000002" y="-27.0" />
+      <point x="332.24375000000003" y="705.0" />
+      <point x="292.1625" y="705.0" />
+      <point x="292.1625" y="472.0" />
+      <point x="395.0" y="472.0" />
+      <point x="133.0" y="171.5" />
+    </edge>
+    <edge source="sequentialSolution.SequentialDriver" target="sequentialSolution.NullCommandLineArgument">
+      <point x="69.19999999999999" y="-27.0" />
+      <point x="366.84375" y="715.0" />
+      <point x="432.6625" y="715.0" />
+      <point x="0.0" y="27.0" />
+    </edge>
+  </edges>
+  <settings layout="Hierarchic Group" zoom="0.6519308437618129" x="20.62506103515625" y="375.78330993652344" />
+  <SelectedNodes />
+  <Categories>
+    <Category>Fields</Category>
+    <Category>Constructors</Category>
+    <Category>Methods</Category>
+    <Category>Properties</Category>
+  </Categories>
+  <SCOPE>All</SCOPE>
+  <VISIBILITY>private</VISIBILITY>
+</Diagram>
+
