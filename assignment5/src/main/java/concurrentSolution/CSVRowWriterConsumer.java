@@ -116,4 +116,5 @@ public class CSVRowWriterConsumer implements Runnable {
         ", poisonCount=" + poisonCount +
         '}';
   }
+
 }
