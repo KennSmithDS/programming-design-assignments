@@ -100,4 +100,13 @@ Closed the buffered writer!
 
 1) We assume that the user is passing a command line argument, and passing in a valid string path to a directory on their computer that stores the file `studentVle.csv`.
 2) We assume that the file has data in it, and that the columns are ordered such that the columns are {"module", "presentation", "student", "site", "date", "clicks"}.
-3) 
+3) We handle a variety of edge cases in the normal producting execution of the application and in testing as well, e.g.:
+ - When user doesn't provide a command line argument string
+ - The folder path provided is invalid (aka does not exist on the computer)
+ - The threshold argument value is non-numeric (needs to be an integer, or can be cast as one)
+ - Flexibility in the number of producers and consumers with how many poison pills are implanted into the blockingqueues
+ - Check that there are more lines of data for the BufferedReader to fetch from CSV data files, in other words scans for end of file implicitly
+ - Check that both the concurrenthashmap and the String key list isn't empty when putting CSVFile objects on to the blockingqueue for writing files
+ - Created two versions of the CSVReaderProducer on "test" and "prod" that allowed us to test on smaller sample of the larger file
+ - Checking various scenarios for when constructing and destroying files and directories in unit tests to make sure output is as expected
+ - Making sure that the blockingqueue sizes increase and grow to the correct size after Producer Threads put, and likewise the blockingqueue is empty after Consumer Threads finish taking.
