@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Diagram>
+  <ID>JAVA</ID>
+  <OriginalElement>concurrentSolution</OriginalElement>
+  <nodes>
+    <node x="332.0522727272729" y="44.5">concurrentSolution.CSVFile</node>
+    <node x="494.0" y="422.5">concurrentSolution.CSVFileWriterConsumer</node>
+    <node x="563.1564935064937" y="822.0">concurrentSolution.ConcurrentDriver</node>
+    <node x="1074.0" y="422.5">concurrentSolution.ClickAggregatorConsumer</node>
+    <node x="1151.0219696969698" y="0.0">concurrentSolution.CSVRow</node>
+    <node x="1661.0" y="523.0">concurrentSolution.InvalidThresholdValue</node>
+    <node x="0.0" y="411.0">concurrentSolution.CSVFileProducer</node>
+    <node x="776.0" y="334.0">concurrentSolution.CSVReaderProducer</node>
+  </nodes>
+  <notes />
+  <edges />
+  <settings layout="Hierarchic Group" zoom="0.6658053402239449" x="936.5" y="570.5" />
+  <SelectedNodes>
+    <node>concurrentSolution.CSVFile</node>
+  </SelectedNodes>
+  <Categories>
+    <Category>Fields</Category>
+    <Category>Methods</Category>
+    <Category>Properties</Category>
+  </Categories>
+  <SCOPE>All</SCOPE>
+  <VISIBILITY>private</VISIBILITY>
+</Diagram>
+
