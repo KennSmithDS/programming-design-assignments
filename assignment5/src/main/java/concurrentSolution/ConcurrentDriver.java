@@ -62,6 +62,14 @@ public class ConcurrentDriver {
 
     }
 
+    /**
+     * Method to instantiate the CSV reader producer and consumer threads that open and read the CSV file rows
+     * Rows are stored in a blockingqueue while the producer and consumer work with them, and aggregated data is stored in a concurrenthashmap
+     * @param path String folder path for file input
+     * @return ConcurrentHashMap with String codeKey and value as nested ConcurrentHashmap with String date and Integer clicks as valaue
+     * @throws NoSuchDirectoryException custom NoSuchDirectoryException when no directory exists
+     * @throws InterruptedException default InterruptedException error for Thread interruption
+     */
     public static ConcurrentHashMap<String, ConcurrentHashMap<String, Integer>> readStudentData(String path) throws NoSuchDirectoryException, InterruptedException {
         BlockingQueue<CSVRow> readerQueue = new LinkedBlockingQueue<CSVRow>(QUEUE_BOUND);
         ConcurrentHashMap<String, ConcurrentHashMap<String, Integer>> aggStudentData = new ConcurrentHashMap<String, ConcurrentHashMap<String, Integer>>();
@@ -81,6 +89,13 @@ public class ConcurrentDriver {
         return aggStudentData;
     }
 
+    /**
+     * Method to instantiate the CSV writing producer and consumer threads that open and write CSV files with aggregated student data
+     * It takes files of data stored in the concurrenthashmap, and writes a new file for each String key post aggregation
+     * @param path String folder path for file output
+     * @param studentData ConcurrentHashMap data structure with aggregated student clicks
+     * @throws NoSuchDirectoryException custom NoSuchDirectoryException when no directory exists
+     */
     public static void writeMultipleFiles(String path, ConcurrentHashMap<String, ConcurrentHashMap<String, Integer>> studentData) throws NoSuchDirectoryException {
         BlockingQueue<CSVFile> writerQueue = new LinkedBlockingQueue<CSVFile>(QUEUE_BOUND);
 
@@ -97,6 +112,15 @@ public class ConcurrentDriver {
         }
     }
 
+    /**
+     * Method to instantiate the CSV writing producer and consumer threads that open and write a single CSV file when click aggregations are over a provided threshold
+     * It takes files of data stored in the concurrenthashmap, and writes rows of data filtered on the threshold value
+     * @param path String folder path for file output
+     * @param threshold Integer value for threshold
+     * @param studentData ConcurrentHashMap data structure with aggregated student clicks
+     * @throws IOException default IOException error
+     * @throws InterruptedException default InterruptedException error for Thread interruption
+     */
     public static void writeSingleThresholdFile(String path, Integer threshold, ConcurrentHashMap<String, ConcurrentHashMap<String, Integer>> studentData)
             throws IOException, InterruptedException {
         BlockingQueue<CSVRow> writerQueue = new LinkedBlockingQueue<CSVRow>(QUEUE_BOUND);
