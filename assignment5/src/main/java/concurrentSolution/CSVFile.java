@@ -1,7 +1,6 @@
 package concurrentSolution;
 
 import java.util.Objects;
-import java.util.Random;
 import java.util.concurrent.CopyOnWriteArrayList;
 
 /**
@@ -21,7 +20,7 @@ public class CSVFile {
    * @param name name of the file, which will be the name of the .csv file later
    */
   public CSVFile(String name) {
-    this.name = name + ".csv";
+    this.name = name;
   }
 
   /**
