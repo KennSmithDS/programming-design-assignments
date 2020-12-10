@@ -1,20 +1,22 @@
+package sample;
+
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
 import java.net.Socket;
 import java.util.Scanner;
 
-public class SimpleClient {
+public class Client {
 
     private Socket socket;
     private DataInputStream dataIn;
     private DataOutputStream dataOut;
     
     public static void main(String[] args) throws IOException {
-        new SimpleClient();
+        new Client();
     }
 
-    public SimpleClient() throws IOException {
+    public Client() throws IOException {
         try {
             socket = new Socket("localhost", 3333); // don't use a port below 1024
             dataIn = new DataInputStream(socket.getInputStream());
@@ -42,6 +44,7 @@ public class SimpleClient {
             }
             try {
                 dataOut.writeUTF(input);
+                dataOut.flush();
 
                 while (dataIn.available() == 0) {
                     try {

@@ -1,3 +1,5 @@
+package sample;
+
 import java.io.*;
 import java.net.ServerSocket;
 import java.net.Socket;
@@ -18,7 +20,7 @@ public class Server {
     }
 
     /**
-     * constructor for the Server class, which will take
+     * constructor for the sample.Server class, which will take
      * @throws IOException
      */
     public Server() throws IOException {
