@@ -1,15 +1,16 @@
-public abstract class Message {
+public abstract class Message extends Communication{
 
-  private Identifier message;
+  private Identifier type;
+  private int nameSize;
+  private byte[] username;
 
-  public Message(Identifier message) throws InvalidMessageException {
-    if(message != null) {
-      this.message = message;
-    } else {
-      throw new InvalidMessageException("You have not provided a valid identifier");
-    }
+  public Message(Identifier type, int nameSize, byte[] username) throws InvalidMessageException {
+    super(type);
+    this.nameSize = nameSize;
+    this.username = username;
   }
 
+  /*
   public Message(int idValue) throws InvalidMessageException {
     if (Identifier.getIdentifier(idValue) != null) {
       this.message = Identifier.getIdentifier(idValue);
@@ -17,16 +18,13 @@ public abstract class Message {
       throw new InvalidMessageException("The id value you have provided is not defined.");
     }
   }
+   */
 
-  //Get the value of the message identifier
-  public int getMessageIdValue() {
-    return this.message.getIdentifierValue();
+  public int getNameSize() {
+    return this.nameSize;
   }
 
-  //Get the "name"/string of the message identifier
-  public Identifier getIdentifier() {
-    return this.message;
+  public byte[] getUsername() {
+    return this.username;
   }
-
-
 }
