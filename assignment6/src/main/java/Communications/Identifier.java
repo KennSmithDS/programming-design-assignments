@@ -1,3 +1,5 @@
+package Communications;
+
 import java.util.HashMap;
 
 public enum Identifier {
@@ -15,7 +17,7 @@ public enum Identifier {
   private final int identifierValue;
   private static HashMap<Integer, Identifier> map = new HashMap<>();
 
-  //Set up a HashMap so that we can access the Identifier given just the message identifier value
+  //Set up a HashMap so that we can access the Communications.Identifier given just the message identifier value
   static {
     for(Identifier id : Identifier.values()) {
       map.put(id.identifierValue, id);

@@ -1,12 +1,16 @@
-public class BroadcastMessage extends Message{
+package Communications;
+
+public class BroadcastMessage extends Message {
 
   private int numUsers;
   private int name2Size;
   private byte[] username2;
 
-  public BroadcastMessage()
-      throws InvalidMessageException {
-    super(Identifier.BROADCAST_MESSAGE);
+  public BroadcastMessage(int nameSize, byte[] username, int numUsers, int name2Size, byte[] username2) throws InvalidMessageException {
+    super(Identifier.BROADCAST_MESSAGE, nameSize, username);
+    this.numUsers = numUsers;
+    this.name2Size =name2Size;
+    this.username2 = username2;
   }
 
   public int getNumUsers() {

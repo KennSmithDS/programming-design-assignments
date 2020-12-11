@@ -1,11 +1,14 @@
+package Communications;
+
 public class InsultMessage extends Message {
 
   private int recipNameSize;
   private byte[] recipUsername;
 
-  public InsultMessage()
-      throws InvalidMessageException {
-    super(Identifier.SEND_INSULT);
+  public InsultMessage(int msgSize, byte[] msg, int recipNameSize, byte[] recipUsername) throws InvalidMessageException {
+    super(Identifier.SEND_INSULT, msgSize, msg);
+    this.recipNameSize = recipNameSize;
+    this.recipUsername = recipUsername;
   }
 
   public int getRecipNameSize() {

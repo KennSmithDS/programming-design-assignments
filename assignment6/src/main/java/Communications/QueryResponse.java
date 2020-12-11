@@ -1,3 +1,5 @@
+package Communications;
+
 import java.util.HashMap;
 
 public class QueryResponse extends Response {
@@ -6,10 +8,11 @@ public class QueryResponse extends Response {
   private int numUsers;
   private HashMap<Integer, Byte[]> map;
 
-  public QueryResponse() throws InvalidMessageException {
-    super(Identifier.QUERY_USER_RESPONSE);
-    setMsgSize(Integer.MIN_VALUE);
-    setMsg(null);
+  public QueryResponse(int numUsers, HashMap<Integer, Byte[]> map) throws InvalidMessageException {
+    super(Identifier.QUERY_USER_RESPONSE, Integer.MIN_VALUE, null);
+    this.numUsers = numUsers;
+    this.map = map;
+
   }
 
   public int getNumUsers() {

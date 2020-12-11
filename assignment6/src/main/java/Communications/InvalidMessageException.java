@@ -1,3 +1,5 @@
+package Communications;
+
 public class InvalidMessageException extends Exception{
 
   public InvalidMessageException(String message) {

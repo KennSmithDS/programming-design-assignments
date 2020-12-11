@@ -1,10 +1,18 @@
+package Communications;
+
+import Communications.Communication;
+import Communications.Identifier;
+import Communications.InvalidMessageException;
+
 public abstract class Response extends Communication {
 
   private int msgSize;
   private byte[] msg;
 
-  public Response(Identifier type) throws InvalidMessageException {
+  public Response(Identifier type, int msgSize, byte[] msg) throws InvalidMessageException {
     super(type);
+    this.msgSize = msgSize;
+    this.msg = msg;
   }
 
   public void setMsgSize(int msgSize) {

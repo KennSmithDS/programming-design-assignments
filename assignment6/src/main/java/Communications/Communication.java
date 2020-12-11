@@ -1,3 +1,5 @@
+package Communications;
+
 public abstract class Communication {
 
   private Identifier type;
@@ -11,11 +13,11 @@ public abstract class Communication {
   }
 
   /*
-  public Communication(int idValue) throws InvalidMessageException {
-    if (Identifier.getIdentifier(idValue) != null) {
-      this.message = Identifier.getIdentifier(idValue);
+  public Communications.Communication(int idValue) throws Communications.InvalidMessageException {
+    if (Communications.Identifier.getIdentifier(idValue) != null) {
+      this.message = Communications.Identifier.getIdentifier(idValue);
     } else {
-      throw new InvalidMessageException("The id value you have provided is not defined.");
+      throw new Communications.InvalidMessageException("The id value you have provided is not defined.");
     }
   }
    */
@@ -31,6 +33,7 @@ public abstract class Communication {
   }
 
 
+  /*
   public static Communication communicationFactory(int type) throws InvalidMessageException {
     Communication com = null;
     switch(type) {
@@ -78,6 +81,8 @@ public abstract class Communication {
     return com;
 
   }
+
+   */
 
 
 

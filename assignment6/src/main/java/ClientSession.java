@@ -18,11 +18,11 @@ public class ClientSession implements Runnable {
         this.port = port;
     }
 
-//    public void sendDirectMessage(Message message) {
+//    public void sendDirectMessage(Communications.Message message) {
 //
 //    }
 //
-//    public void sendGlobalMessage(Message message) {
+//    public void sendGlobalMessage(Communications.Message message) {
 //
 //    }
 
