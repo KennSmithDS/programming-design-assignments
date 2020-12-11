@@ -6,9 +6,9 @@ public class QueryResponse extends Response {
 
   //Not really sure what this message is supposed to return...not sure if these fields are correct
   private int numUsers;
-  private HashMap<Integer, Byte[]> map;
+  private HashMap<Integer, byte[]> map;
 
-  public QueryResponse(int numUsers, HashMap<Integer, Byte[]> map) throws InvalidMessageException {
+  public QueryResponse(int numUsers, HashMap<Integer, byte[]> map) throws InvalidMessageException {
     super(Identifier.QUERY_USER_RESPONSE, Integer.MIN_VALUE, null);
     this.numUsers = numUsers;
     this.map = map;
@@ -19,7 +19,7 @@ public class QueryResponse extends Response {
     return numUsers;
   }
 
-  public HashMap<Integer, Byte[]> getMap() {
+  public HashMap<Integer, byte[]> getMap() {
     return map;
   }
 
@@ -27,7 +27,7 @@ public class QueryResponse extends Response {
     this.numUsers = numUsers;
   }
 
-  public void setMap(HashMap<Integer, Byte[]> map) {
+  public void setMap(HashMap<Integer, byte[]> map) {
     this.map = map;
   }
 }
