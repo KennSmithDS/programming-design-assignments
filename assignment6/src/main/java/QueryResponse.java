@@ -6,8 +6,25 @@ public class QueryResponse extends Response {
   private int numUsers;
   private HashMap<Integer, Byte[]> map;
 
-  public QueryResponse(int numUsers) throws InvalidMessageException {
-    super(Identifier.QUERY_USER_RESPONSE, Integer.MIN_VALUE, null);
+  public QueryResponse() throws InvalidMessageException {
+    super(Identifier.QUERY_USER_RESPONSE);
+    setMsgSize(Integer.MIN_VALUE);
+    setMsg(null);
   }
 
+  public int getNumUsers() {
+    return numUsers;
+  }
+
+  public HashMap<Integer, Byte[]> getMap() {
+    return map;
+  }
+
+  public void setNumUsers(int numUsers) {
+    this.numUsers = numUsers;
+  }
+
+  public void setMap(HashMap<Integer, Byte[]> map) {
+    this.map = map;
+  }
 }

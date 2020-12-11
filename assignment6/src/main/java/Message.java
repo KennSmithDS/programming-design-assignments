@@ -4,10 +4,8 @@ public abstract class Message extends Communication{
   private int nameSize;
   private byte[] username;
 
-  public Message(Identifier type, int nameSize, byte[] username) throws InvalidMessageException {
+  public Message(Identifier type) throws InvalidMessageException {
     super(type);
-    this.nameSize = nameSize;
-    this.username = username;
   }
 
   /*
@@ -26,5 +24,13 @@ public abstract class Message extends Communication{
 
   public byte[] getUsername() {
     return this.username;
+  }
+
+  public void setNameSize(int nameSize) {
+    this.nameSize = nameSize;
+  }
+
+  public void setUsername(byte[] username) {
+    this.username = username;
   }
 }

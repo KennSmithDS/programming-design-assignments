@@ -1,8 +1,8 @@
 public class DisconnectResponse extends Response {
 
-  public DisconnectResponse(int msgSize, byte[] msg)
+  public DisconnectResponse()
       throws InvalidMessageException {
-    super(Identifier.DISCONNECT_MESSAGE, msgSize, msg);
+    super(Identifier.DISCONNECT_MESSAGE);
   }
 
 }
