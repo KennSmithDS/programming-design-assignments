@@ -1,39 +1,41 @@
 package Communications;
 
+/**
+ * Class representing a BROADCAST_MESSAGE object.
+ * It is a subtype of the Message class.
+ */
 public class BroadcastMessage extends Message {
 
-  private int numUsers;
-  private int name2Size;
-  private byte[] username2;
+  private int msgSize;
+  private byte[] msg;
 
-  public BroadcastMessage(int nameSize, byte[] username, int numUsers, int name2Size, byte[] username2) throws InvalidMessageException {
+  /**
+   * Constructor for BroadcastMessage
+   * @param nameSize int representing the size of the sender's username
+   * @param username byte array representing the sender's username
+   * @param msgSize int representing the size of the message
+   * @param msg byte array representing the message
+   * @throws InvalidMessageException
+   */
+  public BroadcastMessage(int nameSize, byte[] username, int msgSize, byte[] msg) throws InvalidMessageException {
     super(Identifier.BROADCAST_MESSAGE, nameSize, username);
-    this.numUsers = numUsers;
-    this.name2Size =name2Size;
-    this.username2 = username2;
+    this.msgSize = msgSize;
+    this.msg = msg;
   }
 
-  public int getNumUsers() {
-    return this.numUsers;
+  /**
+   * Getter method for the message size
+   * @return size of message to be sent
+   */
+  public int getMsgSize() {
+    return msgSize;
   }
 
-  public int getName2Size() {
-    return this.name2Size;
-  }
-
-  public byte[] getUsername2() {
-    return this.username2;
-  }
-
-  public void setNumUsers(int numUsers) {
-    this.numUsers = numUsers;
-  }
-
-  public void setName2Size(int name2Size) {
-    this.name2Size = name2Size;
-  }
-
-  public void setUsername2(byte[] username2) {
-    this.username2 = username2;
+  /**
+   * Getter method for the message
+   * @return message to be sent as a byte array
+   */
+  public byte[] getMsg() {
+    return msg;
   }
 }
