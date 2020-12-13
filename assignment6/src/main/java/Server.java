@@ -16,6 +16,7 @@ public class Server {
     private static final int DEFAULT_PORT = 3333;
     private static final int THREAD_LIMIT = 10;
     private HashMap<byte[], ClientSession> clientSessions;
+    private int threadCount;
     private boolean serverRunning = true;
     private static ExecutorService threadPool = Executors.newFixedThreadPool(THREAD_LIMIT);
 
@@ -56,15 +57,17 @@ public class Server {
 
             while (true) {
                 // unable to get the main logic to be able to handle both shutdown command as well as listen on port
-                String consoleInput = serverConsole.nextLine();
-                while (!consoleInput.equals("shutdown")) {
-                    // accept inbound connections from clients, and add them to the thread pool executor
+//                String consoleInput = serverConsole.nextLine();
+//                while (!consoleInput.equals("shutdown")) {
+                // accept inbound connections from clients, and add them to the thread pool executor
+
+                if (server.threadCount < THREAD_LIMIT) {
                     Socket clientSocket = serverSocket.accept();
                     System.out.println("Client connection from: " + clientSocket);
-                    ClientSession clientThread = new ClientSession(clientSocket, server, server.serverPort);
+                    ClientSession clientThread = new ClientSession(clientSocket, server, server.getServerPort());
                     threadPool.execute(clientThread);
+                    server.showClientCount();
                 }
-                break;
             }
         } catch (IOException e) {
             e.printStackTrace();
@@ -84,7 +87,11 @@ public class Server {
      *
      * @return
      */
-    public int getServerPort() { return this.serverPort; }
+    protected int getServerPort() { return this.serverPort; }
+
+    protected void countIncrement() { this.threadCount++; }
+
+    protected void countDecrement() { this.threadCount--; }
 
     /**
      *
@@ -97,6 +104,8 @@ public class Server {
             throw new RuntimeException("Unable to open connection on port " + this.serverPort, e);
         }
     }
+
+    private void showClientCount() { System.out.println("There are " + this.threadCount + " clients connected"); }
 
     /**
      *

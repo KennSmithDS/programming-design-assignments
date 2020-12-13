@@ -15,6 +15,7 @@ public class ClientSession implements Runnable {
     private Socket socket;
     private Server server;
     private int port;
+    private boolean isConnected;
     private ObjectInputStream messageInStream;
     private ObjectOutputStream messageOutStream;
 
@@ -29,16 +30,77 @@ public class ClientSession implements Runnable {
         this.socket = socket;
         this.server = server;
         this.port = port;
-        this.messageInStream = new ObjectInputStream(socket.getInputStream());
-        this.messageOutStream = new ObjectOutputStream(socket.getOutputStream());
+        this.isConnected = false;
+        this.messageInStream = null;
+        this.messageOutStream = null;
+        this.server.countIncrement();
     }
 
     /**
      *
-     * @return
      */
-    protected Socket getClientSocket() { return this.socket; }
+    @Override
+    public void run() {
+        try {
+            handleClientSession();
+        } catch (IOException | InterruptedException e) {
+            e.printStackTrace();
+        }
+    }
 
+    private void handleClientSession() throws InterruptedException, IOException {
+        try {
+            System.out.println("New client session created");
+            this.messageOutStream = new ObjectOutputStream(socket.getOutputStream());
+            this.messageInStream = new ObjectInputStream(socket.getInputStream());
+
+            while (true) {
+                // decide what kind of message to send
+                if (messageInStream.available() > 0) {
+                    Message inboundMessage = (Message) messageInStream.readObject();
+                    if (!isConnected) {
+                        if (inboundMessage.getIdentifier() != Identifier.CONNECT_MESSAGE) {
+                            // return failed message to user
+                            continue;
+                        } else if (inboundMessage.getIdentifier() == Identifier.CONNECT_MESSAGE) {
+                            // check if session in pool - not waiting for available spot
+                            // add to client sessions
+                            System.out.println("");
+                            server.addClientSession(inboundMessage.getUsername(), this);
+                            // send connect response with boolean == true
+                            isConnected = true;
+                        }
+                    } else {
+                        messageHandler(inboundMessage);
+                    }
+                } else {
+                    try {
+                        Thread.sleep(1);
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
+                    }
+                }
+            }
+        } catch (ClassNotFoundException | InvalidMessageException e) {
+            e.printStackTrace();
+        } finally {
+            try {
+                System.out.println("Closing object input/output streams and client socket");
+                server.countDecrement();
+                messageInStream.close();
+                messageOutStream.close();
+                socket.close();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+    }
+
+    /**
+     *
+     * @param message
+     * @throws IOException
+     */
     public void sendDirectMessage(Communications.DirectMessage message) throws IOException {
         try {
             byte[] recipientUser = message.getUsername();
@@ -68,39 +130,6 @@ public class ClientSession implements Runnable {
 
     /**
      *
-     */
-    @Override
-    public void run() {
-        try {
-            while (true) {
-                while (messageInStream.available() == 0) {
-                    try {
-                        Thread.sleep(1);
-                    } catch (InterruptedException e) {
-                        e.printStackTrace();
-                    }
-                }
-                // decide what kind of message to send
-                Message inboundMessage = (Message) messageInStream.readObject();
-                messageHandler(inboundMessage);
-            }
-
-        } catch (IOException | ClassNotFoundException | InvalidMessageException e) {
-            e.printStackTrace();
-
-        } finally {
-            try {
-                messageInStream.close();
-                messageOutStream.close();
-                socket.close();
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-        }
-    }
-
-    /**
-     *
      * @param inboundMessage
      * @throws InvalidMessageException
      */
@@ -114,13 +143,25 @@ public class ClientSession implements Runnable {
             throw new InvalidMessageException("The received a message type from client that is invalid.");
         }
         switch(messageType) {
-            case CONNECT_MESSAGE :
+            // make a response message if receive a connect
+            case CONNECT_MESSAGE:
                 byte[] userName = inboundMessage.getUsername();
                 String responseString = "User " + Arrays.toString(userName) + " connected to server on port: " + this.server.getServerPort();
                 int responseSize = responseString.length();
                 String connectResponse = "20" + " " + responseSize + " " + responseString +" " + "true";
                 commProtocol = Communication.communicationFactory(connectResponse);
                 this.messageOutStream.writeObject(commProtocol);
+                break;
+            case DISCONNECT_MESSAGE:
+                break;
+            case QUERY_CONNECTED_USERS:
+                break;
+            case BROADCAST_MESSAGE:
+                break;
+            case DIRECT_MESSAGE:
+                break;
+            case SEND_INSULT:
+                break;
         }
     }
 
