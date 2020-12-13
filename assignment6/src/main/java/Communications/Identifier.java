@@ -2,6 +2,9 @@ package Communications;
 
 import java.util.HashMap;
 
+/**
+ * Enum class to represent all the different types of messages (protocol) that our chat app supports
+ */
 public enum Identifier {
 
   CONNECT_MESSAGE(19),
@@ -25,14 +28,27 @@ public enum Identifier {
     }
   }
 
+  /**
+   * Constructor for the enum class
+   * @param identifierValue takes int associated to that message/communication type
+   */
   Identifier(int identifierValue) {
     this.identifierValue = identifierValue;
   }
 
+  /**
+   * Getter method for the int value associated with each type of message/communication
+   * @return int associated with that Identifier
+   */
   public int getIdentifierValue() {
     return this.identifierValue;
   }
 
+  /**
+   * Getter method for the actual Identifier itself
+   * @param value int for which we want the identifier
+   * @return identifier
+   */
   public static Identifier getIdentifier(int value) {
     if(map.containsKey(value)) {
       return map.get(value);

@@ -4,12 +4,18 @@ import java.util.HashMap;
 
 /**
  * Class to represent any kind of communication (i.e. the entire protocol).
- * This is the parent (abstract) class for the teo types of communication that occur
+ * This is the parent (abstract) class for the two types of communication that occur, message and
+ * response (these are also abstract parent classes for their subtypes).
  */
 public abstract class Communication {
 
   private Identifier type;
 
+  /**
+   * Communication constructor.
+   * @param type the enum representing the type of communication
+   * @throws InvalidMessageException if the type is null
+   */
   public Communication(Identifier type) throws InvalidMessageException {
     if(type != null) {
       this.type = type;
@@ -18,17 +24,33 @@ public abstract class Communication {
     }
   }
 
-  //Get the value of the message identifier
+  /**
+   * Method that gets the int enum value of the identifier.
+   * @return
+   */
   public int getMessageIdValue() {
     return this.type.getIdentifierValue();
   }
 
-  //Get the "name"/string of the message identifier
+  /**
+   * Method that returns the enum representing the type of communication.
+   * @return
+   */
   public Identifier getIdentifier() {
     return this.type;
   }
 
 
+  /**
+   * Factory method that creates a Communication object based on the data passed in the string param.
+   * The method parses the string to get information to pass to the constructor of the
+   * appropriate Communication subtype.
+   * If the string is not formatted correctly as outlined in the assignment specs, it will catch
+   * any error pertaining to processing of this string, and throw an InvalidMs
+   * @param data String containing all necessary constructor information
+   * @return a Communication object (subtype)
+   * @throws InvalidMessageException string is not formatted correctly as outlined in the assignment specs
+   */
   public static Communication communicationFactory(String data) throws InvalidMessageException {
     Communication com = null;
     String[] split = data.split("\\s+");
@@ -134,27 +156,30 @@ public abstract class Communication {
         try{
           nameSize = Integer.parseInt(split[1]);
           username = split[2].getBytes();
-          numUsers = Integer.parseInt(split[3]);
-          name2Size = Integer.parseInt(split[4]);
-          username2 = split[5].getBytes();
-        } catch (Exception e) {
-          throw new InvalidMessageException("The input you entered is not valid.");
-        }
-        com = new BroadcastMessage(nameSize, username, numUsers, name2Size, username2);
-        break;
-
-      //DIRECT_MESSAGE
-      //DirectMessage(int nameSize, byte[] username, int msgSize, byte[] msg)
-      case 26 :
-        try {
-          nameSize = Integer.parseInt(split[1]);
-          username = split[2].getBytes();
           msgSize = Integer.parseInt(split[3]);
           msg = split[4].getBytes();
         } catch (Exception e) {
           throw new InvalidMessageException("The input you entered is not valid.");
         }
-        com = new DirectMessage(nameSize, username, msgSize, msg);
+        com = new BroadcastMessage(nameSize, username, msgSize, msg);
+        break;
+
+      //DIRECT_MESSAGE
+      //DirectMessage(int nameSize, byte[] username, int msgSize, byte[] msg)
+      case 26 :
+        int recipNameSize;
+        byte[] recipUsername;
+        try {
+          nameSize = Integer.parseInt(split[1]);
+          username = split[2].getBytes();
+          recipNameSize = Integer.parseInt(split[3]);
+          recipUsername = split[4].getBytes();
+          msgSize = Integer.parseInt(split[5]);
+          msg = split[6].getBytes();
+        } catch (Exception e) {
+          throw new InvalidMessageException("The input you entered is not valid.");
+        }
+        com = new DirectMessage(nameSize, username, recipNameSize, recipUsername, msgSize, msg);
         break;
 
       //FAILED_MESSAGE
@@ -172,17 +197,15 @@ public abstract class Communication {
       //SEND_INSULT
       //InsultMessage(int msgSize, byte[] msg, int recipNameSize, byte[] recipUsername)
       case 28 :
-        int recipNameSize;
-        byte[] recipUsername;
         try {
-          msgSize = Integer.parseInt(split[1]);
-          msg = split[2].getBytes();
+          nameSize = Integer.parseInt(split[1]);
+          username = split[2].getBytes();
           recipNameSize = Integer.parseInt(split[3]);
           recipUsername = split[4].getBytes();
         } catch (Exception e) {
           throw new InvalidMessageException("The input you entered is not valid.");
         }
-        com = new InsultMessage(msgSize, msg, recipNameSize, recipUsername);
+        com = new InsultMessage(nameSize, username, recipNameSize, recipUsername);
         break;
 
       default :
