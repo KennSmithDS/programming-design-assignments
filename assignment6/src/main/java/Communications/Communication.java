@@ -2,6 +2,10 @@ package Communications;
 
 import java.util.HashMap;
 
+/**
+ * Class to represent any kind of communication (i.e. the entire protocol).
+ * This is the parent (abstract) class for the teo types of communication that occur
+ */
 public abstract class Communication {
 
   private Identifier type;
