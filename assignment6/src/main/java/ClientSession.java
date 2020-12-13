@@ -1,13 +1,8 @@
-import Communications.Communication;
-import Communications.InvalidMessageException;
-import Communications.Message;
-
+import Communications.*;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
-import java.net.ServerSocket;
 import java.net.Socket;
-import java.nio.file.Path;
 
 public class ClientSession implements Runnable {
 
@@ -18,11 +13,15 @@ public class ClientSession implements Runnable {
     private ObjectInputStream messageInStream;
     private ObjectOutputStream messageOutStream;
 
-    ClientSession (Socket socket, Server server, int port) {
+    ClientSession (Socket socket, Server server, int port) throws IOException {
         this.socket = socket;
         this.server = server;
         this.port = port;
+        messageInStream = new ObjectInputStream(socket.getInputStream());
+        messageOutStream = new ObjectOutputStream(socket.getOutputStream());
     }
+
+    protected Socket getClientSocket() { return this.socket; }
 
 //    public void sendDirectMessage(Communications.Message message) {
 //
@@ -35,9 +34,6 @@ public class ClientSession implements Runnable {
     @Override
     public void run() {
         try {
-            messageOutStream = new ObjectOutputStream(socket.getOutputStream());
-            messageInStream = new ObjectInputStream(socket.getInputStream());
-
             while (serverRun) {
                 while (messageInStream.available() == 0) {
                     try {
@@ -50,12 +46,18 @@ public class ClientSession implements Runnable {
                 Message inboundMessage = (Message) messageInStream.readObject();
                 messageHandler(inboundMessage);
             }
-            
-            messageInStream.close();
-            messageOutStream.close();
-            socket.close();
+
         } catch (IOException | ClassNotFoundException | InvalidMessageException e) {
             e.printStackTrace();
+
+        } finally {
+            try {
+                messageInStream.close();
+                messageOutStream.close();
+                socket.close();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
         }
     }
 
