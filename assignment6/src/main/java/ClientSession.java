@@ -3,38 +3,76 @@ import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.net.Socket;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.Objects;
 
+/**
+ *
+ */
 public class ClientSession implements Runnable {
 
     private Socket socket;
     private Server server;
     private int port;
-    private boolean serverRun = true;
     private ObjectInputStream messageInStream;
     private ObjectOutputStream messageOutStream;
 
+    /**
+     *
+     * @param socket
+     * @param server
+     * @param port
+     * @throws IOException
+     */
     ClientSession (Socket socket, Server server, int port) throws IOException {
         this.socket = socket;
         this.server = server;
         this.port = port;
-        messageInStream = new ObjectInputStream(socket.getInputStream());
-        messageOutStream = new ObjectOutputStream(socket.getOutputStream());
+        this.messageInStream = new ObjectInputStream(socket.getInputStream());
+        this.messageOutStream = new ObjectOutputStream(socket.getOutputStream());
     }
 
+    /**
+     *
+     * @return
+     */
     protected Socket getClientSocket() { return this.socket; }
 
-//    public void sendDirectMessage(Communications.Message message) {
-//
-//    }
-//
-//    public void sendGlobalMessage(Communications.Message message) {
-//
-//    }
+    public void sendDirectMessage(Communications.DirectMessage message) throws IOException {
+        try {
+            byte[] recipientUser = message.getUsername();
+            if (this.server.getClientSessions().containsKey(recipientUser)) {
+                this.server.getClientSessions().get(recipientUser).messageOutStream.writeObject(message);
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
 
+    /**
+     *
+     * @param message
+     * @throws IOException
+     */
+    public void sendGlobalMessage(Communications.BroadcastMessage message) throws IOException {
+        try {
+            HashMap<byte[], ClientSession> sessions = this.server.getClientSessions();
+            for (byte[] clientName : sessions.keySet()) {
+                sessions.get(clientName).messageOutStream.writeObject(message);
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    /**
+     *
+     */
     @Override
     public void run() {
         try {
-            while (serverRun) {
+            while (true) {
                 while (messageInStream.available() == 0) {
                     try {
                         Thread.sleep(1);
@@ -61,19 +99,69 @@ public class ClientSession implements Runnable {
         }
     }
 
-    private void messageHandler(Message inboundMessage) throws InvalidMessageException {
+    /**
+     *
+     * @param inboundMessage
+     * @throws InvalidMessageException
+     */
+    private void messageHandler(Message inboundMessage) throws InvalidMessageException, IOException {
         Communication commProtocol = null;
-        int type;
+        Identifier messageType;
 
         try {
-            type = inboundMessage.getMessageIdValue();
+            messageType = inboundMessage.getIdentifier();
         } catch (Exception e) {
             throw new InvalidMessageException("The received a message type from client that is invalid.");
         }
-        switch(type) {
-            case 19:
-                Communication.communicationFactory("19 5 hello");
+        switch(messageType) {
+            case CONNECT_MESSAGE :
+                byte[] userName = inboundMessage.getUsername();
+                String responseString = "User " + Arrays.toString(userName) + " connected to server on port: " + this.server.getServerPort();
+                int responseSize = responseString.length();
+                String connectResponse = "20" + " " + responseSize + " " + responseString +" " + "true";
+                commProtocol = Communication.communicationFactory(connectResponse);
+                this.messageOutStream.writeObject(commProtocol);
         }
     }
 
+    /**
+     *
+     * @param o
+     * @return
+     */
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        ClientSession that = (ClientSession) o;
+        return port == that.port &&
+                Objects.equals(socket, that.socket) &&
+                Objects.equals(server, that.server) &&
+                Objects.equals(messageInStream, that.messageInStream) &&
+                Objects.equals(messageOutStream, that.messageOutStream);
+    }
+
+    /**
+     *
+     * @return
+     */
+    @Override
+    public int hashCode() {
+        return Objects.hash(socket, server, port, messageInStream, messageOutStream);
+    }
+
+    /**
+     *
+     * @return
+     */
+    @Override
+    public String toString() {
+        return "ClientSession{" +
+                "socket=" + socket +
+                ", server=" + server +
+                ", port=" + port +
+                ", messageInStream=" + messageInStream +
+                ", messageOutStream=" + messageOutStream +
+                '}';
+    }
 }

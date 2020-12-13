@@ -2,89 +2,94 @@ import java.io.IOException;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.HashMap;
+import java.util.Objects;
 import java.util.Scanner;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
+/**
+ *
+ */
 public class Server {
     private ServerSocket serverSocket;
     private int serverPort;
     private static final int DEFAULT_PORT = 3333;
     private static final int THREAD_LIMIT = 10;
-    private HashMap<String, ClientSession> clientConnections;
+    private HashMap<byte[], ClientSession> clientSessions;
     private boolean serverRunning = true;
-    protected ExecutorService threadExecutor;
+    private static ExecutorService threadPool = Executors.newFixedThreadPool(THREAD_LIMIT);
 
+    /**
+     *
+     * @throws IOException
+     */
     Server() throws IOException {
         this.serverPort = DEFAULT_PORT;
         openServerSocketOnPort(DEFAULT_PORT);
-        this.threadExecutor = Executors.newFixedThreadPool(THREAD_LIMIT);
-        this.clientConnections = new HashMap<>();
+        this.clientSessions = new HashMap<>();
     }
 
+    /**
+     *
+     * @param port
+     * @throws IOException
+     */
     Server(int port) throws IOException {
         this.serverPort = port;
         openServerSocketOnPort(port);
-        this.threadExecutor = Executors.newFixedThreadPool(THREAD_LIMIT);
-        this.clientConnections = new HashMap<>();
+        this.clientSessions = new HashMap<>();
     }
 
-    public static void main(String[] args) {
+    /**
+     *
+     * @param args
+     */
+    public static void main(String[] args) throws IOException {
         try {
             Scanner serverConsole = new Scanner(System.in);
+
             Server server = new Server();
             ServerSocket serverSocket = server.getServerSocket();
+
             System.out.println("Chat server is running on port " + server.serverPort);
+            System.out.println("Server is waiting for clients to connect");
 
             while (true) {
-
-                Socket clientSocket = serverSocket.accept();
-                ClientSession clientThread = new ClientSession(clientSocket, server, server.serverPort);
-                server.threadExecutor.execute(clientThread);
-//                server.threadExecutor.execute(new ClientSession(server.serverSocket.accept(), server, server.serverPort));
-
-                while (!serverConsole.hasNext()) {
-                    try {
-                        Thread.sleep(1);
-                    } catch (InterruptedException e) {
-                        e.printStackTrace();
-                    }
-                }
-
+                // unable to get the main logic to be able to handle both shutdown command as well as listen on port
                 String consoleInput = serverConsole.nextLine();
-                if (consoleInput.toLowerCase().equals("@shutdown")) {
-                    // add logic to send disconnect response to all clients
-                    server.shutdownServer();
-                    break;
+                while (!consoleInput.equals("shutdown")) {
+                    // accept inbound connections from clients, and add them to the thread pool executor
+                    Socket clientSocket = serverSocket.accept();
+                    System.out.println("Client connection from: " + clientSocket);
+                    ClientSession clientThread = new ClientSession(clientSocket, server, server.serverPort);
+                    threadPool.execute(clientThread);
                 }
+                break;
             }
         } catch (IOException e) {
             e.printStackTrace();
         } finally {
-            System.exit(0);
+            threadPool.shutdown();
+//            server.shutdownServer();
         }
-//        finally {
-//            try {
-//                serverSocket.close();
-//                /* unable to close the server connection here */
-//            } catch (Exception e) {
-//                e.printStackTrace();
-//            }
-//        }
     }
 
+    /**
+     *
+     * @return
+     */
     private ServerSocket getServerSocket() { return this.serverSocket; }
 
-    private void shutdownServer() throws IOException {
-        for (String clientName : this.clientConnections.keySet()) {
-            clientConnections.get(clientName).getClientSocket().close();
-        }
-        System.out.println("Shutting down client connections and server port");
-        this.serverSocket.close();
-    }
+    /**
+     *
+     * @return
+     */
+    public int getServerPort() { return this.serverPort; }
 
-    private int getServerPort() { return this.serverPort; }
-
+    /**
+     *
+     * @param port
+     */
     private void openServerSocketOnPort(int port) {
         try {
             this.serverSocket = new ServerSocket(port);
@@ -93,15 +98,58 @@ public class Server {
         }
     }
 
-    protected void addClientConnection(String clientName, ClientSession session) {
-        clientConnections.putIfAbsent(clientName, session);
+    /**
+     *
+     * @param clientName
+     * @param session
+     */
+    protected void addClientSession(byte[] clientName, ClientSession session) {
+        clientSessions.putIfAbsent(clientName, session);
     }
 
-    protected ClientSession getClientConnection(String clientName) {
-        if (clientConnections.containsKey(clientName)) {
-            return clientConnections.get(clientName);
+    /**
+     *
+     * @param clientName
+     * @return
+     */
+    protected ClientSession getClientSession(byte[] clientName) {
+        if (clientSessions.containsKey(clientName)) {
+            return clientSessions.get(clientName);
         }
         return null;
     }
 
+    /**
+     *
+     * @return
+     */
+    protected HashMap<byte[], ClientSession> getClientSessions() {
+        return this.clientSessions;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Server server = (Server) o;
+        return serverPort == server.serverPort &&
+                serverRunning == server.serverRunning &&
+                Objects.equals(serverSocket, server.serverSocket) &&
+                Objects.equals(clientSessions, server.clientSessions);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(serverSocket, serverPort, clientSessions, serverRunning);
+    }
+
+    @Override
+    public String toString() {
+        return "Server{" +
+                "serverSocket=" + serverSocket +
+                ", serverPort=" + serverPort +
+                ", clientSessions=" + clientSessions +
+                ", serverRunning=" + serverRunning +
+                '}';
+    }
 }
