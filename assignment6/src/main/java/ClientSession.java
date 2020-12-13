@@ -4,6 +4,7 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.net.Socket;
 import java.util.Arrays;
+import java.util.Base64;
 import java.util.HashMap;
 import java.util.Objects;
 
@@ -54,45 +55,46 @@ public class ClientSession implements Runnable {
             this.messageOutStream = new ObjectOutputStream(socket.getOutputStream());
             this.messageInStream = new ObjectInputStream(socket.getInputStream());
 
-            while (true) {
+            while (socket.isConnected()) {
                 // decide what kind of message to send
-                if (messageInStream.available() > 0) {
-                    Message inboundMessage = (Message) messageInStream.readObject();
-                    if (!isConnected) {
-                        if (inboundMessage.getIdentifier() != Identifier.CONNECT_MESSAGE) {
-                            // return failed message to user
-                            continue;
-                        } else if (inboundMessage.getIdentifier() == Identifier.CONNECT_MESSAGE) {
-                            // check if session in pool - not waiting for available spot
-                            // add to client sessions
-                            System.out.println("");
-                            server.addClientSession(inboundMessage.getUsername(), this);
-                            // send connect response with boolean == true
-                            isConnected = true;
-                        }
-                    } else {
-                        messageHandler(inboundMessage);
+                Message inboundMessage = (Message) messageInStream.readObject();
+                // block user from doing anything until connected
+                if (!isConnected) {
+                    if (inboundMessage.getIdentifier() != Identifier.CONNECT_MESSAGE) {
+                        System.out.println(Base64.getEncoder().encodeToString(inboundMessage.getUsername()) + " attempted to send message while not logged in");
+                        // return failed message to user
+                        sendConnectionResponse(inboundMessage, false);
+                        continue;
+                    } else if (inboundMessage.getIdentifier() == Identifier.CONNECT_MESSAGE) {
+                        // check if session in pool - not waiting for available spot
+                        // add to client sessions
+                        System.out.println("Inbound request from " + Base64.getEncoder().encodeToString(inboundMessage.getUsername()) + " to login to chat");
+                        server.addClientSession(inboundMessage.getUsername(), this);
+                        // send connect response with boolean == true
+                        sendConnectionResponse(inboundMessage, true);
+                        isConnected = true;
                     }
+                // let the user do other normal things once connected
                 } else {
-                    try {
-                        Thread.sleep(1);
-                    } catch (InterruptedException e) {
-                        e.printStackTrace();
+                    if (inboundMessage.getIdentifier() == Identifier.DISCONNECT_MESSAGE) {
+                        System.out.println(Base64.getEncoder().encodeToString(inboundMessage.getUsername()) + " requested to logoff the chat server");
+                        // send disconnect message
+                        sendDisconnectResponse(inboundMessage);
+
+                        // remove user from sessions
+                        isConnected = false;
+                        server.dropClientSession(inboundMessage.getUsername(), this);
+                        server.countDecrement();
+                        server.showClientCount();
+                        socket.close();
+                    } else {
+                        // handle other message types, i.e. direct, broadcast, insult and user query
                     }
                 }
             }
         } catch (ClassNotFoundException | InvalidMessageException e) {
             e.printStackTrace();
-        } finally {
-            try {
-                System.out.println("Closing object input/output streams and client socket");
-                server.countDecrement();
-                messageInStream.close();
-                messageOutStream.close();
-                socket.close();
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
+            socket.close();
         }
     }
 
@@ -128,41 +130,22 @@ public class ClientSession implements Runnable {
         }
     }
 
-    /**
-     *
-     * @param inboundMessage
-     * @throws InvalidMessageException
-     */
-    private void messageHandler(Message inboundMessage) throws InvalidMessageException, IOException {
-        Communication commProtocol = null;
-        Identifier messageType;
+    private void sendConnectionResponse(Message inboundMessage, boolean status) throws InvalidMessageException, IOException {
+        Communication commProtocol;
+        byte[] userName = inboundMessage.getUsername();
+        String responseString = "User " + Arrays.toString(userName) + " connection status to server on port: " + this.server.getServerPort();
+        int responseSize = responseString.length();
+        String connectResponse = Identifier.CONNECT_RESPONSE.getIdentifierValue() + " " + responseSize + " " + responseString +" " + status;
+        commProtocol = Communication.communicationFactory(connectResponse);
+        this.messageOutStream.writeObject(commProtocol);
+    }
 
-        try {
-            messageType = inboundMessage.getIdentifier();
-        } catch (Exception e) {
-            throw new InvalidMessageException("The received a message type from client that is invalid.");
-        }
-        switch(messageType) {
-            // make a response message if receive a connect
-            case CONNECT_MESSAGE:
-                byte[] userName = inboundMessage.getUsername();
-                String responseString = "User " + Arrays.toString(userName) + " connected to server on port: " + this.server.getServerPort();
-                int responseSize = responseString.length();
-                String connectResponse = "20" + " " + responseSize + " " + responseString +" " + "true";
-                commProtocol = Communication.communicationFactory(connectResponse);
-                this.messageOutStream.writeObject(commProtocol);
-                break;
-            case DISCONNECT_MESSAGE:
-                break;
-            case QUERY_CONNECTED_USERS:
-                break;
-            case BROADCAST_MESSAGE:
-                break;
-            case DIRECT_MESSAGE:
-                break;
-            case SEND_INSULT:
-                break;
-        }
+    private void sendDisconnectResponse(Message inboundMessage) throws InvalidMessageException, IOException {
+        Communication commProtocol;
+        String disconnectString = Arrays.toString(inboundMessage.getUsername()) + ", you are no longer connected to the chat server";
+        String disconnectResponse = Identifier.DISCONNECT_RESPONSE.getIdentifierValue() + " " + disconnectString.length() + " " + disconnectString;
+        commProtocol = Communication.communicationFactory(disconnectResponse);
+        this.messageOutStream.writeObject(commProtocol);
     }
 
     /**

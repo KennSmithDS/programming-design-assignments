@@ -1,5 +1,6 @@
 package Communications;
 
+import java.io.Serializable;
 import java.util.HashMap;
 
 /**
@@ -7,7 +8,7 @@ import java.util.HashMap;
  * This is the parent (abstract) class for the two types of communication that occur, message and
  * response (these are also abstract parent classes for their subtypes).
  */
-public abstract class Communication {
+public abstract class Communication implements Serializable {
 
   private Identifier type;
 

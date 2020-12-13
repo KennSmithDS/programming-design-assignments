@@ -54,7 +54,6 @@ public class Client {
           userName = logonSplit[1];
           System.out.println("Attempting to login to server as " + userName);
           String connectString = Identifier.CONNECT_MESSAGE.getIdentifierValue() + " " + userName.length() + " " + userName;
-          System.out.println(connectString);
 
           // send connect message
           Communication logonMessage = Communication.communicationFactory(connectString);
@@ -69,8 +68,6 @@ public class Client {
           messageOutStream.writeObject(logoffMessage);
 
           // await disconnect response
-
-
           break;
         } else if (input.equals("?")) {
           // show the available commands to user
@@ -80,7 +77,9 @@ public class Client {
             // construct other message/requests from client input and send to server
             Communication outboundMessage = Communication.communicationFactory(input);
             messageOutStream.writeObject(outboundMessage);
-          } catch (InvalidMessageException | IOException e) {
+          } catch (InvalidMessageException e) {
+            System.out.println("The command you entered is invalid, please try again...");
+          } catch (IOException e) {
             e.printStackTrace();
           }
         }

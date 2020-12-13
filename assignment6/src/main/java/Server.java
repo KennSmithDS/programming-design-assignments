@@ -105,16 +105,21 @@ public class Server {
         }
     }
 
-    private void showClientCount() { System.out.println("There are " + this.threadCount + " clients connected"); }
+    protected void showClientCount() { System.out.println("There are " + this.threadCount + " clients connected"); }
 
     /**
      *
      * @param clientName
      * @param session
      */
-    protected void addClientSession(byte[] clientName, ClientSession session) {
-        clientSessions.putIfAbsent(clientName, session);
-    }
+    protected void addClientSession(byte[] clientName, ClientSession session) { clientSessions.putIfAbsent(clientName, session); }
+
+    /**
+     *
+     * @param clientName
+     * @param session
+     */
+    protected void dropClientSession(byte[] clientName, ClientSession session) { clientSessions.remove(clientName, session); }
 
     /**
      *
