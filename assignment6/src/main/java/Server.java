@@ -1,6 +1,7 @@
 import java.io.IOException;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.util.Scanner;
 import java.util.concurrent.Executor;
 import java.util.concurrent.Executors;
 
@@ -25,11 +26,28 @@ public class Server {
 
     public static void main(String[] args) {
         try {
+            Scanner serverConsole = new Scanner(System.in);
             Server server = new Server();
             server.openServerSocketOnPort();
             System.out.println("Chat server is running on port " + server.serverPort);
+
             while (true) {
+
                 server.threadExecutor.execute(new ClientSession(server.serverSocket.accept(), server, server.serverPort));
+
+                while (!serverConsole.hasNext()) {
+                    try {
+                        Thread.sleep(1);
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
+                    }
+                }
+
+                String consoleInput = serverConsole.nextLine();
+                if (consoleInput.toLowerCase().equals("@shutdown")) {
+                    // add logic to send disconnect response to all clients
+                    break;
+                }
             }
 
         } catch (IOException e) {
