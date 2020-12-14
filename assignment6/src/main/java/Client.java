@@ -73,7 +73,7 @@ public class Client {
           } else {
             // construct logon message
             String[] logonSplit = input.split("\\s+");
-            userName = logonSplit[1];
+            this.userName = logonSplit[1];
             System.out.println("Attempting to login to server as @" + userName);
             String connectString = Identifier.CONNECT_MESSAGE.getIdentifierValue() + " " + userName.length() + " " + userName;
 
@@ -98,7 +98,60 @@ public class Client {
         } else if (input.equals("?")) {
           // show the available commands to user
           displayCommands();
-        } else {
+        }
+
+        else if(input.toLowerCase().startsWith("who")) {
+          if(!server.isConnected()) {
+            System.out.println("You are not yet logged on. Please log on before calling other commands.");
+          } else {
+            System.out.println("User query request from @" + userName + ".");
+            String queryString = Identifier.QUERY_CONNECTED_USERS.getIdentifierValue() + " " + this.userName.length() + " " + this.userName;
+            Communication queryMessage = Communication.communicationFactory(queryString);
+            messageOutStream.writeObject(queryMessage);
+          }
+        }
+
+        else if(input.toLowerCase().startsWith("@all")) {
+          if(!server.isConnected()) {
+            System.out.println("You are not yet logged on. Please log on before calling other commands.");
+          } else {
+            String[] allSplit = input.split("\\s+");
+            String msg = "";
+            for(int i = 1; i < allSplit.length; i++) {
+              msg = msg + allSplit[i] + " ";
+            }
+            int msgLength = msg.length();
+            String allString = Identifier.BROADCAST_MESSAGE.getIdentifierValue() + " " +
+                this.userName.length() + " " + this.userName + " " + msgLength + " " + msg;
+            Communication broadcastMessage = Communication.communicationFactory(allString);
+            messageOutStream.writeObject(broadcastMessage);
+          }
+        }
+
+        else if(input.toLowerCase().startsWith("@a")) {
+          if(!server.isConnected()) {
+            System.out.println("You are not yet logged on. Please log on before calling other commands.");
+          } else {
+            String[] directSplit = input.split("\\s+");
+            String recipient = directSplit[0].substring(1);
+            int recpiSize = recipient.length();
+            String msg = "";
+            for(int i = 1; i < directSplit.length; i++) {
+              msg = msg + directSplit[i] + " ";
+            }
+            int msgLength = msg.length();
+            String directString = Identifier.DIRECT_MESSAGE.getIdentifierValue() + " " +
+                this.userName.length() + " " + this.userName + " " + recpiSize + " " + recipient
+                + " " + msgLength + " " + msg;
+            Communication directMessage = Communication.communicationFactory(directString);
+            messageOutStream.writeObject(directMessage);
+
+          }
+        }
+
+        //need to handle sending insult
+
+        else {
           try {
             // construct other message/requests from client input and send to server
             Communication outboundMessage = Communication.communicationFactory(input);

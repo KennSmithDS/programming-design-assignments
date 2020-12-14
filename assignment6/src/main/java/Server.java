@@ -68,7 +68,6 @@ public class Server {
                     ClientSession clientThread = new ClientSession(clientSocket, server, server.getServerPort());
                     threadPool.execute(clientThread);
                     System.out.println("There are " + server.getClientCount() + " clients connected");
-
                 }
             }
         } catch (IOException e) {
