@@ -82,7 +82,7 @@ public class ServerConnection implements Runnable {
                 }
 
                 else if(serverInbound instanceof Communications.FailedResponse) {
-                    System.out.println("MESSAGE FAILURE.");
+                    System.out.println("FAILURE.");
                     System.out.println(((FailedResponse) serverInbound).getStringMsg());
                 }
 

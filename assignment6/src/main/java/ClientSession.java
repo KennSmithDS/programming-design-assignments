@@ -140,9 +140,13 @@ public class ClientSession implements Runnable {
             if (this.server.getClientSessions().containsKey(recipientUser)) {
                 this.server.getClientSessions().get(recipientUser).messageOutStream.writeObject(message);
             } else {
-                // logic to send failed message
+                String msg = "Cannot send direct message because user @" + message.getRecipStringName() + " does not exist.";
+                int msgLength = msg.length();
+                String failMsg = Identifier.FAILED_MESSAGE.getIdentifierValue() + " " + msgLength + " " + msg;
+                Communication fail = Communication.communicationFactory(failMsg);
+                this.server.getClientSessions().get(message.getStringName()).messageOutStream.writeObject(fail);
             }
-        } catch (IOException e) {
+        } catch (IOException | InvalidMessageException e) {
             e.printStackTrace();
         }
     }
