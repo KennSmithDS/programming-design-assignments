@@ -1,5 +1,7 @@
 package Communications;
 
+import java.nio.charset.StandardCharsets;
+
 /**
  * Class representing a DISCONNECT_MESSAGE object.
  * It is a subtype of the Message class.
@@ -60,5 +62,14 @@ public class DirectMessage extends Message {
    */
   public byte[] getMsg() {
     return msg;
+  }
+
+  /**
+   *
+   * @return
+   */
+  public String getStringMsg() {
+    String s = new String(this.msg, StandardCharsets.UTF_8);
+    return s;
   }
 }

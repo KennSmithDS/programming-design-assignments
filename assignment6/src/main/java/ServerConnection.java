@@ -1,8 +1,11 @@
 import Communications.BroadcastMessage;
 import Communications.Communication;
 import Communications.ConnectResponse;
+import Communications.DirectMessage;
 import Communications.DisconnectResponse;
+import Communications.FailedResponse;
 import Communications.Identifier;
+import Communications.InsultMessage;
 import Communications.InvalidMessageException;
 import Communications.Message;
 import Communications.QueryResponse;
@@ -53,12 +56,13 @@ public class ServerConnection implements Runnable {
 
                 if(serverInbound instanceof Communications.ConnectResponse) {
                     this.connected = ((ConnectResponse) serverInbound).isSuccess();
-                    System.out.println(((ConnectResponse) serverInbound).getStringMessage());
+                    System.out.println(((ConnectResponse) serverInbound).getStringMsg());
                 }
 
                 else if(serverInbound instanceof Communications.DisconnectResponse) {
-                    System.out.println(((DisconnectResponse) serverInbound).getStringMessage());
+                    System.out.println(((DisconnectResponse) serverInbound).getStringMsg());
                     this.allowLogoff = true;
+                    break;
                 }
 
                 else if(serverInbound instanceof Communications.QueryResponse) {
@@ -72,15 +76,31 @@ public class ServerConnection implements Runnable {
                     System.out.println("MESSAGE: " + ((BroadcastMessage) serverInbound).getStringMsg());
                 }
 
+                else if(serverInbound instanceof Communications.DirectMessage) {
+                    System.out.println("Direct message from : @" + ((DirectMessage) serverInbound).getStringName());
+                    System.out.println("MESSAGE: " + ((DirectMessage) serverInbound).getStringMsg());
+                }
 
-                //What do we do for direct message?
+                else if(serverInbound instanceof Communications.FailedResponse) {
+                    System.out.println("MESSAGE FAILURE.");
+                    System.out.println(((FailedResponse) serverInbound).getStringMsg());
+                }
+
+                else if(serverInbound instanceof Communications.InsultMessage) {
+                    System.out.println("You have been sent an insult from @" + ((InsultMessage) serverInbound).getStringName());
+                    //Print insult here
+                }
 
             }
+            messageInStream.close();
+            System.out.println("Closed stream.");
 
         } catch (Exception e) {
             e.printStackTrace();
             messageInStream.close();
+            System.out.println("Caught error and closed stream.");
         }
+
     }
 
 

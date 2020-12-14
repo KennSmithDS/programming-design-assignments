@@ -4,6 +4,8 @@ import Communications.Communication;
 import Communications.Identifier;
 import Communications.InvalidMessageException;
 import java.nio.charset.StandardCharsets;
+import java.util.Arrays;
+import java.util.Objects;
 
 /**
  * Abstract (parent) class representing a Message object.
@@ -45,9 +47,58 @@ public abstract class Message extends Communication {
     return this.username;
   }
 
+  /**
+   * Getter method for the String username
+   * @return String username
+   */
   public String getStringName() {
     String s = new String(this.username, StandardCharsets.UTF_8);
     return s;
   }
 
+  /**
+   * Overridden equals method
+   * @param o
+   * @return boolean if objects are equal
+   */
+  @Override
+  public boolean equals(Object o) {
+    if (this == o) {
+      return true;
+    }
+    if (!(o instanceof Message)) {
+      return false;
+    }
+    if (!super.equals(o)) {
+      return false;
+    }
+    Message message = (Message) o;
+    return nameSize == message.nameSize &&
+        type == message.type &&
+        Arrays.equals(username, message.username);
+  }
+
+  /**
+   * Overridden hashCode method
+   * @return int hashcode
+   */
+  @Override
+  public int hashCode() {
+    int result = Objects.hash(super.hashCode(), type, nameSize);
+    result = 31 * result + Arrays.hashCode(username);
+    return result;
+  }
+
+  /**
+   * Overridden toString method
+   * @return string representing the object
+   */
+  @Override
+  public String toString() {
+    return "Message{" +
+        "type=" + type +
+        ", nameSize=" + nameSize +
+        ", username=" + Arrays.toString(username) +
+        '}';
+  }
 }

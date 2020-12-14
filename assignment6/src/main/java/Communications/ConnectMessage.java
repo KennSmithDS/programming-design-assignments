@@ -16,4 +16,7 @@ public class ConnectMessage extends Message {
     super(Identifier.CONNECT_MESSAGE, nameSize, username);
   }
 
+  //equals(), hashCode(), and toString() don't need to be overriden because there are no additional
+  //fields that differ from that of the parent class (Message)
+
 }

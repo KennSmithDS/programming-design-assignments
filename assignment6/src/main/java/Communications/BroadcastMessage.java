@@ -1,6 +1,8 @@
 package Communications;
 
 import java.nio.charset.StandardCharsets;
+import java.util.Arrays;
+import java.util.Objects;
 
 /**
  * Class representing a BROADCAST_MESSAGE object.
@@ -41,9 +43,56 @@ public class BroadcastMessage extends Message {
     return msg;
   }
 
+  /**
+   * Getter method that returns the message as a String
+   * @return msg as a String
+   */
   public String getStringMsg() {
     String s = new String(this.msg, StandardCharsets.UTF_8);
     return s;
   }
 
+  /**
+   * Overriden equals method to include params that aren't in the parent Message class
+   * @param o
+   * @return boolean are equal
+   */
+  @Override
+  public boolean equals(Object o) {
+    if (this == o) {
+      return true;
+    }
+    if (!(o instanceof BroadcastMessage)) {
+      return false;
+    }
+    if (!super.equals(o)) {
+      return false;
+    }
+    BroadcastMessage that = (BroadcastMessage) o;
+    return msgSize == that.msgSize &&
+        Arrays.equals(msg, that.msg);
+  }
+
+  /**
+   * Overridden hashCode method to include params that aren't in the parent Message class
+   * @return int hashCode
+   */
+  @Override
+  public int hashCode() {
+    int result = Objects.hash(super.hashCode(), msgSize);
+    result = 31 * result + Arrays.hashCode(msg);
+    return result;
+  }
+
+  /**
+   * Overridden toString method to include params that aren't in the parent Message class
+   * @return
+   */
+  @Override
+  public String toString() {
+    return "BroadcastMessage{" +
+        "msgSize=" + msgSize +
+        ", msg=" + Arrays.toString(msg) +
+        "} " + super.toString();
+  }
 }

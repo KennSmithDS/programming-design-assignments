@@ -41,6 +41,9 @@ public class QueryResponse extends Response {
     return users;
   }
 
+  /**
+   * Method that prints all the users that are currently connected (in the HashMap)
+   */
   public void printUsers() {
     for(byte[] username : users.keySet()) {
       String s = new String(username, StandardCharsets.UTF_8);

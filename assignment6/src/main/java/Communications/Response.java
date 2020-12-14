@@ -44,6 +44,10 @@ public abstract class Response extends Communication {
     return this.msg;
   }
 
+  /**
+   * Getter method for String message
+   * @return meessage as a String
+   */
   public String getStringMsg() {
     String s = new String(this.msg, StandardCharsets.UTF_8);
     return s;

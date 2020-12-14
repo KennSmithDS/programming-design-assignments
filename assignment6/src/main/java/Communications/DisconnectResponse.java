@@ -17,9 +17,5 @@ public class DisconnectResponse extends Response {
     super(Identifier.DISCONNECT_MESSAGE, msgSize, msg);
   }
 
-  public String getStringMessage() {
-    String s = new String(this.getMsg(), StandardCharsets.UTF_8);
-    return s;
-  }
 
 }

@@ -2,6 +2,7 @@ package Communications;
 
 import java.io.Serializable;
 import java.util.HashMap;
+import java.util.Objects;
 
 /**
  * Class to represent any kind of communication (i.e. the entire protocol).
@@ -237,8 +238,40 @@ public abstract class Communication implements Serializable {
 
   }
 
+  /**
+   * Overridden equals method
+   * @param o
+   * @return boolean if objects are equal
+   */
+  @Override
+  public boolean equals(Object o) {
+    if (this == o) {
+      return true;
+    }
+    if (!(o instanceof Communication)) {
+      return false;
+    }
+    Communication that = (Communication) o;
+    return type == that.type;
+  }
 
+  /**
+   * Overridden hashCode method
+   * @return int hashcode
+   */
+  @Override
+  public int hashCode() {
+    return Objects.hash(type);
+  }
 
-
-
+  /**
+   * Overridden toString method
+   * @return string representing the object
+   */
+  @Override
+  public String toString() {
+    return "Communication{" +
+        "type=" + type +
+        '}';
+  }
 }

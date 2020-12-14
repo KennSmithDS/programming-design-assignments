@@ -29,9 +29,5 @@ public class ConnectResponse extends Response {
     return this.success;
   }
 
-  public String getStringMessage() {
-    String s = new String(this.getMsg(), StandardCharsets.UTF_8);
-    return s;
-  }
 
 }
