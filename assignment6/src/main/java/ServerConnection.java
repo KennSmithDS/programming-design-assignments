@@ -1,17 +1,37 @@
+import Communications.BroadcastMessage;
 import Communications.Communication;
+import Communications.ConnectResponse;
+import Communications.DisconnectResponse;
+import Communications.Identifier;
+import Communications.InvalidMessageException;
 import Communications.Message;
+import Communications.QueryResponse;
 import java.io.IOException;
 import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
 import java.net.Socket;
+import java.util.Arrays;
 
 public class ServerConnection implements Runnable {
 
     private Socket socket;
     private ObjectInputStream messageInStream;
+    private boolean connected;
+    private boolean allowLogoff;
 
     ServerConnection(Socket socket, ObjectInputStream messageInStream) throws IOException {
         this.socket = socket;
         this.messageInStream = messageInStream;
+        this.connected = false;
+        this.allowLogoff = false;
+    }
+
+    public boolean isConnected() {
+        return connected;
+    }
+
+    public boolean isAllowLogoff() {
+        return allowLogoff;
     }
 
     @Override
@@ -23,34 +43,45 @@ public class ServerConnection implements Runnable {
         }
     }
 
+    //Handles all responses
     private void handleServerConnection() throws IOException {
         try {
 
             while (true) {
                 Object serverInbound = messageInStream.readObject();
-                System.out.println(serverInbound.toString());
+                //System.out.println("The message is: " + serverInbound.toString());
 
-                // receive the communication from server and interpret
-    //                Communication commProtocol = (Communication) messageInStream.readObject();
-    //                if (commProtocol instanceof DirectMessage) {
-    //                    DirectMessage inboundMessage = (DirectMessage) commProtocol;
-    //                    displayMessage(inboundMessage);
-    //                } else if (commProtocol instanceof BroadcastMessage) {
-    //                    BroadcastMessage inboundMessage = (BroadcastMessage) commProtocol;
-    //                }
+                if(serverInbound instanceof Communications.ConnectResponse) {
+                    this.connected = ((ConnectResponse) serverInbound).isSuccess();
+                    System.out.println(((ConnectResponse) serverInbound).getStringMessage());
                 }
 
+                else if(serverInbound instanceof Communications.DisconnectResponse) {
+                    System.out.println(((DisconnectResponse) serverInbound).getStringMessage());
+                    this.allowLogoff = true;
+                }
+
+                else if(serverInbound instanceof Communications.QueryResponse) {
+                    System.out.println("There are " + ((QueryResponse) serverInbound).getNumUsers() +
+                        " users connected.");
+                    ((QueryResponse) serverInbound).printUsers();
+                }
+
+                else if(serverInbound instanceof Communications.BroadcastMessage) {
+                    System.out.println("Broadcast message from : @" + ((BroadcastMessage) serverInbound).getStringName());
+                    System.out.println("MESSAGE: " + ((BroadcastMessage) serverInbound).getStringMsg());
+                }
+
+
+                //What do we do for direct message?
+
+            }
+
         } catch (Exception e) {
-                e.printStackTrace();
-                messageInStream.close();
+            e.printStackTrace();
+            messageInStream.close();
         }
     }
 
-    public void displayMessage(Communication inboundCommunication) {
-//    String sendingUsername = Arrays.toString(inboundMessage.getUsername());
-//    String messageSent = Arrays.toString(inboundMessage.getMsg());
-//    String directMessageContents = sendingUsername +": " + messageSent;
-//    System.out.println(directMessageContents);
-    }
 
 }

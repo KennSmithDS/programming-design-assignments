@@ -3,6 +3,7 @@ package Communications;
 import Communications.Communication;
 import Communications.Identifier;
 import Communications.InvalidMessageException;
+import java.nio.charset.StandardCharsets;
 
 /**
  * Abstract (parent) class representing a Response object.
@@ -42,4 +43,10 @@ public abstract class Response extends Communication {
   public byte[] getMsg() {
     return this.msg;
   }
+
+  public String getStringMsg() {
+    String s = new String(this.msg, StandardCharsets.UTF_8);
+    return s;
+  }
+
 }

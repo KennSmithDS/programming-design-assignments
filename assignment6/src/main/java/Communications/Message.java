@@ -3,6 +3,7 @@ package Communications;
 import Communications.Communication;
 import Communications.Identifier;
 import Communications.InvalidMessageException;
+import java.nio.charset.StandardCharsets;
 
 /**
  * Abstract (parent) class representing a Message object.
@@ -42,6 +43,11 @@ public abstract class Message extends Communication {
    */
   public byte[] getUsername() {
     return this.username;
+  }
+
+  public String getStringName() {
+    String s = new String(this.username, StandardCharsets.UTF_8);
+    return s;
   }
 
 }

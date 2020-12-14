@@ -1,5 +1,7 @@
 package Communications;
 
+import java.nio.charset.StandardCharsets;
+
 /**
  * Class that is a subtype of Response to represent CONNECT_RESPONSE (20)
  */
@@ -25,6 +27,11 @@ public class ConnectResponse extends Response {
    */
   public boolean isSuccess() {
     return this.success;
+  }
+
+  public String getStringMessage() {
+    String s = new String(this.getMsg(), StandardCharsets.UTF_8);
+    return s;
   }
 
 }

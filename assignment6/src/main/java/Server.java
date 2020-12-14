@@ -67,6 +67,7 @@ public class Server {
                     ClientSession clientThread = new ClientSession(clientSocket, server, server.getServerPort());
                     threadPool.execute(clientThread);
                     server.showClientCount();
+
                 }
             }
         } catch (IOException e) {

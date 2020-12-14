@@ -1,5 +1,6 @@
 package Communications;
 
+import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
 
 /**
@@ -8,7 +9,7 @@ import java.util.HashMap;
 public class QueryResponse extends Response {
 
   private int numUsers;
-  private HashMap<Integer, byte[]> users;
+  private HashMap<byte[], Integer> users;
 
   /**
    * Constructor for QueryResponse object
@@ -17,7 +18,7 @@ public class QueryResponse extends Response {
    *              represented by a byte array)
    * @throws InvalidMessageException
    */
-  public QueryResponse(int numUsers, HashMap<Integer, byte[]> users) throws InvalidMessageException {
+  public QueryResponse(int numUsers, HashMap<byte[], Integer> users) throws InvalidMessageException {
     super(Identifier.QUERY_USER_RESPONSE, Integer.MIN_VALUE, null);
     this.numUsers = numUsers;
     this.users = users;
@@ -36,8 +37,15 @@ public class QueryResponse extends Response {
    * Getter method for the HashMap containing connected users' information
    * @return HashMap of connected users' info
    */
-  public HashMap<Integer, byte[]> getUsers() {
+  public HashMap<byte[], Integer> getUsers() {
     return users;
+  }
+
+  public void printUsers() {
+    for(byte[] username : users.keySet()) {
+      String s = new String(username, StandardCharsets.UTF_8);
+      System.out.println(s);
+    }
   }
 
 }

@@ -9,6 +9,8 @@ public class Client {
   private static final int DEFAULT_PORT = 3333;
   private static final String DEFAULT_HOST = "localhost";
   private String userName;
+  private boolean connected;
+  private boolean allowLogoff;
 
   public Client(String host, int port) {
     try {
@@ -17,10 +19,28 @@ public class Client {
     } catch (IOException e) {
       e.printStackTrace();
     }
+    this.connected = false;
+    this.allowLogoff = false;
   }
 
   public Socket getClientSocket() {
     return this.socket;
+  }
+
+  public boolean isConnected() {
+    return connected;
+  }
+
+  public void setConnected(boolean connected) {
+    this.connected = connected;
+  }
+
+  public boolean isAllowLogoff() {
+    return allowLogoff;
+  }
+
+  public void setAllowLogoff(boolean allowLogoff) {
+    this.allowLogoff = allowLogoff;
   }
 
   public static void main(String[] args) throws IOException, InvalidMessageException {
@@ -30,10 +50,10 @@ public class Client {
 
     ServerConnection serverConnectionThread = new ServerConnection(client.getClientSocket(), messageInStream);
     new Thread(serverConnectionThread).start();
-    client.listenForUserCommands(messageOutStream);
+    client.listenForUserCommands(messageOutStream, messageInStream, serverConnectionThread);
   }
 
-  public void listenForUserCommands(ObjectOutputStream messageOutStream) throws IOException, InvalidMessageException {
+  public void listenForUserCommands(ObjectOutputStream messageOutStream, ObjectInputStream messageInStream, ServerConnection server) throws IOException, InvalidMessageException {
     System.out.println("Welcome to the chat app, you can type '?' at any time to see list of available commands");
     Scanner console = new Scanner(System.in);
 
@@ -48,27 +68,33 @@ public class Client {
         // this will be overwritten by the real logoff, which will send disconnect message
         // that will then wait for a disconnect response from the server
         if (input.toLowerCase().startsWith("logon")) {
+          if(server.isConnected()) {
+            System.out.println("You are already logged on and cannot log on again.");
+          } else {
+            // construct logon message
+            String[] logonSplit = input.split("\\s+");
+            userName = logonSplit[1];
+            System.out.println("Attempting to login to server as @" + userName);
+            String connectString = Identifier.CONNECT_MESSAGE.getIdentifierValue() + " " + userName.length() + " " + userName;
 
-          // construct logon message
-          String[] logonSplit = input.split("\\s+");
-          userName = logonSplit[1];
-          System.out.println("Attempting to login to server as " + userName);
-          String connectString = Identifier.CONNECT_MESSAGE.getIdentifierValue() + " " + userName.length() + " " + userName;
-
-          // send connect message
-          Communication logonMessage = Communication.communicationFactory(connectString);
-          messageOutStream.writeObject(logonMessage);
-
-          // await connect response
+            // send connect message
+            Communication logonMessage = Communication.communicationFactory(connectString);
+            messageOutStream.writeObject(logonMessage);
+          }
 
         } else if (input.toLowerCase().equals("logoff")) {
-          // send disconnect message
-          String disconnectString = Identifier.DISCONNECT_MESSAGE.getIdentifierValue() + " " + userName.length() + " " + userName;
-          Communication logoffMessage = Communication.communicationFactory(disconnectString);
-          messageOutStream.writeObject(logoffMessage);
+          if(!server.isConnected()) {
+            System.out.println("You are not yet logged on. Please log on before trying to log off.");
+          } else {
+            String disconnectString = Identifier.DISCONNECT_MESSAGE.getIdentifierValue() + " " + userName.length() + " " + userName;
+            Communication logoffMessage = Communication.communicationFactory(disconnectString);
+            messageOutStream.writeObject(logoffMessage);
 
-          // await disconnect response
-          break;
+            while(!server.isAllowLogoff()) {
+            }
+            break;
+          }
+
         } else if (input.equals("?")) {
           // show the available commands to user
           displayCommands();
@@ -78,7 +104,7 @@ public class Client {
             Communication outboundMessage = Communication.communicationFactory(input);
             messageOutStream.writeObject(outboundMessage);
           } catch (InvalidMessageException e) {
-            System.out.println("The command you entered is invalid, please try again...");
+            System.out.println("The command you entered is invalid, please try again. Do not include spaces before or after commands.");
           } catch (IOException e) {
             e.printStackTrace();
           }
@@ -87,7 +113,6 @@ public class Client {
     } catch (Exception e) {
       e.printStackTrace();
     } finally {
-      System.out.println("Logging off of chat app");
       System.exit(0);
     }
   }

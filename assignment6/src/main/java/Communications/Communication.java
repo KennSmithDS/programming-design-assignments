@@ -87,8 +87,12 @@ public abstract class Communication implements Serializable {
         boolean success;
         try {
           msgSize = Integer.parseInt(split[1]);
-          msg = split[2].getBytes();
-          success = Boolean.parseBoolean(split[3]);
+          String fullMsg = "";
+          for(int i = 2; i < split.length-1; i++) {
+            fullMsg = fullMsg + split[i] + " ";
+          }
+          msg = fullMsg.getBytes();
+          success = Boolean.parseBoolean(split[split.length-1]);
         } catch (Exception e) {
           throw new InvalidMessageException("The input you entered is not valid.");
         }
@@ -112,7 +116,11 @@ public abstract class Communication implements Serializable {
       case 22 :
         try {
           msgSize = Integer.parseInt(split[1]);
-          msg = split[2].getBytes();
+          String fullMsg = "";
+          for(int i = 2; i < split.length; i++) {
+            fullMsg = fullMsg + split[i] + " ";
+          }
+          msg = fullMsg.getBytes();
         } catch (Exception e) {
           throw new InvalidMessageException("The input you entered is not valid.");
         }
@@ -135,13 +143,13 @@ public abstract class Communication implements Serializable {
       //QueryResponse(int numUsers, HashMap<Integer, byte[]> map)
       case 24 :
         int numUsers;
-        HashMap<Integer, byte[]> map = new HashMap<>();
+        HashMap<byte[], Integer> map = new HashMap<>();
         try {
           numUsers = Integer.parseInt(split[1]);
           for(int i = 2; i < split.length; i+=2) {
             nameSize = Integer.parseInt(split[i]);
             username = split[i + 1].getBytes();
-            map.put(nameSize, username);
+            map.put(username, nameSize);
           }
         } catch (Exception e) {
           throw new InvalidMessageException("The input you entered is not valid.");
@@ -158,7 +166,11 @@ public abstract class Communication implements Serializable {
           nameSize = Integer.parseInt(split[1]);
           username = split[2].getBytes();
           msgSize = Integer.parseInt(split[3]);
-          msg = split[4].getBytes();
+          String fullMsg = "";
+          for(int i = 4; i < split.length; i++) {
+            fullMsg = fullMsg + split[i] + " ";
+          }
+          msg = fullMsg.getBytes();
         } catch (Exception e) {
           throw new InvalidMessageException("The input you entered is not valid.");
         }
@@ -176,7 +188,11 @@ public abstract class Communication implements Serializable {
           recipNameSize = Integer.parseInt(split[3]);
           recipUsername = split[4].getBytes();
           msgSize = Integer.parseInt(split[5]);
-          msg = split[6].getBytes();
+          String fullMsg = "";
+          for(int i = 6; i < split.length; i++) {
+            fullMsg = fullMsg + split[i] + " ";
+          }
+          msg = fullMsg.getBytes();
         } catch (Exception e) {
           throw new InvalidMessageException("The input you entered is not valid.");
         }
@@ -188,7 +204,11 @@ public abstract class Communication implements Serializable {
       case 27 :
         try {
           msgSize = Integer.parseInt(split[1]);
-          msg = split[2].getBytes();
+          String fullMsg = "";
+          for(int i = 2; i < split.length; i++) {
+            fullMsg = fullMsg + split[i] + " ";
+          }
+          msg = fullMsg.getBytes();
         } catch (Exception e) {
           throw new InvalidMessageException("The input you entered is not valid.");
         }

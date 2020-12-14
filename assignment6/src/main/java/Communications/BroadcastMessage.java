@@ -1,5 +1,7 @@
 package Communications;
 
+import java.nio.charset.StandardCharsets;
+
 /**
  * Class representing a BROADCAST_MESSAGE object.
  * It is a subtype of the Message class.
@@ -38,4 +40,10 @@ public class BroadcastMessage extends Message {
   public byte[] getMsg() {
     return msg;
   }
+
+  public String getStringMsg() {
+    String s = new String(this.msg, StandardCharsets.UTF_8);
+    return s;
+  }
+
 }

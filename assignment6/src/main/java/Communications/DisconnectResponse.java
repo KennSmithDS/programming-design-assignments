@@ -1,5 +1,7 @@
 package Communications;
 
+import java.nio.charset.StandardCharsets;
+
 /**
  * Class that is a subtype of Response to represent DISCONNECT_RESPONSE (22)
  */
@@ -13,6 +15,11 @@ public class DisconnectResponse extends Response {
    */
   public DisconnectResponse(int msgSize, byte[] msg) throws InvalidMessageException {
     super(Identifier.DISCONNECT_MESSAGE, msgSize, msg);
+  }
+
+  public String getStringMessage() {
+    String s = new String(this.getMsg(), StandardCharsets.UTF_8);
+    return s;
   }
 
 }
