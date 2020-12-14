@@ -130,7 +130,7 @@ public class Client {
           }
         }
 
-        else if(input.toLowerCase().startsWith("@a")) {
+        else if(input.toLowerCase().startsWith("@")) {
           if(!server.isConnected()) {
             System.out.println("You are not yet logged on. Please log on before calling other commands.");
           } else {
@@ -151,7 +151,20 @@ public class Client {
           }
         }
 
-        //need to handle sending insult
+        else if(input.toLowerCase().startsWith("!")) {
+          if(!server.isConnected()) {
+            System.out.println("You are not yet logged on. Please log on before calling other commands.");
+          } else {
+            String[] directSplit = input.split("\\s+");
+            String recipient = directSplit[0].substring(1);
+            int recpiSize = recipient.length();
+            String insultString = Identifier.SEND_INSULT.getIdentifierValue() + " " +
+                this.userName.length() + " " + this.userName + " " + recpiSize + " " + recipient;
+            Communication insultMessage = Communication.communicationFactory(insultString);
+            messageOutStream.writeObject(insultMessage);
+          }
+
+        }
 
         else {
           try {

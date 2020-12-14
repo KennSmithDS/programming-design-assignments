@@ -49,6 +49,15 @@ public class DirectMessage extends Message {
   }
 
   /**
+   * Getter method for the recipient's username as a String
+   * @return String of the recipient's username
+   */
+  public String getRecipStringName() {
+    String s = new String(this.recipUsername, StandardCharsets.UTF_8);
+    return s;
+  }
+
+  /**
    * Getter method for the size of the direct message
    * @return int size of the message
    */

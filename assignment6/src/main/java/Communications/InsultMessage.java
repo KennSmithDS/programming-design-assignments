@@ -1,5 +1,7 @@
 package Communications;
 
+import java.nio.charset.StandardCharsets;
+
 /**
  * Class that is a subtype of Message to represent SEND_INSULT (28)
  */
@@ -36,6 +38,15 @@ public class InsultMessage extends Message {
    */
   public byte[] getRecipUsername() {
     return this.recipUsername;
+  }
+
+  /**
+   * Getter method for the recipient's username as a String
+   * @return String of the recipient's username
+   */
+  public String getRecipStringName() {
+    String s = new String(this.recipUsername, StandardCharsets.UTF_8);
+    return s;
   }
 
 

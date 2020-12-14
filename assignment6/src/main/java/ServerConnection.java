@@ -87,8 +87,9 @@ public class ServerConnection implements Runnable {
                 }
 
                 else if(serverInbound instanceof Communications.InsultMessage) {
-                    System.out.println("You have been sent an insult from @" + ((InsultMessage) serverInbound).getStringName());
-                    //Print insult here
+                    System.out.println("INSULT from @" + ((InsultMessage) serverInbound).getStringName());
+                    String insult = new SentenceGenerator(new Grammar(new JSONFileParser("./lib/insult_grammar.json")), null).buildSentence();
+                    System.out.println(insult);
                 }
 
             }

@@ -114,7 +114,7 @@ public class ClientSession implements Runnable {
                     } else if (inboundMessage instanceof BroadcastMessage) {
                         sendBroadcastMessage((BroadcastMessage) inboundMessage);
                     } else if (inboundMessage instanceof InsultMessage) {
-                        sendDirectMessage((InsultMessage) inboundMessage);
+                        sendInsult((InsultMessage) inboundMessage);
                     } else if (inboundMessage instanceof QueryUsers) {
                         sendUserQueryResponse();
                         // use function to query all client names byte[] from clientSessions hashmap
@@ -134,9 +134,27 @@ public class ClientSession implements Runnable {
      * @param message
      * @throws IOException
      */
-    private void sendDirectMessage(Message message) throws IOException {
+    private void sendDirectMessage(DirectMessage message) throws IOException {
         try {
-            byte[] recipientUser = message.getUsername();
+            String recipientUser = message.getRecipStringName();
+            if (this.server.getClientSessions().containsKey(recipientUser)) {
+                this.server.getClientSessions().get(recipientUser).messageOutStream.writeObject(message);
+            } else {
+                // logic to send failed message
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    /**
+     *
+     * @param message
+     * @throws IOException
+     */
+    private void sendInsult(InsultMessage message) throws IOException {
+        try {
+            String recipientUser = message.getRecipStringName();
             if (this.server.getClientSessions().containsKey(recipientUser)) {
                 this.server.getClientSessions().get(recipientUser).messageOutStream.writeObject(message);
             } else {
