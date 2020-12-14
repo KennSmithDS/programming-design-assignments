@@ -74,26 +74,27 @@ public class ClientSession implements Runnable {
                 Message inboundMessage = (Message) messageInStream.readObject();
                 // block user from doing anything until connected
                 if (!isConnected) {
-                    if (inboundMessage.getIdentifier() != Identifier.CONNECT_MESSAGE) {
+//                    if (inboundMessage.getIdentifier() != Identifier.CONNECT_MESSAGE) {
+                    if (!(inboundMessage instanceof ConnectMessage)) {
                         System.out.println("@" + inboundMessage.getStringName() + " attempted to send message while not logged in.");
                         // return failed message to user
                         sendConnectionResponse(inboundMessage, false);
-                        continue;
-                    } else if (inboundMessage.getIdentifier() == Identifier.CONNECT_MESSAGE) {
+//                    } else if (inboundMessage.getIdentifier() == Identifier.CONNECT_MESSAGE) {
+                    } else {
                         // check if session in pool - not waiting for available spot
                         // add to client sessions
-                        System.out.println("Inbound request from @" + inboundMessage.getStringName() + " to login to chat.");
+                        System.out.println("Inbound request from @" + inboundMessage.getStringName() + " to login to the chat server.");
                         server.addClientSession(inboundMessage.getUsername(), this);
                         // send connect response with boolean == true
                         //what if there are already max amount of clients?
                         sendConnectionResponse(inboundMessage, true);
                         isConnected = true;
-
                     }
                 // let the user do other normal things once connected
                 } else {
-                    if (inboundMessage.getIdentifier() == Identifier.DISCONNECT_MESSAGE) {
-                        System.out.println("@" + inboundMessage.getStringName() + " requested to logoff the chat server.");
+//                    if (inboundMessage.getIdentifier() == Identifier.DISCONNECT_MESSAGE) {
+                    if (inboundMessage instanceof DisconnectMessage) {
+                        System.out.println("Inbound request from @" + inboundMessage.getStringName() + " to logoff the chat server.");
                         // send disconnect message
                         sendDisconnectResponse(inboundMessage);
 
@@ -104,8 +105,17 @@ public class ClientSession implements Runnable {
                         server.showClientCount();
                         socket.close();
                         break;
+                    // handle other message types, i.e. direct, broadcast, insult and user query
+                    } else if (inboundMessage instanceof DirectMessage){
+                        sendDirectMessage((DirectMessage) inboundMessage);
+                    } else if (inboundMessage instanceof BroadcastMessage) {
+                        sendBroadcastMessage((BroadcastMessage) inboundMessage);
+                    } else if (inboundMessage instanceof InsultMessage) {
+
+                    } else if (inboundMessage instanceof QueryUsers) {
+
                     } else {
-                        // handle other message types, i.e. direct, broadcast, insult and user query
+
                     }
                 }
             }
@@ -157,7 +167,7 @@ public class ClientSession implements Runnable {
     private void sendConnectionResponse(Message inboundMessage, boolean status) throws InvalidMessageException, IOException {
         Communication commProtocol;
         byte[] userName = inboundMessage.getUsername();
-        String responseString = "User @" + inboundMessage.getStringName() + " connection status to server on port: " + this.server.getServerPort();
+        String responseString = "@" + inboundMessage.getStringName() + ", you are connected to chat server!";
         int responseSize = responseString.length();
         String connectResponse = Identifier.CONNECT_RESPONSE.getIdentifierValue() + " " + responseSize + " " + responseString +" " + status;
         commProtocol = Communication.communicationFactory(connectResponse);
