@@ -86,7 +86,8 @@ public class ClientSession implements Runnable {
                         // check if session in pool - not waiting for available spot
                         // add to client sessions
                         System.out.println("Inbound request from @" + inboundMessage.getStringName() + " to login to the chat server.");
-                        server.addClientSession(inboundMessage.getUsername(), this);
+                        server.addClientSession(inboundMessage.getStringName(), this);
+                        System.out.println("There are " + server.getClientCount() + " clients connected");
                         // send connect response with boolean == true
                         //what if there are already max amount of clients?
                         sendConnectionResponse(inboundMessage, true);
@@ -102,7 +103,7 @@ public class ClientSession implements Runnable {
 
                         // remove user from sessions
                         isConnected = false;
-                        server.dropClientSession(inboundMessage.getUsername(), this);
+                        server.dropClientSession(inboundMessage.getStringName()); // here
                         server.countDecrement();
                         System.out.println("There are " + server.getClientCount() + " clients connected");
                         socket.close();
@@ -153,8 +154,8 @@ public class ClientSession implements Runnable {
      */
     private void sendBroadcastMessage(BroadcastMessage message) throws IOException {
         try {
-            ConcurrentHashMap<byte[], ClientSession> sessions = this.server.getClientSessions();
-            for (byte[] clientName : sessions.keySet()) {
+            ConcurrentHashMap<String, ClientSession> sessions = this.server.getClientSessions();
+            for (String clientName : sessions.keySet()) {
                 sessions.get(clientName).messageOutStream.writeObject(message);
             }
         } catch (IOException e) {
@@ -208,10 +209,10 @@ public class ClientSession implements Runnable {
      * @return
      */
     private String getAllConnectedUsers() {
-        ConcurrentHashMap<byte[], ClientSession> sessions = this.server.getClientSessions();
+        ConcurrentHashMap<String, ClientSession> sessions = this.server.getClientSessions();
         StringBuilder userQuery = new StringBuilder();
-        for (byte[] name : sessions.keySet()) {
-            String stringName = new String(name, StandardCharsets.UTF_8);
+        for (String stringName : sessions.keySet()) {
+//            String stringName = new String(name, StandardCharsets.UTF_8);
             userQuery.append(stringName.length());
             userQuery.append(" ");
             userQuery.append(stringName);

@@ -45,12 +45,14 @@ public class Client {
 
   public static void main(String[] args) throws IOException, InvalidMessageException {
     Client client = new Client(DEFAULT_HOST, DEFAULT_PORT);
-    ObjectOutputStream messageOutStream = new ObjectOutputStream(client.getClientSocket().getOutputStream());
-    ObjectInputStream messageInStream = new ObjectInputStream(client.getClientSocket().getInputStream());
+    if (client.socket.isConnected()) {
+      ObjectOutputStream messageOutStream = new ObjectOutputStream(client.getClientSocket().getOutputStream());
+      ObjectInputStream messageInStream = new ObjectInputStream(client.getClientSocket().getInputStream());
 
-    ServerConnection serverConnectionThread = new ServerConnection(client.getClientSocket(), messageInStream);
-    new Thread(serverConnectionThread).start();
-    client.listenForUserCommands(messageOutStream, messageInStream, serverConnectionThread);
+      ServerConnection serverConnectionThread = new ServerConnection(client.getClientSocket(), messageInStream);
+      new Thread(serverConnectionThread).start();
+      client.listenForUserCommands(messageOutStream, messageInStream, serverConnectionThread);
+    }
   }
 
   public void listenForUserCommands(ObjectOutputStream messageOutStream, ObjectInputStream messageInStream, ServerConnection server) throws IOException, InvalidMessageException {

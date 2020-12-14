@@ -1,6 +1,8 @@
 import java.io.IOException;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.net.StandardProtocolFamily;
+import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
 import java.util.Objects;
 import java.util.Scanner;
@@ -15,8 +17,8 @@ public class Server {
     private ServerSocket serverSocket;
     private int serverPort;
     private static final int DEFAULT_PORT = 3333;
-    private static final int THREAD_LIMIT = 10;
-    private ConcurrentHashMap<byte[], ClientSession> clientSessions;
+    private static final int THREAD_LIMIT = 2;
+    private ConcurrentHashMap<String, ClientSession> clientSessions;
     private int threadCount;
     private boolean serverRunning = true;
     private static ExecutorService threadPool = Executors.newFixedThreadPool(THREAD_LIMIT);
@@ -62,13 +64,13 @@ public class Server {
 //                while (!consoleInput.equals("shutdown")) {
                 // accept inbound connections from clients, and add them to the thread pool executor
 
-                if (server.threadCount < THREAD_LIMIT) {
+                if (server.getClientCount() < THREAD_LIMIT) {
                     Socket clientSocket = serverSocket.accept();
                     System.out.println("Client connection from: " + clientSocket);
                     ClientSession clientThread = new ClientSession(clientSocket, server, server.getServerPort());
                     threadPool.execute(clientThread);
-                    System.out.println("There are " + server.getClientCount() + " clients connected");
-
+                } else {
+                    System.out.println("More than " + THREAD_LIMIT + " users attempted to connect to server.");
                 }
             }
         } catch (IOException e) {
@@ -113,30 +115,38 @@ public class Server {
         }
     }
 
-    protected int getClientCount() {
-        return this.threadCount;
-//        return this.clientSessions.size();
+    /**
+     *
+     * @return
+     */
+    protected int getClientCount() { return this.clientSessions.size(); }
+
+    /**
+     *
+     * @param clientName
+     * @param session
+     */
+    protected void addClientSession(String clientName, ClientSession session) {
+//        System.out.println("Before adding: " + clientSessions.size());
+        clientSessions.putIfAbsent(clientName, session);
+//        System.out.println("After adding: " + clientSessions.size());
     }
 
     /**
      *
      * @param clientName
-     * @param session
      */
-    protected void addClientSession(byte[] clientName, ClientSession session) { clientSessions.putIfAbsent(clientName, session); }
-
-    /**
-     *
-     * @param clientName
-     * @param session
-     */
-    protected void dropClientSession(byte[] clientName, ClientSession session) { clientSessions.remove(clientName, session); }
+    protected void dropClientSession(String clientName) {
+//        System.out.println("Before removing: " + clientSessions.size());
+        clientSessions.remove(clientName);
+//        System.out.println("After removing: " + clientSessions.size());
+    }
 
     /**
      *
      * @return
      */
-    protected ConcurrentHashMap<byte[], ClientSession> getClientSessions() {
+    protected ConcurrentHashMap<String, ClientSession> getClientSessions() {
         return this.clientSessions;
     }
 
