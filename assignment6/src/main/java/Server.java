@@ -4,6 +4,7 @@ import java.net.Socket;
 import java.util.HashMap;
 import java.util.Objects;
 import java.util.Scanner;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
@@ -15,7 +16,7 @@ public class Server {
     private int serverPort;
     private static final int DEFAULT_PORT = 3333;
     private static final int THREAD_LIMIT = 10;
-    private HashMap<byte[], ClientSession> clientSessions;
+    private ConcurrentHashMap<byte[], ClientSession> clientSessions;
     private int threadCount;
     private boolean serverRunning = true;
     private static ExecutorService threadPool = Executors.newFixedThreadPool(THREAD_LIMIT);
@@ -27,7 +28,7 @@ public class Server {
     Server() throws IOException {
         this.serverPort = DEFAULT_PORT;
         openServerSocketOnPort(DEFAULT_PORT);
-        this.clientSessions = new HashMap<>();
+        this.clientSessions = new ConcurrentHashMap<>();
     }
 
     /**
@@ -38,7 +39,7 @@ public class Server {
     Server(int port) throws IOException {
         this.serverPort = port;
         openServerSocketOnPort(port);
-        this.clientSessions = new HashMap<>();
+        this.clientSessions = new ConcurrentHashMap<>();
     }
 
     /**
@@ -66,7 +67,7 @@ public class Server {
                     System.out.println("Client connection from: " + clientSocket);
                     ClientSession clientThread = new ClientSession(clientSocket, server, server.getServerPort());
                     threadPool.execute(clientThread);
-                    server.showClientCount();
+                    System.out.println("There are " + server.getClientCount() + " clients connected");
 
                 }
             }
@@ -90,8 +91,14 @@ public class Server {
      */
     protected int getServerPort() { return this.serverPort; }
 
+    /**
+     *
+     */
     protected void countIncrement() { this.threadCount++; }
 
+    /**
+     *
+     */
     protected void countDecrement() { this.threadCount--; }
 
     /**
@@ -106,7 +113,10 @@ public class Server {
         }
     }
 
-    protected void showClientCount() { System.out.println("There are " + this.threadCount + " clients connected"); }
+    protected int getClientCount() {
+        return this.threadCount;
+//        return this.clientSessions.size();
+    }
 
     /**
      *
@@ -124,21 +134,9 @@ public class Server {
 
     /**
      *
-     * @param clientName
      * @return
      */
-    protected ClientSession getClientSession(byte[] clientName) {
-        if (clientSessions.containsKey(clientName)) {
-            return clientSessions.get(clientName);
-        }
-        return null;
-    }
-
-    /**
-     *
-     * @return
-     */
-    protected HashMap<byte[], ClientSession> getClientSessions() {
+    protected ConcurrentHashMap<byte[], ClientSession> getClientSessions() {
         return this.clientSessions;
     }
 

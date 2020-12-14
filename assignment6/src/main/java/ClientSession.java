@@ -3,10 +3,12 @@ import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.net.Socket;
+import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
 import java.util.Base64;
 import java.util.HashMap;
 import java.util.Objects;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.TimeUnit;
 
 /**
@@ -102,7 +104,7 @@ public class ClientSession implements Runnable {
                         isConnected = false;
                         server.dropClientSession(inboundMessage.getUsername(), this);
                         server.countDecrement();
-                        server.showClientCount();
+                        System.out.println("There are " + server.getClientCount() + " clients connected");
                         socket.close();
                         break;
                     // handle other message types, i.e. direct, broadcast, insult and user query
@@ -111,11 +113,12 @@ public class ClientSession implements Runnable {
                     } else if (inboundMessage instanceof BroadcastMessage) {
                         sendBroadcastMessage((BroadcastMessage) inboundMessage);
                     } else if (inboundMessage instanceof InsultMessage) {
-
+                        sendDirectMessage((InsultMessage) inboundMessage);
                     } else if (inboundMessage instanceof QueryUsers) {
-
+                        sendUserQueryResponse();
+                        // use function to query all client names byte[] from clientSessions hashmap
                     } else {
-
+                        // failed message due to unknown type - base case handle
                     }
                 }
             }
@@ -130,11 +133,13 @@ public class ClientSession implements Runnable {
      * @param message
      * @throws IOException
      */
-    public void sendDirectMessage(Communications.DirectMessage message) throws IOException {
+    private void sendDirectMessage(Message message) throws IOException {
         try {
             byte[] recipientUser = message.getUsername();
             if (this.server.getClientSessions().containsKey(recipientUser)) {
                 this.server.getClientSessions().get(recipientUser).messageOutStream.writeObject(message);
+            } else {
+                // logic to send failed message
             }
         } catch (IOException e) {
             e.printStackTrace();
@@ -146,9 +151,9 @@ public class ClientSession implements Runnable {
      * @param message
      * @throws IOException
      */
-    public void sendBroadcastMessage(Communications.BroadcastMessage message) throws IOException {
+    private void sendBroadcastMessage(BroadcastMessage message) throws IOException {
         try {
-            HashMap<byte[], ClientSession> sessions = this.server.getClientSessions();
+            ConcurrentHashMap<byte[], ClientSession> sessions = this.server.getClientSessions();
             for (byte[] clientName : sessions.keySet()) {
                 sessions.get(clientName).messageOutStream.writeObject(message);
             }
@@ -182,10 +187,37 @@ public class ClientSession implements Runnable {
      */
     private void sendDisconnectResponse(Message inboundMessage) throws InvalidMessageException, IOException {
         Communication commProtocol;
-        String disconnectString = "@" + inboundMessage.getStringName() + ", you are no longer connected to the chat server";
+        String disconnectString = "@" + inboundMessage.getStringName() + ", you are disconnecting from the chat server";
         String disconnectResponse = Identifier.DISCONNECT_RESPONSE.getIdentifierValue() + " " + disconnectString.length() + " " + disconnectString;
         commProtocol = Communication.communicationFactory(disconnectResponse);
         this.messageOutStream.writeObject(commProtocol);
+    }
+
+    /**
+     *
+     */
+    private void sendUserQueryResponse() throws InvalidMessageException, IOException {
+        Communication commProtocol;
+        String userQueryString = Identifier.QUERY_USER_RESPONSE.getIdentifierValue() + " " + this.server.getClientCount() + " " + getAllConnectedUsers();
+        commProtocol = Communication.communicationFactory(userQueryString);
+        messageOutStream.writeObject(commProtocol);
+    }
+
+    /**
+     *
+     * @return
+     */
+    private String getAllConnectedUsers() {
+        ConcurrentHashMap<byte[], ClientSession> sessions = this.server.getClientSessions();
+        StringBuilder userQuery = new StringBuilder();
+        for (byte[] name : sessions.keySet()) {
+            String stringName = new String(name, StandardCharsets.UTF_8);
+            userQuery.append(stringName.length());
+            userQuery.append(" ");
+            userQuery.append(stringName);
+            userQuery.append(" ");
+        }
+        return userQuery.toString();
     }
 
     /**
