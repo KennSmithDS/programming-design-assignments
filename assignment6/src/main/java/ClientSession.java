@@ -49,13 +49,18 @@ public class ClientSession implements Runnable {
         }
     }
 
+    /**
+     * 
+     * @throws InterruptedException
+     * @throws IOException
+     */
     private void handleClientSession() throws InterruptedException, IOException {
         try {
             System.out.println("New client session created");
             this.messageOutStream = new ObjectOutputStream(socket.getOutputStream());
             this.messageInStream = new ObjectInputStream(socket.getInputStream());
 
-            while (socket.isConnected()) {
+            while (true) {
                 // decide what kind of message to send
                 Message inboundMessage = (Message) messageInStream.readObject();
                 // block user from doing anything until connected
@@ -87,6 +92,7 @@ public class ClientSession implements Runnable {
                         server.countDecrement();
                         server.showClientCount();
                         socket.close();
+                        break;
                     } else {
                         // handle other message types, i.e. direct, broadcast, insult and user query
                     }
@@ -119,7 +125,7 @@ public class ClientSession implements Runnable {
      * @param message
      * @throws IOException
      */
-    public void sendGlobalMessage(Communications.BroadcastMessage message) throws IOException {
+    public void sendBroadcastMessage(Communications.BroadcastMessage message) throws IOException {
         try {
             HashMap<byte[], ClientSession> sessions = this.server.getClientSessions();
             for (byte[] clientName : sessions.keySet()) {
@@ -130,6 +136,13 @@ public class ClientSession implements Runnable {
         }
     }
 
+    /**
+     *
+     * @param inboundMessage
+     * @param status
+     * @throws InvalidMessageException
+     * @throws IOException
+     */
     private void sendConnectionResponse(Message inboundMessage, boolean status) throws InvalidMessageException, IOException {
         Communication commProtocol;
         byte[] userName = inboundMessage.getUsername();
@@ -140,6 +153,12 @@ public class ClientSession implements Runnable {
         this.messageOutStream.writeObject(commProtocol);
     }
 
+    /**
+     *
+     * @param inboundMessage
+     * @throws InvalidMessageException
+     * @throws IOException
+     */
     private void sendDisconnectResponse(Message inboundMessage) throws InvalidMessageException, IOException {
         Communication commProtocol;
         String disconnectString = Arrays.toString(inboundMessage.getUsername()) + ", you are no longer connected to the chat server";
