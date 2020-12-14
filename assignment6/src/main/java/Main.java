@@ -1,10 +1,14 @@
 import Communications.Communication;
 import Communications.ConnectMessage;
 import Communications.InvalidMessageException;
+import org.json.simple.parser.ParseException;
+
+import java.io.FileNotFoundException;
+import java.io.IOException;
 
 public class Main {
 
-  public static void main(String[] args) throws InvalidMessageException {
+  public static void main(String[] args) throws InvalidMessageException, IOException, ParseException, NoSuchGrammarTypeException {
 
 //    String name = "isidora";
 //    byte[] nameByte = name.getBytes();
@@ -17,8 +21,8 @@ public class Main {
 //    }
     //System.out.println(msg.getClass());
 
-
-
+    String insult = new SentenceGenerator(new Grammar(new JSONFileParser("./lib/insult_grammar.json")), null).buildSentence();
+    System.out.println(insult);
   }
 
 }
