@@ -103,7 +103,7 @@ public class Server {
      * @param serverSocket ServerSocket for Server
      * @throws IOException default exception for IO error
      */
-    private static void acceptClientRequest(Server server, ServerSocket serverSocket) throws IOException {
+    protected static void acceptClientRequest(Server server, ServerSocket serverSocket) throws IOException {
         Socket clientSocket = serverSocket.accept();
         System.out.println("Client connection from: " + clientSocket);
         ClientSession clientThread = new ClientSession(clientSocket, server, server.getServerPort());
