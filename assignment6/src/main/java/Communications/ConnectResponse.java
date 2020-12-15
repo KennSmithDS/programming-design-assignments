@@ -1,6 +1,7 @@
 package Communications;
 
 import java.nio.charset.StandardCharsets;
+import java.util.Objects;
 
 /**
  * Class that is a subtype of Response to represent CONNECT_RESPONSE (20)
@@ -29,5 +30,43 @@ public class ConnectResponse extends Response {
     return this.success;
   }
 
+  /**
+   * Overridden equals method for ConnectResponse objects
+   * @param o
+   * @return boolean if the objects are equal
+   */
+  @Override
+  public boolean equals(Object o) {
+    if (this == o) {
+      return true;
+    }
+    if (!(o instanceof ConnectResponse)) {
+      return false;
+    }
+    if (!super.equals(o)) {
+      return false;
+    }
+    ConnectResponse that = (ConnectResponse) o;
+    return success == that.success;
+  }
 
+  /**
+   * Overridden hashcode
+   * @return int hashcode of ConnectResponse object
+   */
+  @Override
+  public int hashCode() {
+    return Objects.hash(super.hashCode(), success);
+  }
+
+  /**
+   * Overridden toString method for ConnectResponse
+   * @return string representation of the object
+   */
+  @Override
+  public String toString() {
+    return "ConnectResponse{" +
+        "success=" + success +
+        "} " + super.toString();
+  }
 }

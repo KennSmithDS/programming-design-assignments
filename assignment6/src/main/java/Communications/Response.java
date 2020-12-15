@@ -4,6 +4,8 @@ import Communications.Communication;
 import Communications.Identifier;
 import Communications.InvalidMessageException;
 import java.nio.charset.StandardCharsets;
+import java.util.Arrays;
+import java.util.Objects;
 
 /**
  * Abstract (parent) class representing a Response object.
@@ -53,4 +55,47 @@ public abstract class Response extends Communication {
     return s;
   }
 
+  /**
+   * Overridden equals method for Response objects
+   * @param o
+   * @return boolean if the objects are equal
+   */
+  @Override
+  public boolean equals(Object o) {
+    if (this == o) {
+      return true;
+    }
+    if (!(o instanceof Response)) {
+      return false;
+    }
+    if (!super.equals(o)) {
+      return false;
+    }
+    Response response = (Response) o;
+    return msgSize == response.msgSize &&
+        Arrays.equals(msg, response.msg);
+  }
+
+  /**
+   * Overridden hashcode
+   * @return int hashcode of Response object
+   */
+  @Override
+  public int hashCode() {
+    int result = Objects.hash(super.hashCode(), msgSize);
+    result = 31 * result + Arrays.hashCode(msg);
+    return result;
+  }
+
+  /**
+   * Overridden toString method for Response
+   * @return string representation of the object
+   */
+  @Override
+  public String toString() {
+    return "Response{" +
+        "msgSize=" + msgSize +
+        ", msg=" + Arrays.toString(msg) +
+        "} " + super.toString();
+  }
 }

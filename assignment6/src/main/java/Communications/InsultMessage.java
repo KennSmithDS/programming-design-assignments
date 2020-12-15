@@ -1,6 +1,8 @@
 package Communications;
 
 import java.nio.charset.StandardCharsets;
+import java.util.Arrays;
+import java.util.Objects;
 
 /**
  * Class that is a subtype of Message to represent SEND_INSULT (28)
@@ -49,5 +51,47 @@ public class InsultMessage extends Message {
     return s;
   }
 
+  /**
+   * Overridden equals method for InsultMessage objects
+   * @param o
+   * @return boolean if the objects are equal
+   */
+  @Override
+  public boolean equals(Object o) {
+    if (this == o) {
+      return true;
+    }
+    if (!(o instanceof InsultMessage)) {
+      return false;
+    }
+    if (!super.equals(o)) {
+      return false;
+    }
+    InsultMessage that = (InsultMessage) o;
+    return recipNameSize == that.recipNameSize &&
+        Arrays.equals(recipUsername, that.recipUsername);
+  }
 
+  /**
+   * Overridden hashcode method for InsultMessage objects
+   * @return int hashcode
+   */
+  @Override
+  public int hashCode() {
+    int result = Objects.hash(super.hashCode(), recipNameSize);
+    result = 31 * result + Arrays.hashCode(recipUsername);
+    return result;
+  }
+
+  /**
+   * Overridden toString method for InsultMessage objects
+   * @return string representation of the InsultMessage object
+   */
+  @Override
+  public String toString() {
+    return "InsultMessage{" +
+        "recipNameSize=" + recipNameSize +
+        ", recipUsername=" + Arrays.toString(recipUsername) +
+        "} " + super.toString();
+  }
 }
