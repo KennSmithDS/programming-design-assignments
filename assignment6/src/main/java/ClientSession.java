@@ -97,12 +97,16 @@ public class ClientSession implements Runnable {
                         // check if session in pool - not waiting for available spot
                         // add to client sessions
                         System.out.println("Inbound request from @" + inboundMessage.getStringName() + " to login to the chat server.");
-                        server.addClientSession(inboundMessage.getStringName(), this);
+                        boolean addedStatus = server.addClientSession(inboundMessage.getStringName(), this);
                         System.out.println("There are " + server.getClientCount() + " clients connected");
                         // send connect response with boolean == true
                         //what if there are already max amount of clients?
-                        sendConnectionResponse(inboundMessage, true);
-                        isConnected = true;
+                        if (addedStatus) {
+                            sendConnectionResponse(inboundMessage, true);
+                            isConnected = true;
+                        } else {
+                            sendConnectionResponse(inboundMessage, false);
+                        }
                     }
                 // let the user do other normal things once connected
                 } else {

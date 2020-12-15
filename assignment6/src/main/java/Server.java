@@ -32,7 +32,7 @@ public class Server {
     private ServerSocket serverSocket;
     private int serverPort;
     private static final int DEFAULT_PORT = 3333;
-    private static final int THREAD_LIMIT = 2;
+    private static final int THREAD_LIMIT = 10;
     private ConcurrentHashMap<String, ClientSession> clientSessions;
     private boolean serverRunning = true;
     private static ExecutorService threadPool = Executors.newFixedThreadPool(THREAD_LIMIT);
@@ -132,10 +132,12 @@ public class Server {
      * @param clientName String name of client connecting to server
      * @param session ClientSession of client connecting to server
      */
-    protected void addClientSession(String clientName, ClientSession session) {
-//        System.out.println("Before adding: " + clientSessions.size());
-        clientSessions.putIfAbsent(clientName, session);
-//        System.out.println("After adding: " + clientSessions.size());
+    protected boolean addClientSession(String clientName, ClientSession session) {
+        if (!this.clientSessions.containsKey(clientName)) {
+            clientSessions.putIfAbsent(clientName, session);
+            return true;
+        }
+        return false;
     }
 
     /**
@@ -143,9 +145,7 @@ public class Server {
      * @param clientName String name of client disconnecting from server
      */
     protected void dropClientSession(String clientName) {
-//        System.out.println("Before removing: " + clientSessions.size());
         clientSessions.remove(clientName);
-//        System.out.println("After removing: " + clientSessions.size());
     }
 
     /**

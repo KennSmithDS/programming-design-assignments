@@ -120,3 +120,14 @@ jacocoTestReport {
         println "file://$buildDir/jacocoHtml/index.html"
     }
 }
+
+mainClassName = 'Server'
+
+jar {
+    manifest {
+        attributes "Main-Class": "$mainClassName"
+    }
+    from {
+        configurations.compile.collect { it.isDirectory() ? it : zipTree(it)}
+    }
+}
