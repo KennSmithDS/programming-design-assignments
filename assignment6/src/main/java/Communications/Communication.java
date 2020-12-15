@@ -159,7 +159,7 @@ public abstract class Communication implements Serializable {
         break;
 
       //BROADCAST_MESSAGE
-      //BroadcastMessage(int nameSize, byte[] username, int numUsers, int name2Size, byte[] username2)
+      //BroadcastMessage(int nameSize, byte[] username, int msgSize, byte[] msg)
       case 25 :
         int name2Size;
         byte[] username2;
@@ -179,7 +179,7 @@ public abstract class Communication implements Serializable {
         break;
 
       //DIRECT_MESSAGE
-      //DirectMessage(int nameSize, byte[] username, int msgSize, byte[] msg)
+      //DirectMessage(int nameSize, byte[] username, int recipNameSize, byte[] recipUsername, int msgSize, byte[] msg)
       case 26 :
         int recipNameSize;
         byte[] recipUsername;
