@@ -66,35 +66,48 @@ public class Server {
      */
     public static void main(String[] args) throws IOException {
         try {
-            Scanner serverConsole = new Scanner(System.in);
+            if (args.length==0) {
+                Scanner serverConsole = new Scanner(System.in);
 
-            Server server = new Server();
-            ServerSocket serverSocket = server.getServerSocket();
+                Server server = new Server();
+                ServerSocket serverSocket = server.getServerSocket();
 
-            System.out.println("Chat server is running on port " + server.serverPort);
-            System.out.println("Server is waiting for clients to connect");
+                System.out.println("Chat server is running on port " + server.serverPort);
+                System.out.println("Server is waiting for clients to connect");
 
-            while (true) {
-                // unable to get the main logic to be able to handle both shutdown command as well as listen on port
-//                String consoleInput = serverConsole.nextLine();
-//                while (!consoleInput.equals("shutdown")) {
-                // accept inbound connections from clients, and add them to the thread pool executor
+                while (true) {
+                    if (server.getClientCount() < THREAD_LIMIT) {
+                        acceptClientRequest(server, serverSocket);
+                    } else {
+                        System.out.println("More than " + THREAD_LIMIT + " users attempted to connect to server.");
+                    }
 
-                if (server.getClientCount() < THREAD_LIMIT) {
-                    Socket clientSocket = serverSocket.accept();
-                    System.out.println("Client connection from: " + clientSocket);
-                    ClientSession clientThread = new ClientSession(clientSocket, server, server.getServerPort());
-                    threadPool.execute(clientThread);
-                } else {
-                    System.out.println("More than " + THREAD_LIMIT + " users attempted to connect to server.");
                 }
             }
+//            } else if (args[0].equals("poison")) {
+//                Server server = new Server();
+//                ServerSocket serverSocket = server.getServerSocket();
+//                acceptClientRequest(server, serverSocket);
+//                serverSocket.close();
+//            }
         } catch (IOException e) {
             e.printStackTrace();
         } finally {
             threadPool.shutdown();
-//            server.shutdownServer();
         }
+    }
+
+    /**
+     * Method to encapsulate the process of accepting inbound client requests to join server
+     * @param server Server object instantiated in main
+     * @param serverSocket ServerSocket for Server
+     * @throws IOException default exception for IO error
+     */
+    protected static void acceptClientRequest(Server server, ServerSocket serverSocket) throws IOException {
+        Socket clientSocket = serverSocket.accept();
+        System.out.println("Client connection from: " + clientSocket);
+        ClientSession clientThread = new ClientSession(clientSocket, server, server.getServerPort());
+        threadPool.execute(clientThread);
     }
 
     /**
