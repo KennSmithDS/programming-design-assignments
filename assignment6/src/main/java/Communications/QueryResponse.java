@@ -2,6 +2,7 @@ package Communications;
 
 import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
+import java.util.Objects;
 
 /**
  * Class that is a subtype of Response to represent QUERY_USER_RESPONSE (24)
@@ -51,4 +52,45 @@ public class QueryResponse extends Response {
     }
   }
 
+  /**
+   * Overridden equals method for QueryResponse objects
+   * @param o
+   * @return boolean representing if the objects are equal
+   */
+  @Override
+  public boolean equals(Object o) {
+    if (this == o) {
+      return true;
+    }
+    if (!(o instanceof QueryResponse)) {
+      return false;
+    }
+    if (!super.equals(o)) {
+      return false;
+    }
+    QueryResponse that = (QueryResponse) o;
+    return numUsers == that.numUsers &&
+        Objects.equals(users, that.users);
+  }
+
+  /**
+   * Overridden hashcode method for QueryResponse objects
+   * @return int hashcode
+   */
+  @Override
+  public int hashCode() {
+    return Objects.hash(super.hashCode(), numUsers, users);
+  }
+
+  /**
+   * Overridden toString method for QueryResponse objects
+   * @return string representation of a QueryResponse object
+   */
+  @Override
+  public String toString() {
+    return "QueryResponse{" +
+        "numUsers=" + numUsers +
+        ", users=" + users +
+        "} " + super.toString();
+  }
 }

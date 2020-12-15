@@ -1,6 +1,8 @@
 package Communications;
 
 import java.nio.charset.StandardCharsets;
+import java.util.Arrays;
+import java.util.Objects;
 
 /**
  * Class representing a DISCONNECT_MESSAGE object.
@@ -80,5 +82,54 @@ public class DirectMessage extends Message {
   public String getStringMsg() {
     String s = new String(this.msg, StandardCharsets.UTF_8);
     return s;
+  }
+
+  /**
+   * Overridden equals for DirectMessage objects
+   * @param o
+   * @return boolean if the objects are equal
+   */
+  @Override
+  public boolean equals(Object o) {
+    if (this == o) {
+      return true;
+    }
+    if (!(o instanceof DirectMessage)) {
+      return false;
+    }
+    if (!super.equals(o)) {
+      return false;
+    }
+    DirectMessage that = (DirectMessage) o;
+    return recipNameSize == that.recipNameSize &&
+        msgSize == that.msgSize &&
+        Arrays.equals(recipUsername, that.recipUsername) &&
+        Arrays.equals(msg, that.msg);
+  }
+
+  /**
+   * Overridden hashCode() method for DirectMessage objects
+   * @return int hashcode
+   */
+  @Override
+  public int hashCode() {
+    int result = Objects.hash(super.hashCode(), recipNameSize, msgSize);
+    result = 31 * result + Arrays.hashCode(recipUsername);
+    result = 31 * result + Arrays.hashCode(msg);
+    return result;
+  }
+
+  /**
+   * Overridden toString method for DirectMessage objects
+   * @return string representation of a DirectMessage object
+   */
+  @Override
+  public String toString() {
+    return "DirectMessage{" +
+        "recipNameSize=" + recipNameSize +
+        ", recipUsername=" + Arrays.toString(recipUsername) +
+        ", msgSize=" + msgSize +
+        ", msg=" + Arrays.toString(msg) +
+        "} " + super.toString();
   }
 }
