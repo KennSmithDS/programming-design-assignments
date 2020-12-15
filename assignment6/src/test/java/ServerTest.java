@@ -3,6 +3,8 @@ import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
+
+import javax.naming.TimeLimitExceededException;
 import java.util.Random;
 import java.io.IOException;
 import java.net.ServerSocket;
@@ -10,6 +12,7 @@ import java.net.Socket;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.concurrent.TimeoutException;
 
 import static org.junit.Assert.*;
 
@@ -40,15 +43,31 @@ public class ServerTest {
     }
 
     @Test
-    public void main() throws IOException, InterruptedException {
-//        String[] args = new String[]{"poison"};
-//        Server.main(args);
-//        Thread.sleep(15000);
-//        Client testClient = new Client(DEFAULT_HOST, 3333);
+    public void stop() throws IOException {
+        int newPort = DEFAULT_PORT+getRandomPortMod();
+        Server testServer = new Server(newPort);
+        Server.stop();
+
+    }
+
+//    @Test (timeout=5000, expected = Exception.class)
+//    public void main() throws IOException, InterruptedException {
+//        try {
+//            System.out.println("testing execution of server main with 5 second timeout");
+//            int poisonPort = 9999;
+//            String[] args = new String[]{}; //{"poison", String.valueOf(poisonPort)};
+//            Server.main(args);
+//            Server.stop();
+//        } catch (IOException e) {
+//            e.printStackTrace();
+//        }
+
+//        Thread.sleep(5000);
+//        Client testClient = new Client(DEFAULT_HOST, poisonPort);
 ////        System.exit(0);
 //        testClient.getClientSocket().close();
 //        Thread.sleep(1000);
-    }
+//    }
 
     @Test
     public void getServerSocket() throws IOException, InterruptedException {

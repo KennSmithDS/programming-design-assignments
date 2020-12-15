@@ -20,7 +20,7 @@ public abstract class Response extends Communication {
    * @param type the enum representing the type of Response
    * @param msgSize size of the message sent in response to a CONNECT_MESSAGE
    * @param msg message represented as a byte array containing the response
-   * @throws InvalidMessageException
+   * @throws InvalidMessageException custom exception for invalid message type
    */
   public Response(Identifier type, int msgSize, byte[] msg) throws InvalidMessageException {
     super(type);

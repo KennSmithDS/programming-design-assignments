@@ -36,6 +36,7 @@ public class ServerConnection implements Runnable {
     private ObjectInputStream messageInStream;
     private boolean connected;
     private boolean allowLogoff;
+    private static final String insultJson = "./lib/insult_grammar.json";
 
     /**
      * Constructor method for ServerConnection that takes socket and message input stream (from client)
@@ -123,7 +124,7 @@ public class ServerConnection implements Runnable {
 
                 else if(serverInbound instanceof Communications.InsultMessage) {
                     System.out.println("INSULT from @" + ((InsultMessage) serverInbound).getStringName());
-                    String insult = new SentenceGenerator(new Grammar(new JSONFileParser("./lib/insult_grammar.json")), null).buildSentence();
+                    String insult = new SentenceGenerator(new Grammar(new JSONFileParser(insultJson)), null).buildSentence();
                     System.out.println(insult);
                 }
 

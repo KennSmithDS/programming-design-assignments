@@ -19,7 +19,7 @@ public class BroadcastMessage extends Message {
    * @param username byte array representing the sender's username
    * @param msgSize int representing the size of the message
    * @param msg byte array representing the message
-   * @throws InvalidMessageException
+   * @throws InvalidMessageException custom exception for invalid message type
    */
   public BroadcastMessage(int nameSize, byte[] username, int msgSize, byte[] msg) throws InvalidMessageException {
     super(Identifier.BROADCAST_MESSAGE, nameSize, username);
@@ -54,7 +54,7 @@ public class BroadcastMessage extends Message {
 
   /**
    * Overriden equals method to include params that aren't in the parent Message class
-   * @param o
+   * @param o object
    * @return boolean are equal
    */
   @Override
@@ -86,7 +86,7 @@ public class BroadcastMessage extends Message {
 
   /**
    * Overridden toString method to include params that aren't in the parent Message class
-   * @return
+   * @return String
    */
   @Override
   public String toString() {

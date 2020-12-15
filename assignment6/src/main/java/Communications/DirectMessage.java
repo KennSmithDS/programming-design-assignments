@@ -21,7 +21,7 @@ public class DirectMessage extends Message {
    * @param recipUsername byte array representing the recipient's username
    * @param msgSize size of the message to be sent to recipient
    * @param msg message represented as a byte array
-   * @throws InvalidMessageException
+   * @throws InvalidMessageException custom exception for invalid message type
    */
   public DirectMessage(int nameSize, byte[] username, int recipNameSize, byte[] recipUsername,
       int msgSize, byte[] msg) throws InvalidMessageException {
@@ -74,8 +74,8 @@ public class DirectMessage extends Message {
   }
 
   /**
-   *
-   * @return
+   * Method to get the UTF8 encoded string of byte array message
+   * @return String UTF8 message
    */
   public String getStringMsg() {
     String s = new String(this.msg, StandardCharsets.UTF_8);

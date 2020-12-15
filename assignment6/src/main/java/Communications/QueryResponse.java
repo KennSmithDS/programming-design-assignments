@@ -16,7 +16,7 @@ public class QueryResponse extends Response {
    * @param numUsers int the number of connected users other than the one requesting the query
    * @param users HashMap containing all other connected users (key = username size, value = username
    *              represented by a byte array)
-   * @throws InvalidMessageException
+   * @throws InvalidMessageException custom exception for invalid message type
    */
   public QueryResponse(int numUsers, HashMap<byte[], Integer> users) throws InvalidMessageException {
     super(Identifier.QUERY_USER_RESPONSE, Integer.MIN_VALUE, null);

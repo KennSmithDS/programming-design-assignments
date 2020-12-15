@@ -28,7 +28,7 @@ public abstract class Communication implements Serializable {
 
   /**
    * Method that gets the int enum value of the identifier.
-   * @return
+   * @return int value of identifier
    */
   public int getMessageIdValue() {
     return this.type.getIdentifierValue();
@@ -36,7 +36,7 @@ public abstract class Communication implements Serializable {
 
   /**
    * Method that returns the enum representing the type of communication.
-   * @return
+   * @return Identifier enum
    */
   public Identifier getIdentifier() {
     return this.type;
@@ -240,7 +240,7 @@ public abstract class Communication implements Serializable {
 
   /**
    * Overridden equals method
-   * @param o
+   * @param o object
    * @return boolean if objects are equal
    */
   @Override

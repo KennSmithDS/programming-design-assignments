@@ -16,7 +16,7 @@ public class InsultMessage extends Message {
    * @param username byte array representing the sender's username
    * @param recipNameSize int representing the size of the recipient's username
    * @param recipUsername byte array representing the recipient's username
-   * @throws InvalidMessageException
+   * @throws InvalidMessageException custom exception for invalid message type
    */
   public InsultMessage(int nameSize, byte[] username, int recipNameSize, byte[] recipUsername) throws InvalidMessageException {
     super(Identifier.SEND_INSULT, nameSize, username);

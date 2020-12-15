@@ -14,7 +14,7 @@ public class ConnectResponse extends Response {
    * @param msgSize size of the message sent in response to a CONNECT_MESSAGE
    * @param msg message represented as a byte array containing the response
    * @param success true if connection was successful, false otherwise
-   * @throws InvalidMessageException
+   * @throws InvalidMessageException custom exception for invalid message type
    */
   public ConnectResponse(int msgSize, byte[] msg, boolean success) throws InvalidMessageException {
     super(Identifier.CONNECT_RESPONSE, msgSize, msg);

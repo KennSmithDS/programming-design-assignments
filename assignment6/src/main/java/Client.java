@@ -57,7 +57,7 @@ public class Client {
    * Allows user to logon, logoff, and create and send messages based on user input
    * @param args String array from command-line terminal
    * @throws IOException default exception for IO errors
-   * @throws InvalidMessageException
+   * @throws InvalidMessageException custom exception for invalid message type
    */
   public static void main(String[] args) throws IOException, InvalidMessageException {
     Client client = new Client(DEFAULT_HOST, DEFAULT_PORT);
@@ -68,6 +68,8 @@ public class Client {
       ServerConnection serverConnectionThread = new ServerConnection(client.getClientSocket(), messageInStream);
       new Thread(serverConnectionThread).start();
       client.listenForUserCommands(messageOutStream, messageInStream, serverConnectionThread);
+    } else {
+      System.out.println("Currently the chat server is full. Please try to join again later! :-)");
     }
   }
 

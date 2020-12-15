@@ -23,7 +23,7 @@ public abstract class Message extends Communication {
    * @param type the enum representing the type of Message
    * @param nameSize int representing the size of the sender's username
    * @param username byte array representing the sender's username
-   * @throws InvalidMessageException
+   * @throws InvalidMessageException custom exception for invalid message type
    */
   public Message(Identifier type, int nameSize, byte[] username) throws InvalidMessageException {
     super(type);
@@ -58,7 +58,7 @@ public abstract class Message extends Communication {
 
   /**
    * Overridden equals method
-   * @param o
+   * @param o object
    * @return boolean if objects are equal
    */
   @Override

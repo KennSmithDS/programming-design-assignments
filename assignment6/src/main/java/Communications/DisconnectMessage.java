@@ -10,7 +10,7 @@ public class DisconnectMessage extends Message {
    * Note that the type is set by default to the DISCONNECT_MESSAGE enum
    * @param nameSize int representing the size of the sender's username
    * @param username byte array representing the sender's username
-   * @throws InvalidMessageException
+   * @throws InvalidMessageException custom exception for invalid message type
    */
   public DisconnectMessage(int nameSize, byte[] username) throws InvalidMessageException {
     super(Identifier.DISCONNECT_MESSAGE, nameSize, username);

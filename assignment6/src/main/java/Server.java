@@ -63,11 +63,12 @@ public class Server {
     /**
      * Main method to drive the execution of server instantiation, and accepting client requests to connect over socket
      * @param args String array from command-line terminal
+     * @throws IOException default exception for IO error
      */
     public static void main(String[] args) throws IOException {
         try {
             if (args.length==0) {
-                Scanner serverConsole = new Scanner(System.in);
+//                Scanner serverConsole = new Scanner(System.in);
 
                 Server server = new Server();
                 ServerSocket serverSocket = server.getServerSocket();
@@ -85,16 +86,27 @@ public class Server {
                 }
             }
 //            } else if (args[0].equals("poison")) {
-//                Server server = new Server();
+//                Server server = new Server(Integer.parseInt(args[1]));
 //                ServerSocket serverSocket = server.getServerSocket();
-//                acceptClientRequest(server, serverSocket);
-//                serverSocket.close();
+//                while (true) {
+//                    acceptClientRequest(server, serverSocket);
+//                    Thread.sleep(5000);
+//                    serverSocket.close();
+//                    Server.stop();
+//                }
 //            }
         } catch (IOException e) {
             e.printStackTrace();
         } finally {
-            threadPool.shutdown();
+            Server.stop();
         }
+    }
+
+    /**
+     * Method to shutdown the thread pool executor service
+     */
+    public static void stop() {
+        threadPool.shutdown();
     }
 
     /**
@@ -104,10 +116,10 @@ public class Server {
      * @throws IOException default exception for IO error
      */
     protected static void acceptClientRequest(Server server, ServerSocket serverSocket) throws IOException {
-        Socket clientSocket = serverSocket.accept();
-        System.out.println("Client connection from: " + clientSocket);
-        ClientSession clientThread = new ClientSession(clientSocket, server, server.getServerPort());
-        threadPool.execute(clientThread);
+            Socket clientSocket = serverSocket.accept();
+            System.out.println("Client connection from: " + clientSocket);
+            ClientSession clientThread = new ClientSession(clientSocket, server, server.getServerPort());
+            threadPool.execute(clientThread);
     }
 
     /**
@@ -144,10 +156,11 @@ public class Server {
      * Method to add clientName and ClientSession to thread safe hashmap
      * @param clientName String name of client connecting to server
      * @param session ClientSession of client connecting to server
+     * @return boolean true or false if client added
      */
     protected boolean addClientSession(String clientName, ClientSession session) {
         if (!this.clientSessions.containsKey(clientName)) {
-            clientSessions.putIfAbsent(clientName, session);
+            clientSessions.put(clientName, session);
             return true;
         }
         return false;
@@ -187,7 +200,7 @@ public class Server {
 
     /**
      * Override method of default hashCode()
-     * @return
+     * @return int
      */
     @Override
     public int hashCode() {
@@ -196,7 +209,7 @@ public class Server {
 
     /**
      * Override method of default toString()
-     * @return
+     * @return String
      */
     @Override
     public String toString() {

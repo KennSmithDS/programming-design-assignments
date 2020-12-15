@@ -10,7 +10,7 @@ public class ConnectMessage extends Message {
    * Note that the type is set by default to the CONNECT_MESSAGE enum
    * @param nameSize int representing the size of the sender's username
    * @param username byte array representing the sender's username
-   * @throws InvalidMessageException
+   * @throws InvalidMessageException custom exception for invalid message type
    */
   public ConnectMessage(int nameSize, byte[] username) throws InvalidMessageException {
     super(Identifier.CONNECT_MESSAGE, nameSize, username);

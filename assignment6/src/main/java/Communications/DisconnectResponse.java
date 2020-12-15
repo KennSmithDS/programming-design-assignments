@@ -11,7 +11,7 @@ public class DisconnectResponse extends Response {
    * Constructor for DisconnectResponse object.
    * @param msgSize size of the message sent in response to a DISCONNECT_MESSAGE
    * @param msg message represented as a byte array containing the response
-   * @throws InvalidMessageException
+   * @throws InvalidMessageException custom exception for invalid message type
    */
   public DisconnectResponse(int msgSize, byte[] msg) throws InvalidMessageException {
     super(Identifier.DISCONNECT_MESSAGE, msgSize, msg);
