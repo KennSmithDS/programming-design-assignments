@@ -54,7 +54,7 @@ public class QueryResponse extends Response {
 
   /**
    * Overridden equals method for QueryResponse objects
-   * @param o
+   * @param o object
    * @return boolean representing if the objects are equal
    */
   @Override

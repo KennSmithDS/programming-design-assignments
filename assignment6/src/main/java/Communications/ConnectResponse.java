@@ -32,7 +32,7 @@ public class ConnectResponse extends Response {
 
   /**
    * Overridden equals method for ConnectResponse objects
-   * @param o
+   * @param o object
    * @return boolean if the objects are equal
    */
   @Override

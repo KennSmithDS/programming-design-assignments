@@ -86,7 +86,7 @@ public class DirectMessage extends Message {
 
   /**
    * Overridden equals for DirectMessage objects
-   * @param o
+   * @param o object
    * @return boolean if the objects are equal
    */
   @Override

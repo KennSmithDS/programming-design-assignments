@@ -53,7 +53,7 @@ public class InsultMessage extends Message {
 
   /**
    * Overridden equals method for InsultMessage objects
-   * @param o
+   * @param o object
    * @return boolean if the objects are equal
    */
   @Override

@@ -57,7 +57,7 @@ public abstract class Response extends Communication {
 
   /**
    * Overridden equals method for Response objects
-   * @param o
+   * @param o object
    * @return boolean if the objects are equal
    */
   @Override
