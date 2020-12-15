@@ -1,6 +1,7 @@
 import Communications.Communication;
 import Communications.ConnectMessage;
 import Communications.InvalidMessageException;
+import java.util.Scanner;
 import org.json.simple.parser.ParseException;
 
 import java.io.FileNotFoundException;
@@ -23,6 +24,12 @@ public class Main {
 
     String insult = new SentenceGenerator(new Grammar(new JSONFileParser("./lib/insult_grammar.json")), null).buildSentence();
     System.out.println(insult);
+  }
+
+  public static String readShit() {
+    Scanner console = new Scanner(System.in);
+    String input = console.nextLine();
+    return input;
   }
 
 }
