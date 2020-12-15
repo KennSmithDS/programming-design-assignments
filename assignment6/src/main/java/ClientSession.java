@@ -3,6 +3,7 @@ import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.net.Socket;
+import java.net.SocketException;
 import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
 import java.util.Base64;
@@ -84,7 +85,14 @@ public class ClientSession implements Runnable {
 
             while (true) {
                 // decide what kind of message to send
-                Message inboundMessage = (Message) messageInStream.readObject();
+                Message inboundMessage = null;
+                try {
+                    inboundMessage = (Message) messageInStream.readObject();
+                } catch (IOException | ClassNotFoundException e) {
+                    System.out.println(e + " " + "error with client session, client unexpectedly disconnected. " + this.toString());
+                    System.out.println("There are " + server.getClientCount() + " clients connected");
+                    break;
+                }
                 // block user from doing anything until connected
                 if (!isConnected) {
 //                    if (inboundMessage.getIdentifier() != Identifier.CONNECT_MESSAGE) {
@@ -108,7 +116,7 @@ public class ClientSession implements Runnable {
                             sendConnectionResponse(inboundMessage, false);
                         }
                     }
-                // let the user do other normal things once connected
+                    // let the user do other normal things once connected
                 } else {
 //                    if (inboundMessage.getIdentifier() == Identifier.DISCONNECT_MESSAGE) {
                     if (inboundMessage instanceof DisconnectMessage) {
@@ -122,8 +130,8 @@ public class ClientSession implements Runnable {
                         System.out.println("There are " + server.getClientCount() + " clients connected");
                         socket.close();
                         break;
-                    // handle other message types, i.e. direct, broadcast, insult and user query
-                    } else if (inboundMessage instanceof DirectMessage){
+                        // handle other message types, i.e. direct, broadcast, insult and user query
+                    } else if (inboundMessage instanceof DirectMessage) {
                         sendDirectMessage((DirectMessage) inboundMessage);
                     } else if (inboundMessage instanceof BroadcastMessage) {
                         sendBroadcastMessage((BroadcastMessage) inboundMessage);
@@ -137,8 +145,9 @@ public class ClientSession implements Runnable {
                     }
                 }
             }
-        } catch (InvalidMessageException | ClassNotFoundException e) {
+        } catch (InvalidMessageException e) {
             e.printStackTrace();
+        } finally {
             socket.close();
         }
     }
@@ -204,7 +213,7 @@ public class ClientSession implements Runnable {
         try {
             ConcurrentHashMap<String, ClientSession> sessions = this.server.getClientSessions();
             for (String clientName : sessions.keySet()) {
-                if (!clientName.equals(message.getStringMsg())) {
+                if (!clientName.equals(message.getStringName())) {
                     sessions.get(clientName).messageOutStream.writeObject(message);
                 }
             }
