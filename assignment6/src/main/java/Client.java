@@ -1,8 +1,24 @@
 import Communications.*;
 import java.io.*;
 import java.net.Socket;
+import java.util.Objects;
 import java.util.Scanner;
 
+/**
+ * Class to represent a client application that connects to the chat server
+ * It's primary task is to provide a simple terminal UI for client to engage
+ * With the chat server, e.g. logon, logoff, and message other clients
+ * Properties:
+ * - client socket
+ * - string user name
+ * - connected status
+ * - able to logoff server (e.g. logged on)
+ * Methods:
+ * - main entry point for the client application
+ * - get client socket for access from inside ServerConnection
+ * - listen for commands from the user to send messages
+ * - display the list of available commands
+ */
 public class Client {
 
   private Socket socket;
@@ -12,6 +28,11 @@ public class Client {
   private boolean connected;
   private boolean allowLogoff;
 
+  /**
+   * Constructor method for Client object that takes a host and port as parameters
+   * @param host String of host location, either local or remote IP
+   * @param port int of port to connect on
+   */
   public Client(String host, int port) {
     try {
       this.userName = null;
@@ -23,26 +44,21 @@ public class Client {
     this.allowLogoff = false;
   }
 
+  /**
+   * Method to get the client socket for access from ServerConnection
+   * @return Socket client socket object connected to server
+   */
   public Socket getClientSocket() {
     return this.socket;
   }
 
-  public boolean isConnected() {
-    return connected;
-  }
-
-  public void setConnected(boolean connected) {
-    this.connected = connected;
-  }
-
-  public boolean isAllowLogoff() {
-    return allowLogoff;
-  }
-
-  public void setAllowLogoff(boolean allowLogoff) {
-    this.allowLogoff = allowLogoff;
-  }
-
+  /**
+   * Main method to drive the execution of client instantiation
+   * Allows user to logon, logoff, and create and send messages based on user input
+   * @param args String array from command-line terminal
+   * @throws IOException default exception for IO errors
+   * @throws InvalidMessageException
+   */
   public static void main(String[] args) throws IOException, InvalidMessageException {
     Client client = new Client(DEFAULT_HOST, DEFAULT_PORT);
     if (client.socket.isConnected()) {
@@ -55,6 +71,15 @@ public class Client {
     }
   }
 
+  /**
+   * Method to handle user input from command-line in terminal
+   * Primary method to handle the routing of user input to generate output messages and logon/logoff requests
+   * @param messageOutStream message output stream
+   * @param messageInStream message input stream
+   * @param server ServerConnection listening to server
+   * @throws IOException default exception for IO errors
+   * @throws InvalidMessageException custom InvalidMessageException error
+   */
   public void listenForUserCommands(ObjectOutputStream messageOutStream, ObjectInputStream messageInStream, ServerConnection server) throws IOException, InvalidMessageException {
     System.out.println("Welcome to the chat app, you can type '?' at any time to see list of available commands");
     Scanner console = new Scanner(System.in);
@@ -185,7 +210,9 @@ public class Client {
     }
   }
 
-
+  /**
+   * Method to display the available commands on client application
+   */
   private static void displayCommands() {
     System.out.println("logon <username> -> sends a message to login to the chat server");
     System.out.println("logoff -> sends a message to logoff from the chat server");
@@ -193,6 +220,45 @@ public class Client {
     System.out.println("@<user> <message> -> sends a message directly to a specific user");
     System.out.println("@all <message> -> sends a message to all connected users");
     System.out.println("!<user> -> sends a random insult to a specific user");
+  }
+
+  /**
+   * Override method for default equals()
+   * @param o object
+   * @return boolean
+   */
+  @Override
+  public boolean equals(Object o) {
+    if (this == o) return true;
+    if (o == null || getClass() != o.getClass()) return false;
+    Client client = (Client) o;
+    return connected == client.connected &&
+            allowLogoff == client.allowLogoff &&
+            Objects.equals(socket, client.socket) &&
+            Objects.equals(userName, client.userName);
+  }
+
+  /**
+   * Override method for default hashCode()
+   * @return int
+   */
+  @Override
+  public int hashCode() {
+    return Objects.hash(socket, userName, connected, allowLogoff);
+  }
+
+  /**
+   * Override method for default toString()
+   * @return String
+   */
+  @Override
+  public String toString() {
+    return "Client{" +
+            "socket=" + socket +
+            ", userName='" + userName + '\'' +
+            ", connected=" + connected +
+            ", allowLogoff=" + allowLogoff +
+            '}';
   }
 
 }

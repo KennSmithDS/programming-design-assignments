@@ -12,7 +12,24 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.TimeUnit;
 
 /**
- *
+ * Class to represent the ClientSession, which are threads to be executed in the thread pool
+ * ClientSessions are threads and therefore need to implement Runnable and override run()
+ * The main responsibility of ClientSession is to route messages between clients and generate responses
+ * Properties:
+ * - client socket
+ * - server instance
+ * - socket port
+ * - session connected status
+ * - message input stream
+ * - message output stream
+ * Methods:
+ * - handle the client session communications
+ * - send direct message
+ * - send broadcast message
+ * - send connection response
+ * - send disconnect response
+ * - send user query response
+ * - get all connected users
  */
 public class ClientSession implements Runnable {
 
@@ -24,11 +41,13 @@ public class ClientSession implements Runnable {
     private ObjectOutputStream messageOutStream;
 
     /**
-     *
-     * @param socket
-     * @param server
-     * @param port
-     * @throws IOException
+     * Constructor for ClientSession object
+     * Takes socket, server object and port as required parameters
+     * Also instantiates connected status as false, and input/output streams as null
+     * @param socket client socket
+     * @param server instance of server
+     * @param port server port
+     * @throws IOException default exception for IO errors
      */
     ClientSession (Socket socket, Server server, int port) throws IOException {
         this.socket = socket;
@@ -37,19 +56,10 @@ public class ClientSession implements Runnable {
         this.isConnected = false;
         this.messageInStream = null;
         this.messageOutStream = null;
-        this.server.countIncrement();
-    }
-
-    public ObjectInputStream getMessageInStream() {
-        return this.messageInStream;
-    }
-
-    public ObjectOutputStream getMessageOutStream() {
-        return this.messageOutStream;
     }
 
     /**
-     *
+     * Override of run() method for Runnable interface
      */
     @Override
     public void run() {
@@ -61,9 +71,10 @@ public class ClientSession implements Runnable {
     }
 
     /**
-     * 
-     * @throws InterruptedException
-     * @throws IOException
+     * Method to handle the communications between clients and sending responses to clients
+     * @throws InterruptedException default exception for thread interrupted
+     * @throws IOException default exception for IO errors
+     * @throws ClassNotFoundException default exception for class not found
      */
     private void handleClientSession() throws InterruptedException, IOException {
         try {
@@ -104,7 +115,6 @@ public class ClientSession implements Runnable {
                         // remove user from sessions
                         isConnected = false;
                         server.dropClientSession(inboundMessage.getStringName()); // here
-                        server.countDecrement();
                         System.out.println("There are " + server.getClientCount() + " clients connected");
                         socket.close();
                         break;
@@ -123,16 +133,17 @@ public class ClientSession implements Runnable {
                     }
                 }
             }
-        } catch (ClassNotFoundException | InvalidMessageException e) {
+        } catch (InvalidMessageException | ClassNotFoundException e) {
             e.printStackTrace();
             socket.close();
         }
     }
 
     /**
-     *
-     * @param message
-     * @throws IOException
+     * Method for sending a direct message to another client
+     * Can be either DirectMessage or InsultMessage
+     * @param message DirectMessage sent from client to another client
+     * @throws IOException default exception for IO error
      */
     private void sendDirectMessage(DirectMessage message) throws IOException {
         try {
@@ -140,11 +151,7 @@ public class ClientSession implements Runnable {
             if (this.server.getClientSessions().containsKey(recipientUser)) {
                 this.server.getClientSessions().get(recipientUser).messageOutStream.writeObject(message);
             } else {
-                String msg = "Cannot send direct message because user @" + message.getRecipStringName() + " does not exist.";
-                int msgLength = msg.length();
-                String failMsg = Identifier.FAILED_MESSAGE.getIdentifierValue() + " " + msgLength + " " + msg;
-                Communication fail = Communication.communicationFactory(failMsg);
-                this.server.getClientSessions().get(message.getStringName()).messageOutStream.writeObject(fail);
+                sendFailedMessage(message.getRecipStringName(), message.getStringName());
             }
         } catch (IOException | InvalidMessageException e) {
             e.printStackTrace();
@@ -152,9 +159,9 @@ public class ClientSession implements Runnable {
     }
 
     /**
-     *
-     * @param message
-     * @throws IOException
+     * Method for sending an insult message to another client
+     * @param message InsultMessage sent from client to another client
+     * @throws IOException default exception for IO error
      */
     private void sendInsult(InsultMessage message) throws IOException {
         try {
@@ -162,23 +169,40 @@ public class ClientSession implements Runnable {
             if (this.server.getClientSessions().containsKey(recipientUser)) {
                 this.server.getClientSessions().get(recipientUser).messageOutStream.writeObject(message);
             } else {
-                // logic to send failed message
+                sendFailedMessage(message.getRecipStringName(), message.getStringName());
             }
-        } catch (IOException e) {
+        } catch (IOException | InvalidMessageException e) {
             e.printStackTrace();
         }
     }
 
     /**
-     *
-     * @param message
-     * @throws IOException
+     * Method to send a failed message back to client when a user is not active on the chat server
+     * @param recipStringName String of recipient client
+     * @param stringName String of sender client
+     * @throws InvalidMessageException custom InvalidMessageException error
+     * @throws IOException default exception for IO error
+     */
+    private void sendFailedMessage(String recipStringName, String stringName) throws InvalidMessageException, IOException {
+        String msg = "Cannot send direct message because user @" + recipStringName + " does not exist.";
+        int msgLength = msg.length();
+        String failMsg = Identifier.FAILED_MESSAGE.getIdentifierValue() + " " + msgLength + " " + msg;
+        Communication fail = Communication.communicationFactory(failMsg);
+        this.server.getClientSessions().get(stringName).messageOutStream.writeObject(fail);
+    }
+
+    /**
+     * Method to send a broadcast message to all users except the sender
+     * @param message BroadCast message object
+     * @throws IOException default exception for IO error
      */
     private void sendBroadcastMessage(BroadcastMessage message) throws IOException {
         try {
             ConcurrentHashMap<String, ClientSession> sessions = this.server.getClientSessions();
             for (String clientName : sessions.keySet()) {
-                sessions.get(clientName).messageOutStream.writeObject(message);
+                if (!clientName.equals(message.getStringMsg())) {
+                    sessions.get(clientName).messageOutStream.writeObject(message);
+                }
             }
         } catch (IOException e) {
             e.printStackTrace();
@@ -186,11 +210,11 @@ public class ClientSession implements Runnable {
     }
 
     /**
-     *
-     * @param inboundMessage
-     * @param status
-     * @throws InvalidMessageException
-     * @throws IOException
+     * Method to generate and send a connection response to client
+     * @param inboundMessage connection message inbound from client
+     * @param status boolean status of client in the thread pool
+     * @throws InvalidMessageException custom InvalidMessageException error
+     * @throws IOException default exception for IO error
      */
     private void sendConnectionResponse(Message inboundMessage, boolean status) throws InvalidMessageException, IOException {
         Communication commProtocol;
@@ -203,10 +227,10 @@ public class ClientSession implements Runnable {
     }
 
     /**
-     *
-     * @param inboundMessage
-     * @throws InvalidMessageException
-     * @throws IOException
+     * Method to generate and send a disconnect response to client
+     * @param inboundMessage disconnect message inbound from client
+     * @throws InvalidMessageException custom InvalidMessageException error
+     * @throws IOException default exception for IO error
      */
     private void sendDisconnectResponse(Message inboundMessage) throws InvalidMessageException, IOException {
         Communication commProtocol;
@@ -217,7 +241,7 @@ public class ClientSession implements Runnable {
     }
 
     /**
-     *
+     * Method to generate a query response and send back to requesting client
      */
     private void sendUserQueryResponse() throws InvalidMessageException, IOException {
         Communication commProtocol;
@@ -227,8 +251,8 @@ public class ClientSession implements Runnable {
     }
 
     /**
-     *
-     * @return
+     * Method to get a String of all users and the lengths of their user names
+     * @return String from StringBuilder of all users
      */
     private String getAllConnectedUsers() {
         ConcurrentHashMap<String, ClientSession> sessions = this.server.getClientSessions();
@@ -244,9 +268,9 @@ public class ClientSession implements Runnable {
     }
 
     /**
-     *
-     * @param o
-     * @return
+     * Override method for default equals()
+     * @param o object
+     * @return boolean
      */
     @Override
     public boolean equals(Object o) {
@@ -261,8 +285,8 @@ public class ClientSession implements Runnable {
     }
 
     /**
-     *
-     * @return
+     * Override method for default hashCode()
+     * @return int
      */
     @Override
     public int hashCode() {
@@ -270,8 +294,8 @@ public class ClientSession implements Runnable {
     }
 
     /**
-     *
-     * @return
+     * Override method for default toString()
+     * @return String
      */
     @Override
     public String toString() {

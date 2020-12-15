@@ -14,7 +14,22 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.net.Socket;
 import java.util.Arrays;
+import java.util.Objects;
 
+/**
+ * Class to represent the ServerConnection, which are single threads to be executed by each client
+ * ServerConnections are threads and therefore need to implement Runnable and override run()
+ * The main responsibility of ServerConnection is to receive message from other users and display responses from the server
+ * Properties:
+ * - client socket
+ * - message input stream
+ * - server connection status
+ * - if client is allowed to logoff
+ * Methods:
+ * - get connected status
+ * - check if allowed to logoff
+ * - handle server connection
+ */
 public class ServerConnection implements Runnable {
 
     private Socket socket;
@@ -22,6 +37,12 @@ public class ServerConnection implements Runnable {
     private boolean connected;
     private boolean allowLogoff;
 
+    /**
+     * Constructor method for ServerConnection that takes socket and message input stream (from client)
+     * @param socket Socket of client socket for connection to server
+     * @param messageInStream ObjectInputStream to receive messages/responses from server
+     * @throws IOException default exception for IO errors
+     */
     ServerConnection(Socket socket, ObjectInputStream messageInStream) throws IOException {
         this.socket = socket;
         this.messageInStream = messageInStream;
@@ -29,14 +50,25 @@ public class ServerConnection implements Runnable {
         this.allowLogoff = false;
     }
 
+    /**
+     * Method to check if a client is connected to server or not via logon
+     * @return boolean
+     */
     public boolean isConnected() {
         return connected;
     }
 
+    /**
+     * Method to check if client is allowed to logoff, has to be logged in first
+     * @return boolean
+     */
     public boolean isAllowLogoff() {
         return allowLogoff;
     }
 
+    /**
+     * Override of run() method for Runnable interface
+     */
     @Override
     public void run() {
         try {
@@ -46,7 +78,10 @@ public class ServerConnection implements Runnable {
         }
     }
 
-    //Handles all responses
+    /**
+     * Method to handle all inbound object stream messages/responses over server connection
+     * @throws IOException default exception for IO errors
+     */
     private void handleServerConnection() throws IOException {
         try {
 
@@ -104,5 +139,42 @@ public class ServerConnection implements Runnable {
 
     }
 
+    /**
+     * Override method for default equals()
+     * @param o object
+     * @return boolean
+     */
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        ServerConnection that = (ServerConnection) o;
+        return connected == that.connected &&
+                allowLogoff == that.allowLogoff &&
+                Objects.equals(socket, that.socket) &&
+                Objects.equals(messageInStream, that.messageInStream);
+    }
 
+    /**
+     * Override method for default hashCode()
+     * @return int
+     */
+    @Override
+    public int hashCode() {
+        return Objects.hash(socket, messageInStream, connected, allowLogoff);
+    }
+
+    /**
+     * Override method for default toString()
+     * @return String
+     */
+    @Override
+    public String toString() {
+        return "ServerConnection{" +
+                "socket=" + socket +
+                ", messageInStream=" + messageInStream +
+                ", connected=" + connected +
+                ", allowLogoff=" + allowLogoff +
+                '}';
+    }
 }
