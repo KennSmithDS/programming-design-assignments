@@ -118,11 +118,12 @@ This class also implements Runnable, and thus is a class of objects which repres
   - `sendDisconnectionResponse` **method**: Sends an DisonnectionResponse Communication object.
   - `sendUserQueryResponse` **method**: Sends an QueryResponse Communication object.
   
-## Edge Cases
+## Edge Cases and Assumptions
 
 1) Cannot send message or logoff before logging on. 
 2) Cannot have two users with the same name.
 3) Can only have 10 clients/users at a time.
+4) Assume that users must log off before the Server is terminated/closed.
 
 ## Note on Issues
 We ran into some problems when testing our assignment. Testing the Communication classes (and subclasses) was not a problem, however, we struggled with testing the Client, Server, ClientSession, and ServerConnection classes. These were particlarly difficult to test due to the combination of port/socket handling and multi threads to handle and test. Further, for the Client class, we also would need to emmulate the commandline input, as well as multithreads and sockets due to the way that our assignment was structured. We kept running into different errors when trying to establish a socket connection in the test, and could not find an appropriate way/solution to set up the objects of these classes such that we could test them. We tried some solutions such as:
