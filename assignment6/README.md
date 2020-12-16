@@ -88,4 +88,28 @@ This is the class that is the user interface (UI) fo the clients/users. It reads
 - `listenForUserCommands` **method**: This method reads from the commandline (reads the user's commands), and checks them (edge cases mentioned above), constructs the appropriate Communication object corresponding to the command, and then puts it onto the ServerConnection object's ObjectOutputStream to be sent to the redirected appropriately.
 - `Main` **method**: Instantiates the ServerConnection object, and then uses the `listenForUserCommands` helper method to read commandline input and send out Communication objects.
 
+**CLASS: ServerConnection:**
+This is the class serves the connection between a particular Client UI and the rest of the chatroom app. ServerConnection implements runnable, and has booleans represnting "connected" and "allowLogoff", which handle edge cases mentioned above. It also has a socket, and ObjectInputStream through which it reads messages (Communication objects) sent by the client UI. When it receives a message from the client or ClientSession (handles Communications from other users/Server over the server connection), it will print that Communication to the console which is seen by the client UI.
+- `handleServerConnection` **method**: This is the most important method in the ServerConnection class, and is called in its run() method (because it implements runnable). In this method, the ServerConnection will read from its ObjectInputStream, check what kind of Communication it is, and then print to the client console the appropriate information contained in that Communication. Further, for received InsultMessage objects, this method will generate the random insult and print that to the client console.
+- `isConnected` **method**: Returns boolean if we have connected to the server.
+- `isAllowLogoff` **method**: Returns boolean if we can logoff (i.e. we only allow logging off once we have connected).
+
+**CLASS: ClientSession:**
+This class also implements Runnable, and thus is a class of objects which represnt a single user, that we can then add to the server threadpool. Its main responsability is to route messages between the clients and generate Communication objects in response to either a Communication from another user or an error (FailMessage). This object also has a socket, server (Server class), port, ObjectInputStream, ObjectOutputStream, and a boolean representing if the session is connected to the server. 
+- `handleClientSession` **method**: This is the most important method in the ClientSession class. From the socket, it gets an input and output stream, through which it sends and receives Communications. Depending on what kind of Communication it receives, it sends an appropriate Communication in response, which is read by the corresponding user's ServerConnection. For example, if it receives a ConnectMessage, it will generate a ConnectResponse and then send that on the output stream which will be read by the ServerConnection and printed/handled to the user UI.
+- `sendDirectMessage` **method**: Helper method for `handleClientSession`, such that it will check if the direct message recipient exists, and if they do, it will redirect and send the direct message. If the user doesn't exist, it will instead respond with a FailedResponse Communication.
+- `sendInsult` **method**: Helper method for `handleClientSession`, such that it will check if the insult message recipient exists, and if they do, it will redirect and send the insult message. If the user doesn't exist, it will instead respond with a FailedResponse Communication.
+- `sendFailedMessage` **method**: Helper method for `handleClientSession`, which constructs a FailedResponse object and send this across the output stream.
+- `sendBroadcastMessage` **method**: Helper method for `handleClientSession`, which will get the HashMap of active ClientSessions from the Server object, and then send out the message to each of the connected users.
+- `send` **methods**: More helper methods for `handleClientSession`, which send differen types of messages/Communications. These all function in the same way as the helper methods mentioned above, but for different types of messages (all use the communicationFactory method to construct the messages, such as:
+  - `sendConnectionResponse` **method**: Sends an ConnectionResponse Communication object.
+  - `sendDisconnectionResponse` **method**: Sends an DisonnectionResponse Communication object.
+  - `sendUserQueryResponse` **method**: Sends an QueryResponse Communication object.
+  
+## Assumptions and Edge Cases
+
+1) 
+
+## Note on Issues
+We ran into some problems when testing our assignment. Testing the Communication classes (and subclasses) was not a problem, however, we struggled with testing the Client, Server, ClientSession, and ServerConnection classes. These were particlarly difficult to test due to the combination of port/socket handling and multi threads to handle and test. Further, for the Client class, we also would need to emmulate the commandline input, as well as multithreads and sockets due to the way that our assignment was structured. We kept running into different errors when trying to establish a socket connection in the test, and could not find an appropriate way/solution to set up the objects of these classes such that we could test them.
 
