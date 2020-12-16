@@ -1,6 +1,8 @@
 import Communications.*;
 import java.io.*;
+import java.net.InetSocketAddress;
 import java.net.Socket;
+import java.net.SocketTimeoutException;
 import java.util.Objects;
 import java.util.Scanner;
 
@@ -27,6 +29,7 @@ public class Client {
   private String userName;
   private boolean connected;
   private boolean allowLogoff;
+  private static final int CONNECT_TIMEOUT = 5000;
   private static final String MENU = "logon <username> -> sends a message to login to the chat server" +
       "\n" + "logoff -> sends a message to logoff from the chat server" + "\n" +
       "who -> sends a query for all users connected to the server" + "\n" +
@@ -43,6 +46,9 @@ public class Client {
     try {
       this.userName = null;
       this.socket = new Socket(host, port);
+      socket.setSoTimeout(10000);
+//      this.socket = new Socket();
+//      socket.connect(new InetSocketAddress(host,port),CONNECT_TIMEOUT);
     } catch (IOException e) {
       e.printStackTrace();
     }
@@ -66,16 +72,22 @@ public class Client {
    * @throws InvalidMessageException custom exception for invalid message type
    */
   public static void main(String[] args) throws IOException, InvalidMessageException {
-    Client client = new Client(DEFAULT_HOST, DEFAULT_PORT);
-    if (client.socket.isConnected()) {
-      ObjectOutputStream messageOutStream = new ObjectOutputStream(client.getClientSocket().getOutputStream());
-      ObjectInputStream messageInStream = new ObjectInputStream(client.getClientSocket().getInputStream());
+    try {
+      Client client = new Client(DEFAULT_HOST, DEFAULT_PORT);
+      if (client.socket.isConnected()) {
+        ObjectOutputStream messageOutStream = new ObjectOutputStream(client.getClientSocket().getOutputStream());
+        ObjectInputStream messageInStream = new ObjectInputStream(client.getClientSocket().getInputStream());
 
-      ServerConnection serverConnectionThread = new ServerConnection(client.getClientSocket(), messageInStream);
-      new Thread(serverConnectionThread).start();
-      client.listenForUserCommands(messageOutStream, serverConnectionThread);
-    } else {
+        ServerConnection serverConnectionThread = new ServerConnection(client.getClientSocket(), messageInStream);
+        new Thread(serverConnectionThread).start();
+        client.listenForUserCommands(messageOutStream, serverConnectionThread);
+      } else {
+        System.out.println("Currently the chat server is full. Please try to join again later! :-)");
+      }
+    } catch (SocketTimeoutException e) {
       System.out.println("Currently the chat server is full. Please try to join again later! :-)");
+    } finally {
+      System.exit(1);
     }
   }
 
