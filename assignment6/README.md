@@ -2,6 +2,18 @@
 
 In this assignment, we were tasked with making a simple messaging app, which consists of client(s) and a server. As the assignment specs indicate, our solution contains of a single server which manages clients such that they can communicate and message each other. Further, there are some more commands that the chatroom must support, such as showing all the users connected, sending broadcast messages (message sent to all connected users), send direct message, and query users (see what users are connected). The server must also manage the chatroom such that there is a limited number of users that can be connected at a certain time, and manage connecting and disconnecting these users. Finally, the chatroom app must adhere to a protocol of messages and responses.
 
+## Usage
+
+In order to run this application, you must open the terminal to first run the Server before any client. 
+```
+java -jar ChatServerApp.jar
+```
+For every subsequent user/client which wants to log on to the app, we must open a new terminal window, and run the following command:
+```
+java -jar ChatClientApp.jar
+```
+Then, for every client terminal, you may begin to pass command line arguments to send messages, query users, etc.
+
 
 ## Classes and Key Methods
 
@@ -106,10 +118,15 @@ This class also implements Runnable, and thus is a class of objects which repres
   - `sendDisconnectionResponse` **method**: Sends an DisonnectionResponse Communication object.
   - `sendUserQueryResponse` **method**: Sends an QueryResponse Communication object.
   
-## Assumptions and Edge Cases
+## Edge Cases
 
-1) 
+1) Cannot send message or logoff before logging on. 
+2) Cannot have two users with the same name.
+3) Can only have 10 clients/users at a time.
 
 ## Note on Issues
-We ran into some problems when testing our assignment. Testing the Communication classes (and subclasses) was not a problem, however, we struggled with testing the Client, Server, ClientSession, and ServerConnection classes. These were particlarly difficult to test due to the combination of port/socket handling and multi threads to handle and test. Further, for the Client class, we also would need to emmulate the commandline input, as well as multithreads and sockets due to the way that our assignment was structured. We kept running into different errors when trying to establish a socket connection in the test, and could not find an appropriate way/solution to set up the objects of these classes such that we could test them.
+We ran into some problems when testing our assignment. Testing the Communication classes (and subclasses) was not a problem, however, we struggled with testing the Client, Server, ClientSession, and ServerConnection classes. These were particlarly difficult to test due to the combination of port/socket handling and multi threads to handle and test. Further, for the Client class, we also would need to emmulate the commandline input, as well as multithreads and sockets due to the way that our assignment was structured. We kept running into different errors when trying to establish a socket connection in the test, and could not find an appropriate way/solution to set up the objects of these classes such that we could test them. We tried some solutions such as:
+
+- In order to overcome threading issues in the Server class tests, we made a random port generator so that we would not run into multi thread issues when testing different aspects of Server. However, since Server runs in the Main method, we could not kill the thread which we believe was causing some issues.
+
 
