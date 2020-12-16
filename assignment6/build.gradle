@@ -121,7 +121,7 @@ jacocoTestReport {
     }
 }
 
-mainClassName = 'Server'
+mainClassName = 'Client'
 
 jar {
     manifest {
