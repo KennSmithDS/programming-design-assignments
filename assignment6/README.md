@@ -13,7 +13,13 @@ The communication package is where all the classes representing the chatroom pro
 The Message class is a child class of the Communication class. The Message class itself is also an abtract class. We chose to split the types of protocol/communication into two different subtypes, being Response (see description for Response class below) as well a this Message class in order to minimize code duplication, since the Message subtypes all have a sender username (byte[]) and a sender username length, whereas every Response has a message (byte[]) and message length. Subclasses of both Response and Message might have additional fields, but we minimize code duplication for fields that are the same across them all.
 - `getStringName` **method**: This method returns a string representation of the byte array username.
 - `Getter` **methods**: We also have getter methods for the username size and byte array representation of username.
-- <ins>Message types that extend Message.class</ins>: 
+- <ins>Message types that extend Message.class</ins>:
+  - CONNECT_MESSAGE(19)
+  - DISCONNECT_MESSAGE(21)
+  - QUERY_USERS(23)
+  - BROADCAST_MESSAGE(25)
+  - DIRECT_MESSAGE(26)
+  - SEND_INSULT(28)
 
 **CLASS: Response:**
 The Response class, as mentioned above, as another abtract class that extends the Communication class.
