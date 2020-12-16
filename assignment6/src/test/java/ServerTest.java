@@ -46,7 +46,7 @@ public class ServerTest {
     public void stop() throws IOException {
         int newPort = DEFAULT_PORT+getRandomPortMod();
         Server testServer = new Server(newPort);
-        Server.stop();
+        testServer.stop();
 
     }
 
@@ -101,6 +101,7 @@ public class ServerTest {
         int serverPortCalled = testServer.getServerPort();
         Assert.assertEquals(newPort, serverPortCalled, 0);
         testServer.getServerSocket().close();
+        testServer.stop();
         Thread.sleep(1000);
     }
 
@@ -112,6 +113,7 @@ public class ServerTest {
         int noClients = testServer.getClientCount();
         Assert.assertEquals(0, noClients,0);
         testServer.getServerSocket().close();
+        testServer.stop();
         Thread.sleep(1000);
     }
 
@@ -127,6 +129,7 @@ public class ServerTest {
         Assert.assertEquals(1, testServer.getClientCount(), 0);
         testServer.getServerSocket().close();
         testClientSocket.close();
+        testServer.stop();
         Thread.sleep(1000);
     }
 
@@ -144,6 +147,7 @@ public class ServerTest {
         Assert.assertFalse(result2);
         testServer.getServerSocket().close();
         testClientSocket.close();
+        testServer.stop();
         Thread.sleep(1000);
     }
 
@@ -168,6 +172,7 @@ public class ServerTest {
         Assert.assertEquals(0, testServer.getClientCount(), 0);
         testServer.getServerSocket().close();
         testClientSocket.close();
+        testServer.stop();
         Thread.sleep(1000);
     }
 
@@ -188,12 +193,14 @@ public class ServerTest {
 
         ConcurrentHashMap<String, ClientSession> sessions = testServer.getClientSessions();
         Assert.assertEquals(2, sessions.size());
+        testServer.stop();
     }
 
     @Test
     public void testEquals() throws IOException, InterruptedException {
         Server testServer = new Server(DEFAULT_PORT+getRandomPortMod());
         Assert.assertEquals(testServer, testServer);
+        testServer.stop();
         Thread.sleep(1000);
     }
 
@@ -203,12 +210,15 @@ public class ServerTest {
         Server testServer2 = new Server(DEFAULT_PORT+getRandomPortMod());
         assertFalse(testServer1.equals(testServer2));
         Thread.sleep(1000);
+        testServer1.stop();
+        testServer2.stop();
     }
 
     @Test
     public void testHashCode() throws IOException, InterruptedException {
         Server testServer = new Server(DEFAULT_PORT+getRandomPortMod());
         Assert.assertEquals(testServer.hashCode(), testServer.hashCode());
+        testServer.stop();
         Thread.sleep(1000);
     }
 
@@ -220,10 +230,11 @@ public class ServerTest {
 //        System.out.println(serverToString);
         ServerSocket socket = testServer.getServerSocket();
         String testString = "Server{serverSocket=" + socket + ", serverPort=" + newPort +
-                ", clientSessions={}, serverRunning=true}";
+                ", serverRunning=true}";
 //        System.out.println(testString);
         Assert.assertEquals(testString, serverToString);
         Thread.sleep(1000);
+        testServer.stop();
     }
 
 }

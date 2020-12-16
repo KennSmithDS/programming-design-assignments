@@ -32,7 +32,7 @@ public class Server {
     private ServerSocket serverSocket;
     private int serverPort;
     private static final int DEFAULT_PORT = 3333;
-    private static final int THREAD_LIMIT = 10;
+    private static final int THREAD_LIMIT = 2;
     private ConcurrentHashMap<String, ClientSession> clientSessions;
     private boolean serverRunning = true;
     private static ExecutorService threadPool = Executors.newFixedThreadPool(THREAD_LIMIT);
@@ -66,11 +66,12 @@ public class Server {
      * @throws IOException default exception for IO error
      */
     public static void main(String[] args) throws IOException {
+
+        Server server = new Server();
+
         try {
             if (args.length==0) {
 //                Scanner serverConsole = new Scanner(System.in);
-
-                Server server = new Server();
                 ServerSocket serverSocket = server.getServerSocket();
 
                 System.out.println("Chat server is running on port " + server.serverPort);
@@ -98,14 +99,14 @@ public class Server {
         } catch (IOException e) {
             e.printStackTrace();
         } finally {
-            Server.stop();
+            server.stop();
         }
     }
 
     /**
      * Method to shutdown the thread pool executor service
      */
-    public static void stop() {
+    public void stop() {
         threadPool.shutdown();
     }
 
@@ -126,7 +127,7 @@ public class Server {
      * Method to get the server socket from ClientSession
      * @return ServerSocket object
      */
-    protected ServerSocket getServerSocket() { return this.serverSocket; }
+    public ServerSocket getServerSocket() { return this.serverSocket; }
 
     /**
      * Method to get the server port from ClientSession
@@ -160,7 +161,7 @@ public class Server {
      */
     protected boolean addClientSession(String clientName, ClientSession session) {
         if (!this.clientSessions.containsKey(clientName)) {
-            clientSessions.put(clientName, session);
+            clientSessions.putIfAbsent(clientName, session);
             return true;
         }
         return false;
@@ -194,8 +195,7 @@ public class Server {
         Server server = (Server) o;
         return serverPort == server.serverPort &&
                 serverRunning == server.serverRunning &&
-                Objects.equals(serverSocket, server.serverSocket) &&
-                Objects.equals(clientSessions, server.clientSessions);
+                Objects.equals(serverSocket, server.serverSocket);
     }
 
     /**
@@ -204,7 +204,7 @@ public class Server {
      */
     @Override
     public int hashCode() {
-        return Objects.hash(serverSocket, serverPort, clientSessions, serverRunning);
+        return Objects.hash(serverSocket, serverPort, serverRunning);
     }
 
     /**
@@ -216,7 +216,6 @@ public class Server {
         return "Server{" +
                 "serverSocket=" + serverSocket +
                 ", serverPort=" + serverPort +
-                ", clientSessions=" + clientSessions +
                 ", serverRunning=" + serverRunning +
                 '}';
     }

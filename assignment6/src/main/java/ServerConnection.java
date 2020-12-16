@@ -87,7 +87,12 @@ public class ServerConnection implements Runnable {
         try {
 
             while (true) {
-                Object serverInbound = messageInStream.readObject();
+                Object serverInbound = null;
+                try {
+                    serverInbound = messageInStream.readObject();
+                } catch (IOException | ClassNotFoundException e) {
+                    e.printStackTrace();
+                }
                 //System.out.println("The message is: " + serverInbound.toString());
 
                 if(serverInbound instanceof Communications.ConnectResponse) {
@@ -173,7 +178,6 @@ public class ServerConnection implements Runnable {
     public String toString() {
         return "ServerConnection{" +
                 "socket=" + socket +
-                ", messageInStream=" + messageInStream +
                 ", connected=" + connected +
                 ", allowLogoff=" + allowLogoff +
                 '}';

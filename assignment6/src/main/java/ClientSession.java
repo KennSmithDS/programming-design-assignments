@@ -153,6 +153,26 @@ public class ClientSession implements Runnable {
     }
 
     /**
+     * Method to set the client session connected status
+     * @param status boolean to set the connected status
+     */
+    protected void setConnected(boolean status) {
+        this.isConnected = status;
+    }
+
+    /**
+     * Method to get the object input stream
+     * @return ObjectInputstream for ClientSession
+     */
+    public ObjectInputStream getMessageInputStream() { return this.messageInStream; }
+
+    /**
+     * Method to get the object output stream
+     * @return ObjectOutputStream for ClientSession
+     */
+    public ObjectOutputStream getMessageOutputStream() { return this.messageOutStream; }
+
+    /**
      * Method for sending a direct message to another client
      * Can be either DirectMessage or InsultMessage
      * @param message DirectMessage sent from client to another client
@@ -231,8 +251,14 @@ public class ClientSession implements Runnable {
      */
     private void sendConnectionResponse(Message inboundMessage, boolean status) throws InvalidMessageException, IOException {
         Communication commProtocol;
+        String responseString;
         byte[] userName = inboundMessage.getUsername();
-        String responseString = "@" + inboundMessage.getStringName() + ", you are connected to chat server!";
+        if (status) {
+            responseString = "@" + inboundMessage.getStringName() + ", you are connected to chat server!";
+        } else {
+            responseString = "@" + inboundMessage.getStringName() + ", unable to connect chat server!";
+        }
+
         int responseSize = responseString.length();
         String connectResponse = Identifier.CONNECT_RESPONSE.getIdentifierValue() + " " + responseSize + " " + responseString +" " + status;
         commProtocol = Communication.communicationFactory(connectResponse);
@@ -292,9 +318,7 @@ public class ClientSession implements Runnable {
         ClientSession that = (ClientSession) o;
         return port == that.port &&
                 Objects.equals(socket, that.socket) &&
-                Objects.equals(server, that.server) &&
-                Objects.equals(messageInStream, that.messageInStream) &&
-                Objects.equals(messageOutStream, that.messageOutStream);
+                Objects.equals(server, that.server);
     }
 
     /**
@@ -303,7 +327,7 @@ public class ClientSession implements Runnable {
      */
     @Override
     public int hashCode() {
-        return Objects.hash(socket, server, port, messageInStream, messageOutStream);
+        return Objects.hash(socket, server, port);
     }
 
     /**
@@ -316,8 +340,6 @@ public class ClientSession implements Runnable {
                 "socket=" + socket +
                 ", server=" + server +
                 ", port=" + port +
-                ", messageInStream=" + messageInStream +
-                ", messageOutStream=" + messageOutStream +
                 '}';
     }
 }
