@@ -27,6 +27,12 @@ public class Client {
   private String userName;
   private boolean connected;
   private boolean allowLogoff;
+  private static final String MENU = "logon <username> -> sends a message to login to the chat server" +
+      "\n" + "logoff -> sends a message to logoff from the chat server" + "\n" +
+      "who -> sends a query for all users connected to the server" + "\n" +
+      "@<user> <message> -> sends a message directly to a specific user" + "\n" +
+      "@all <message> -> sends a message to all connected users" + "\n" +
+      "!<user> -> sends a random insult to a specific user";
 
   /**
    * Constructor method for Client object that takes a host and port as parameters
@@ -67,7 +73,7 @@ public class Client {
 
       ServerConnection serverConnectionThread = new ServerConnection(client.getClientSocket(), messageInStream);
       new Thread(serverConnectionThread).start();
-      client.listenForUserCommands(messageOutStream, messageInStream, serverConnectionThread);
+      client.listenForUserCommands(messageOutStream, serverConnectionThread);
     } else {
       System.out.println("Currently the chat server is full. Please try to join again later! :-)");
     }
@@ -77,12 +83,11 @@ public class Client {
    * Method to handle user input from command-line in terminal
    * Primary method to handle the routing of user input to generate output messages and logon/logoff requests
    * @param messageOutStream message output stream
-   * @param messageInStream message input stream
    * @param server ServerConnection listening to server
    * @throws IOException default exception for IO errors
    * @throws InvalidMessageException custom InvalidMessageException error
    */
-  public void listenForUserCommands(ObjectOutputStream messageOutStream, ObjectInputStream messageInStream, ServerConnection server) throws IOException, InvalidMessageException {
+  public void listenForUserCommands(ObjectOutputStream messageOutStream, ServerConnection server) throws IOException, InvalidMessageException {
     System.out.println("Welcome to the chat app, you can type '?' at any time to see list of available commands");
     Scanner console = new Scanner(System.in);
 
@@ -216,12 +221,7 @@ public class Client {
    * Method to display the available commands on client application
    */
   private static void displayCommands() {
-    System.out.println("logon <username> -> sends a message to login to the chat server");
-    System.out.println("logoff -> sends a message to logoff from the chat server");
-    System.out.println("who -> sends a query for all users connected to the server");
-    System.out.println("@<user> <message> -> sends a message directly to a specific user");
-    System.out.println("@all <message> -> sends a message to all connected users");
-    System.out.println("!<user> -> sends a random insult to a specific user");
+    System.out.println(MENU);
   }
 
   /**
