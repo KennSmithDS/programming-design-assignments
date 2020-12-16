@@ -77,6 +77,15 @@ This is a (non-abstract) class that represents a SEND_INSULT(28) in the protocol
 - `getRecipUsername` **method**: This method returns a byte array represnting the recipient's username.
 - `getRecipStringName` **method**: This method returnsThis method returns a string representation of the recipient's username.
 
+**CLASS: Server:**
+This is the class that respresents a Server. As its fields, it has a server socket, server port, ConcurrentHashMap holding all the ClientSessions (see class description below), boolean representing if the server is running, and findally a treadpool (of fixed size 10) which holds all the ClientSession threads (again, see description for ClientSession below). This class manages all the users (represented as ClientSession objects) through its threadpool, and thus can manage how many users we have connected. It accepts or declines client requests to join the chatroom.
+- `Main` **method**: Gets the socket, and then keeps track of how many users there are and if they try to connect, either accepts (if there is room in the threadpool), or not otherwise.
+- `acceptClientRequest` **method**: Helper method for the main method, which accepts a user and creates a new ClientSession object represnting that user, creates a new ClientSession thread, and adds it to the threadpool + executes.
+- `Getter` **methods**: We have various getter methods for the different fields mentioned above.
 
+**CLASS: Client:**
+This is the class that is the user interface (UI) fo the clients/users. It reads the console for input from the users, and depending on the user input, then creates the corresponding Communication object to send to the server (through ServerConnection object, see below). While reading from the console (i.e. reading user input), this class makes sure that the user doesn't break any edge cases; cannot logoff before being logged on, cannot logon if already logged on, etc. by keeping track of the ServerConnection status (see below). The Client object communicates across the chatroom through its associated ServerConnection object, which has an inputObjectStream and OutputObjectStream. Thus, when the Client main method reads a command from the commandline, it will construct the appropriate Communication object and then it across the outputObjectStream.
+- `listenForUserCommands` **method**: This method reads from the commandline (reads the user's commands), and checks them (edge cases mentioned above), constructs the appropriate Communication object corresponding to the command, and then puts it onto the ServerConnection object's ObjectOutputStream to be sent to the redirected appropriately.
+- `Main` **method**: Instantiates the ServerConnection object, and then uses the `listenForUserCommands` helper method to read commandline input and send out Communication objects.
 
 
